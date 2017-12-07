@@ -11,225 +11,118 @@ using System.IO;
 using System.IO.Compression;
 using System.Net;
 
-//TODO: Utilize more built in helper methods when getting and
-// setting information about directory paths. (look at DirecoryCopy()
-// for good examples)
+// TODO: Make a good error checking system.
 
 namespace GPPInstaller
 {
     public partial class Form1 : Form
     {
-        public static string MAIN_DIR = Directory.GetCurrentDirectory();
+        Utility util;
 
-        WebClient webclient;
+        
+        
+        string[] installedModPacks = new string[2];
+
+        Dictionary<string, string> selectedModPacks = new Dictionary<string, string>();
+
+        //private int _progressBarLogic;
+        //public int ProgressBarLogic
+        //{
+        //    get { return _progressBarLogic; }
+        //    set
+        //    {
+        //        _progressBarLogic = value;
+        //        if (_progressBarLogic == 1)
+        //        {
+        //            progressBar1.PerformStep();
+        //            _progressBarLogic = 0;
+        //        }
+        //    }
+        //}
 
         public Form1()
         {
             InitializeComponent();
 
-            // Check for ksp version number using the readme.txt file
-            label1.Text = "KSP Version: " + GetVersionNumber();
+            util = new Utility(this);
 
-            // Create a mod storage dir
-            Directory.CreateDirectory(MAIN_DIR + "\\GPPInstaller");
+            label1.Text = "KSP Version: " + util.GetVersionNumber() + " (" + util.GetEXE() + ")";
+
+            Directory.CreateDirectory(".\\GPPInstaller");
+
+            installedModPacks = util.CurrentInstalledModPacks();
+            CheckInstalledMods(installedModPacks);
         }
 
-        private string GetVersionNumber()
-        {
-            //string currentDir = Directory.GetCurrentDirectory();
-            string target = MAIN_DIR + "\\readme.txt";
-
-            if (!File.Exists(target))
-            {
-                // Make a popup window for this error
-                return "Error: Could not determine KSP version";
-            }
-
-            string[] readmeLines = File.ReadAllLines(target);
-
-            
-
-            string versionNumberLine = readmeLines[14];
-
-            char[] versionChars = new char[5];
-            for (int lineI = 8, charI = 0; lineI <= 12; lineI++, charI++)
-            {
-                versionChars[charI] = versionNumberLine[lineI];
-            }
-
-            string versionNumber = new string(versionChars);
-
-            return versionNumber;
-        }
-
-
-        // Starts intallation process
         private void button1_Click(object sender, EventArgs e)
         {
-            // Check to make sure the Gamedata folder is clean
-            // TODO: Make a good error checking system.
-            CheckGameData();
+            progressBar1.Visible = false;
 
-            // Download and install compatable version of Kopernicus
-            //DownLoadAndInstallKopernicus();
-            DownloadAndIntall("Kopernicus");
+            if (checkBox1.Checked)
+            {
+                progressBar1.Minimum = 0;
+                progressBar1.Maximum = 9; // 3 mods * 3 steps
+                progressBar1.Value = 0;
+                progressBar1.Step = 1;
+                progressBar1.Visible = true;
 
-            // 
+                util.DownloadAndInstall("Core");
+            }
+            else util.Uninstall("Core");
+
+
+
+            //if (checkBox2.Checked)
+            //{
+            //    util.DownloadAndInstall("Core");
+            //}
+            //else util.Uninstall("");
+
         }
 
-        private void CheckGameData()
+        private void button2_Click(object sender, EventArgs e)
         {
-            string targetDir = Directory.GetCurrentDirectory() + "\\GameData";
-            if (!Directory.Exists(targetDir))
-            {
-                // Throw an error 
-                DisplayError("GameData folder does not exist.");
-                return;
-            }
+        }
 
-            string[] directories = Directory.GetDirectories(targetDir);
-            string[] files = Directory.GetFiles(targetDir);
-            string squadDir = targetDir + "\\Squad";
-            if (directories[0] != squadDir)
-            {
-                DisplayError("GameData does not contain vanilla squad folders.");
-                return;
-            }
+        private void button3_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
 
-            if (directories.Length > 1)
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            button1.Enabled = true;
+        }
+
+        private void checkBox2_CheckedChanged(object sender, EventArgs e)
+        {
+            button1.Enabled = true;
+        }
+
+        private void CheckInstalledMods(string[] installedModPacks)
+        {
+            if (installedModPacks[0] == "Core")
             {
-                DisplayError("GameData is not clean.");
-                return;
+                checkBox1.Checked = true;
             }
             
-            if (files.Length > 0)
+            if (installedModPacks[1] == "VisualEnhacements")
             {
-                DisplayError("GameData is not clean.");
-                return;
+                checkBox2.Checked = true;
             }
 
+            button1.Enabled = false;
         }
 
-        private void DisplayError(string errorMessage)
+        public void ProgressBarStep()
         {
-            errorLabel.Visible = true;
-            errorLabel.Text = "Error: " + errorMessage;
+            progressBar1.PerformStep();
         }
 
-        private void DownloadAndIntall(string modName)
+        public void ProgressLabelUpdate(string Message)
         {
-            webclient = new WebClient();
-
-            if (modName == "Kopernicus")
-            {
-                string downloadAddress = "https://github.com/Kopernicus/Kopernicus/releases/download/release-1.3.1-2/Kopernicus-1.3.1-2.zip";
-                string fileName = "Kopernicus-1.3.1-2.zip";
-                string gppDir = @".\GPPInstaller";
-
-                webclient.DownloadFile(downloadAddress, fileName);
-
-                try
-                {
-                    string sourceFile = @".\" + fileName;
-                    string destFile = gppDir + "\\" + fileName;
-
-                    if (File.Exists(destFile))
-                    {
-                        File.Delete(destFile);
-                    }
-
-                    File.Move(sourceFile, destFile);
-                }
-                catch (Exception e)
-                {
-                    DisplayError(e.ToString());
-                }
-            }
+            progressLabel.Visible = true;
+            progressLabel.Text = Message;
         }
-
-        private void DownLoadAndInstallKopernicus()
-        {
-            webclient = new WebClient();
-            string downloadAddress = "https://github.com/Kopernicus/Kopernicus/releases/download/release-1.3.1-2/Kopernicus-1.3.1-2.zip";
-            string fileName = "Kopernicus-1.3.1-2.zip";
-            string gppDir = MAIN_DIR + "\\GPPInstaller";
-
-            webclient.DownloadFile(downloadAddress, fileName);
-
-            try
-            {
-                string sourceFile = MAIN_DIR + "\\" + fileName;
-                string destFile = gppDir + "\\" + fileName;
-
-                if (File.Exists(destFile))
-                {
-                    File.Delete(destFile);
-                }
-
-                File.Move(sourceFile, destFile);
-            }
-            catch (Exception e)
-            {
-                DisplayError(e.ToString());
-            }
-
-            // NOTE: Needed to add a reference to System.IO.Compression.FileSystem
-            // in order to get ZipFile to work. Right click on References in the Solution
-            // Explorer to add references.
-            string dirName = fileName.Remove(18, 4);
-            string destDir = gppDir + "\\" + dirName;
-            DirectoryInfo destDirInfo = new DirectoryInfo(destDir);
-
-            if (destDirInfo.Exists)
-            {
-                Directory.Delete(destDir, true);
-            }
-
-            string zipFile = gppDir + "\\" + fileName;
-            Directory.CreateDirectory(gppDir + "\\" + dirName);
-            ZipFile.ExtractToDirectory(zipFile, destDir);
-            
-
-            string sourceDirName = gppDir + "\\" + dirName + "\\GameData";
-            string destDirName = MAIN_DIR + "\\GameData";
-            DirectoryCopy(sourceDirName, destDirName, true);
-            
-        }
-
-        private static void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs)
-        {
-            // Get subdirectories for the specified directory.
-            DirectoryInfo dir = new DirectoryInfo(sourceDirName);
-
-            if (!dir.Exists)
-            {
-                throw new DirectoryNotFoundException("Source directory does not exist: " + sourceDirName);
-            }
-
-            DirectoryInfo[] dirs = dir.GetDirectories();
-            if (!Directory.Exists(destDirName))
-            {
-                //throw new DirectoryNotFoundException("Destination directory does not exist: " + destDirName);
-                Directory.CreateDirectory(destDirName);
-            }
-
-            FileInfo[] files = dir.GetFiles();
-            foreach(FileInfo file in files)
-            {
-                string tempPath = Path.Combine(destDirName, file.Name);
-                file.CopyTo(tempPath, true);
-            }
-
-            // If copying subdirectories, copy them and their contents to new location.
-            if (copySubDirs)
-            {
-                foreach (DirectoryInfo subDir in dirs)
-                {
-                    string tempPath = Path.Combine(destDirName, subDir.Name);
-                    DirectoryCopy(subDir.FullName, tempPath, copySubDirs);
-                }
-            }
-        }
-
     }
 }
