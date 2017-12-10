@@ -18,27 +18,8 @@ namespace GPPInstaller
     public partial class Form1 : Form
     {
         Utility util;
-
-        
-        
         string[] installedModPacks = new string[2];
-
         Dictionary<string, string> selectedModPacks = new Dictionary<string, string>();
-
-        //private int _progressBarLogic;
-        //public int ProgressBarLogic
-        //{
-        //    get { return _progressBarLogic; }
-        //    set
-        //    {
-        //        _progressBarLogic = value;
-        //        if (_progressBarLogic == 1)
-        //        {
-        //            progressBar1.PerformStep();
-        //            _progressBarLogic = 0;
-        //        }
-        //    }
-        //}
 
         public Form1()
         {
@@ -66,7 +47,10 @@ namespace GPPInstaller
                 progressBar1.Step = 1;
                 progressBar1.Visible = true;
 
-                util.DownloadAndInstall("Core");
+                util.BuildModPack("Core");
+
+                int index = 0;
+                util.Download(index);
             }
             else util.Uninstall("Core");
 

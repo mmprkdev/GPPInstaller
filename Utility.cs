@@ -17,14 +17,16 @@ namespace GPPInstaller
 {
     class Mod
     {
+        public string ModPackName { get; set; }
         public string ModName { get; set; }
         public string DownloadAddress { get; set; }
         public string FileName { get; set; }
+        public string State { get; set; }
     }
 
     class Utility
     {
-        List<Mod> modPack = new List<Mod>();
+        public List<Mod> modPack = new List<Mod>();
 
         Form1 form1;
 
@@ -33,29 +35,36 @@ namespace GPPInstaller
             this.form1 = form1;
         }
 
+        // NOTE: Different States: Uninstalled (default), Downloaded, Installed
         public void BuildModPack(string modPackName)
         {
             if (modPackName == "Core")
             {
                 modPack.Add(new Mod()
                 {
+                    ModPackName = "Core", 
                     ModName = "Kopernicus",
                     DownloadAddress = "https://github.com/Kopernicus/Kopernicus/releases/download/release-1.3.1-2/Kopernicus-1.3.1-2.zip",
-                    FileName = "Kopernicus-1.3.1-2.zip"
+                    FileName = "Kopernicus-1.3.1-2.zip",
+                    State = "Uninstalled"
                 });
 
                 modPack.Add(new Mod()
                 {
+                    ModPackName = "Core",
                     ModName = "GPP",
                     DownloadAddress = "https://github.com/Galileo88/Galileos-Planet-Pack/releases/download/1.5.88/Galileos.Planet.Pack.1.5.88.zip",
-                    FileName = "Galileos.Planet.Pack.1.5.88.zip"
+                    FileName = "Galileos.Planet.Pack.1.5.88.zip",
+                    State = "Uninstalled"
                 });
 
                 modPack.Add(new Mod()
                 {
+                    ModPackName = "Core",
                     ModName = "GPP_Textures",
                     DownloadAddress = "https://github.com/Galileo88/Galileos-Planet-Pack/releases/download/3.0.0/GPP_Textures-3.0.0.zip",
-                    FileName = "GPP_Textures-3.0.0.zip"
+                    FileName = "GPP_Textures-3.0.0.zip",
+                    State = "Uninstalled"
                 });
             }
 
@@ -82,10 +91,35 @@ namespace GPPInstaller
             }
         }
 
+
+        public void Download(int index)
+        {
+            int threadHit = 0;
+
+            string downloadAddress = modPack[index].DownloadAddress;
+            string fileName = modPack[index].FileName;
+
+            string gppDir = ".\\GPPInstaller";
+            string downloadDest = gppDir + "\\" + fileName;
+
+            if (!File.Exists(downloadDest))
+            {
+                DownloadFileBackground(downloadAddress, downloadDest);
+            }
+
+            threadHit++;
+
+            // TODO: Need to get this conditional to check true
+            if (threadHit % 2 == 0 && index < modPack.Count)
+            {
+                index++;
+                Download(index);
+            }
+        }
+
         public async void DownloadAndInstall(string modPackName)
         {
             int debugCounter = 0;
-            WebClient webclient = new WebClient();
 
             BuildModPack(modPackName);
             
@@ -102,7 +136,7 @@ namespace GPPInstaller
                 //NOTE: downloadfileasync appears to be timing out for the GPP download 
                 if (!File.Exists(downloadDest))
                 {
-                    await webclient.DownloadFileTaskAsync(downloadAddress, fileName);
+                    DownloadFileBackground(downloadAddress, downloadDest);
                 }
                 
                 // STEP 1
@@ -172,12 +206,29 @@ namespace GPPInstaller
             modPack = new List<Mod>();
         }
 
-        //private async Task DownloadFileAsync(string downloadAddress, string fileName)
-        //{
-        //    WebClient webclient = new WebClient();
-        //    //Uri uri = new Uri(downloadAddress);
-        //    await webclient.DownloadFileTaskAsync(downloadAddress, fileName);
-        //}
+        public void DownloadFileBackground(string downloadAddress, string fileName)
+        {
+            WebClient webclient = new WebClient();
+            Uri uri = new Uri(downloadAddress);
+
+            webclient.DownloadFileCompleted += new AsyncCompletedEventHandler(DownloadFileCallback);
+            webclient.DownloadProgressChanged += new DownloadProgressChangedEventHandler(DownloadProgressCallback);
+            webclient.DownloadFileAsync(uri, fileName);
+        }
+
+        private void DownloadProgressCallback(object sender, DownloadProgressChangedEventArgs e)
+        {
+            string output = (string)e.UserState + " downloaded " + e.BytesReceived + "/" + e.TotalBytesToReceive + " bytes." + e.ProgressPercentage + "% complete...";
+            form1.ProgressLabelUpdate(output);
+
+            form1.ProgressLabelUpdate("");
+        }
+
+        private void DownloadFileCallback(object sender, AsyncCompletedEventArgs e)
+        {
+            form1.ProgressLabelUpdate("Download Complete");
+
+        }
 
         private void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs)
         {
@@ -327,7 +378,7 @@ namespace GPPInstaller
                     form1.ProgressLabelUpdate("Changes successfully applied!");
                 }
             }
-            
+
         }
     }
 }
