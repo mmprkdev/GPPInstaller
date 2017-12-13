@@ -26,7 +26,8 @@ namespace GPPInstaller
 
     class Utility
     {
-        public List<Mod> modPack = new List<Mod>();
+        private static int modIndex = 0;
+        public static List<Mod> modPack = new List<Mod>();
 
         Form1 form1;
 
@@ -42,7 +43,7 @@ namespace GPPInstaller
             {
                 modPack.Add(new Mod()
                 {
-                    ModPackName = "Core", 
+                    ModPackName = "Core",
                     ModName = "Kopernicus",
                     DownloadAddress = "https://github.com/Kopernicus/Kopernicus/releases/download/release-1.3.1-2/Kopernicus-1.3.1-2.zip",
                     FileName = "Kopernicus-1.3.1-2.zip",
@@ -67,61 +68,93 @@ namespace GPPInstaller
                     State = "Uninstalled"
                 });
             }
+            
+            // Clouds, Auroae, and Shadows
+            // 1.) Choose cloud textures
+            // 2.) Download and install EVE
 
-            if (modPackName == "Visuals")
+
+            //modPack.Add(new Mod()
+            //{
+            //    ModName = ""
+            //})
+
+            // Scatterer
+            // 1.) Download and install Scatterer
+
+            // PlanetShine
+            // 1.) Download and install PlanetShine
+
+            // DistantObjectEnhancement
+            // 1.) Download and install DistantObjectEnhancement
+            
+        }
+        
+        public async void DownloadFiles()
+        {
+            for (int i = 0; i < modPack.Count; i++)
             {
-                // Clouds, Auroae, and Shadows
-                // 1.) Choose cloud textures
-                // 2.) Download and install EVE
+                string downloadAddress = modPack[i].DownloadAddress;
+                string fileName = modPack[i].FileName;
 
+                string gppDir = ".\\GPPInstaller";
+                string downloadDest = gppDir + "\\" + fileName;
 
-                //modPack.Add(new Mod()
-                //{
-                //    ModName = ""
-                //})
+                if (!File.Exists(downloadDest))
+                {
+                    WebClient webclient = new WebClient();
+                    Uri uri = new Uri(downloadAddress);
 
-                // Scatterer
-                // 1.) Download and install Scatterer
-
-                // PlanetShine
-                // 1.) Download and install PlanetShine
-
-                // DistantObjectEnhancement
-                // 1.) Download and install DistantObjectEnhancement
+                    webclient.DownloadFileCompleted += DownloadFileComplete(modPack[i], form1);
+                    webclient.DownloadProgressChanged += new DownloadProgressChangedEventHandler(DownloadProgressCallback);
+                    await Task.Factory.StartNew(() => webclient.DownloadFileAsync(uri, downloadDest));
+                }
             }
+            // NOTE: After await, the rest of the function is still exicuted, still not sure what
+            // the threads are doing.
         }
 
-
-        public void Download(int index)
+        private void DownloadProgressCallback(object sender, DownloadProgressChangedEventArgs e)
         {
-            int threadHit = 0;
+            string output = e.ProgressPercentage + "% complete...";
+            form1.ProgressLabelUpdate(output);
+        }
 
-            string downloadAddress = modPack[index].DownloadAddress;
-            string fileName = modPack[index].FileName;
-
-            string gppDir = ".\\GPPInstaller";
-            string downloadDest = gppDir + "\\" + fileName;
-
-            if (!File.Exists(downloadDest))
+        public static AsyncCompletedEventHandler DownloadFileComplete(Mod mod, Form1 form1)
+        {
+            Action<object, AsyncCompletedEventArgs> action = (sender, e) =>
             {
-                DownloadFileBackground(downloadAddress, downloadDest);
-            }
+                switch (mod.ModName)
+                {
+                    case "Kopernicus":
+                        mod.State = "Downloaded";
+                        break;
+                    case "GPP":
+                        mod.State = "Downloaded";
+                        break;
+                    case "GPP_Textures":
+                        mod.State = "Downloaded";
+                        break;
+                    default:
+                        break;
+                }
 
-            threadHit++;
+                form1.ProgressBar1Step();
 
-            // TODO: Need to get this conditional to check true
-            if (threadHit % 2 == 0 && index < modPack.Count)
-            {
-                index++;
-                Download(index);
-            }
+                modIndex++;
+
+                if (modIndex >= modPack.Count)
+                {
+                    form1.ProgressLabelUpdate("All Downloads complete.");
+                }
+            };
+            return new AsyncCompletedEventHandler(action);
         }
 
         public async void DownloadAndInstall(string modPackName)
         {
             int debugCounter = 0;
 
-            BuildModPack(modPackName);
             
             for (int i = 0; i < modPack.Count; i++)
             {
@@ -136,14 +169,14 @@ namespace GPPInstaller
                 //NOTE: downloadfileasync appears to be timing out for the GPP download 
                 if (!File.Exists(downloadDest))
                 {
-                    DownloadFileBackground(downloadAddress, downloadDest);
+                    //DownloadFileBackground(downloadAddress, downloadDest);
                 }
                 
                 // STEP 1
-                form1.ProgressBarStep();
+                //form1.ProgressBarStep();
                 debugCounter++;
                 Debug.WriteLine("Step: " + debugCounter.ToString());
-                StepDescription(modPackName, modName, debugCounter);
+                //StepDescription(modPackName, modName, debugCounter);
 
                 int fileNameLength = fileName.Length;
                 string dirName = fileName.Remove((fileNameLength - 4), 4);
@@ -173,8 +206,8 @@ namespace GPPInstaller
                 // STEP 2
                 debugCounter++;
                 Debug.WriteLine("Step: " + debugCounter.ToString());
-                form1.ProgressBarStep();
-                StepDescription(modPackName, modName, debugCounter);
+                //form1.ProgressBarStep();
+                //StepDescription(modPackName, modName, debugCounter);
 
 
                 //TODO: Might want to delete the zip file after exctraction.
@@ -196,8 +229,8 @@ namespace GPPInstaller
                 // STEP 3
                 debugCounter++;
                 Debug.WriteLine("Step: " + debugCounter.ToString());
-                form1.ProgressBarStep();
-                StepDescription(modPackName, modName, debugCounter);
+                //form1.ProgressBarStep();
+                //StepDescription(modPackName, modName, debugCounter);
             }
             Debug.WriteLine("Install finished");
 
@@ -206,29 +239,7 @@ namespace GPPInstaller
             modPack = new List<Mod>();
         }
 
-        public void DownloadFileBackground(string downloadAddress, string fileName)
-        {
-            WebClient webclient = new WebClient();
-            Uri uri = new Uri(downloadAddress);
-
-            webclient.DownloadFileCompleted += new AsyncCompletedEventHandler(DownloadFileCallback);
-            webclient.DownloadProgressChanged += new DownloadProgressChangedEventHandler(DownloadProgressCallback);
-            webclient.DownloadFileAsync(uri, fileName);
-        }
-
-        private void DownloadProgressCallback(object sender, DownloadProgressChangedEventArgs e)
-        {
-            string output = (string)e.UserState + " downloaded " + e.BytesReceived + "/" + e.TotalBytesToReceive + " bytes." + e.ProgressPercentage + "% complete...";
-            form1.ProgressLabelUpdate(output);
-
-            form1.ProgressLabelUpdate("");
-        }
-
-        private void DownloadFileCallback(object sender, AsyncCompletedEventArgs e)
-        {
-            form1.ProgressLabelUpdate("Download Complete");
-
-        }
+        
 
         private void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs)
         {
@@ -320,7 +331,7 @@ namespace GPPInstaller
             }
 
             Debug.WriteLine("Uninstallation complete");
-            form1.ProgressLabelUpdate("Changes successfully applied!");
+            //form1.ProgressLabelUpdate("Changes successfully applied!");
 
             // TODO: VisualEnhacements
         }
@@ -354,31 +365,31 @@ namespace GPPInstaller
             return result;
         }
 
-        private void StepDescription(string modPackName, string modName, int Step)
-        {
-            if (modPackName == "Core")
-            {
-                if (Step == 0 || Step == 3 || Step == 6)
-                {
-                    form1.ProgressLabelUpdate("Downloading " + modName + "...");
-                }
+        //private void StepDescription(string modPackName, string modName, int Step)
+        //{
+        //    if (modPackName == "Core")
+        //    {
+        //        if (Step == 0 || Step == 3 || Step == 6)
+        //        {
+        //            form1.ProgressLabelUpdate("Downloading " + modName + "...");
+        //        }
 
-                if (Step == 1 || Step == 4 || Step == 7)
-                {
-                    form1.ProgressLabelUpdate("Extracting " + modName + "...");
-                }
+        //        if (Step == 1 || Step == 4 || Step == 7)
+        //        {
+        //            form1.ProgressLabelUpdate("Extracting " + modName + "...");
+        //        }
 
-                if (Step == 2 || Step == 5 || Step == 8)
-                {
-                    form1.ProgressLabelUpdate("Copying " + modName + " into GameData...");
-                }
+        //        if (Step == 2 || Step == 5 || Step == 8)
+        //        {
+        //            form1.ProgressLabelUpdate("Copying " + modName + " into GameData...");
+        //        }
 
-                if (Step == 9)
-                {
-                    form1.ProgressLabelUpdate("Changes successfully applied!");
-                }
-            }
+        //        if (Step == 9)
+        //        {
+        //            form1.ProgressLabelUpdate("Changes successfully applied!");
+        //        }
+        //    }
 
-        }
+        //}
     }
 }

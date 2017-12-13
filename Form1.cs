@@ -41,26 +41,12 @@ namespace GPPInstaller
 
             if (checkBox1.Checked)
             {
-                progressBar1.Minimum = 0;
-                progressBar1.Maximum = 9; // 3 mods * 3 steps
-                progressBar1.Value = 0;
-                progressBar1.Step = 1;
-                progressBar1.Visible = true;
-
+                progressLabel.Text = "Downloading...";
+                ProgressBar1Init();
                 util.BuildModPack("Core");
-
-                int index = 0;
-                util.Download(index);
+                util.DownloadFiles();
             }
             else util.Uninstall("Core");
-
-
-
-            //if (checkBox2.Checked)
-            //{
-            //    util.DownloadAndInstall("Core");
-            //}
-            //else util.Uninstall("");
 
         }
 
@@ -98,15 +84,46 @@ namespace GPPInstaller
             button1.Enabled = false;
         }
 
-        public void ProgressBarStep()
+        private void ProgressBar1Init()
         {
-            progressBar1.PerformStep();
+            progressBar1.Minimum = 0;
+            progressBar1.Maximum = 3;
+            progressBar1.Value = 0;
+            progressBar1.Step = 1;
+            progressBar1.Visible = true;
+        }
+
+        public void ProgressBar1Step()
+        {
+            if (progressBar1.InvokeRequired)
+            {
+                progressBar1.Invoke(new MethodInvoker(delegate
+                {
+                    progressBar1.PerformStep();
+                }));
+            }
+            else
+            {
+                progressBar1.PerformStep();
+            }
         }
 
         public void ProgressLabelUpdate(string Message)
         {
-            progressLabel.Visible = true;
-            progressLabel.Text = Message;
+            if (progressLabel.InvokeRequired)
+            {
+                progressLabel.Invoke(new MethodInvoker(delegate
+                {
+                    progressLabel.Visible = true;
+                    progressLabel.Text = Message;
+                }));
+            }
+            else
+            {
+                progressLabel.Visible = true;
+                progressLabel.Text = Message;
+            }
+            
         }
     }
 }
