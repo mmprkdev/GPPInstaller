@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
@@ -36,7 +37,7 @@ namespace GPPInstaller
             this.form1 = form1;
         }
 
-        // NOTE: Different States: Uninstalled (default), Downloaded, Installed
+        // NOTE: Different States: Uninstalled, Downloaded, Extracted, Installed
         public void BuildModPack(string modPackName)
         {
             if (modPackName == "Core")
@@ -108,6 +109,19 @@ namespace GPPInstaller
                     webclient.DownloadFileCompleted += DownloadFileComplete(modPack[i], form1);
                     webclient.DownloadProgressChanged += new DownloadProgressChangedEventHandler(DownloadProgressCallback);
                     await Task.Factory.StartNew(() => webclient.DownloadFileAsync(uri, downloadDest));
+                    // TODO: Try placing logic here that is currently being run in the closure. 
+                }
+                else
+                {
+                    modIndex++;
+                    form1.ProgressBar1Step();
+
+                    if (modIndex >= modPack.Count)
+                    {
+                        form1.ProgressLabelUpdate("All Downloads complete.");
+
+                        ExtractFiles();
+                    }
                 }
             }
             // NOTE: After await, the rest of the function is still exicuted, still not sure what
@@ -146,100 +160,104 @@ namespace GPPInstaller
                 if (modIndex >= modPack.Count)
                 {
                     form1.ProgressLabelUpdate("All Downloads complete.");
+
+                    Utility util = new Utility(form1);
+                    util.ExtractFiles();
                 }
             };
             return new AsyncCompletedEventHandler(action);
         }
 
-        public async void DownloadAndInstall(string modPackName)
+        private async void ExtractFiles()
         {
-            int debugCounter = 0;
+            modIndex = 0;
 
-            
             for (int i = 0; i < modPack.Count; i++)
             {
-
-                string modName = modPack[i].ModName;
-                string downloadAddress = modPack[i].DownloadAddress;
                 string fileName = modPack[i].FileName;
-
-                string gppDir = ".\\GPPInstaller";
-                string downloadDest = gppDir + "\\" + fileName;
-
-                //NOTE: downloadfileasync appears to be timing out for the GPP download 
-                if (!File.Exists(downloadDest))
-                {
-                    //DownloadFileBackground(downloadAddress, downloadDest);
-                }
-                
-                // STEP 1
-                //form1.ProgressBarStep();
-                debugCounter++;
-                Debug.WriteLine("Step: " + debugCounter.ToString());
-                //StepDescription(modPackName, modName, debugCounter);
-
                 int fileNameLength = fileName.Length;
                 string dirName = fileName.Remove((fileNameLength - 4), 4);
-                string destDir = gppDir + "\\" + dirName;
+                string destDir = @".\GPPInstaller\" + dirName;
 
                 DirectoryInfo destDirInfo = new DirectoryInfo(destDir);
 
-                // NOTE: overwritting data for now, might want to handle
-                // this differently.
-                //if (destDirInfo.Exists)
-                //{
-                //    Directory.Delete(destDir, true);
-                //}
+                string zipFile = @".\GPPInstaller\" + fileName;
 
-                //string zipFile = gppDir + "\\" + fileName;
-                //Directory.CreateDirectory(gppDir + "\\" + dirName);
-                //await Task.Factory.StartNew(() => ZipFile.ExtractToDirectory(zipFile, destDir));
-
-                string zipFile = gppDir + "\\" + fileName;
-                
                 if (!destDirInfo.Exists)
                 {
-                    Directory.CreateDirectory(gppDir + "\\" + dirName);
+                    Directory.CreateDirectory(destDir);
                     await Task.Factory.StartNew(() => ZipFile.ExtractToDirectory(zipFile, destDir));
-                }
 
-                // STEP 2
-                debugCounter++;
-                Debug.WriteLine("Step: " + debugCounter.ToString());
-                //form1.ProgressBarStep();
-                //StepDescription(modPackName, modName, debugCounter);
+                    modIndex++;
+                    if (modIndex >= modPack.Count)
+                    {
+                        form1.ProgressLabelUpdate("All files extracted");
 
-
-                //TODO: Might want to delete the zip file after exctraction.
-
-                string sourceDirName;
-                string destDirName;
-                if (modName == "GPP_Textures")
-                {
-                    sourceDirName = gppDir + "\\" + dirName + "\\GameData\\GPP";
-                    destDirName = ".\\GameData\\GPP";
+                        InstallMods();
+                    }
+                        
                 }
                 else
                 {
-                    sourceDirName = gppDir + "\\" + dirName + "\\GameData";
-                    destDirName = ".\\GameData";
+                    modIndex++;
+                    if (modIndex >= modPack.Count)
+                    {
+                        form1.ProgressLabelUpdate("All files extracted");
+
+                        InstallMods();
+                    }
+                        
+                }
+                
+            }
+        }
+
+        private async void InstallMods()
+        {
+            modIndex = 0;
+
+            string sourceDirName;
+            string destDirName;
+
+            for (int i = 0; i < modPack.Count; i++)
+            {
+                string modName = modPack[i].ModName;
+                string fileName = modPack[i].FileName;
+                int fileNameLength = fileName.Length;
+                string dirName = fileName.Remove((fileNameLength - 4), 4);
+
+                if (modName == "GPP_Textures")
+                {
+                    sourceDirName = @".\GPPInstaller\" + dirName + @"\GameData\GPP";
+                    destDirName = @".\GameData\GPP";
+                }
+                else
+                {
+                    sourceDirName = @".\GPPInstaller\" + @"\" + dirName + @"\GameData";
+                    destDirName = @".\GameData";
                 }
 
                 await Task.Factory.StartNew(() => DirectoryCopy(sourceDirName, destDirName, true));
-                // STEP 3
-                debugCounter++;
-                Debug.WriteLine("Step: " + debugCounter.ToString());
-                //form1.ProgressBarStep();
-                //StepDescription(modPackName, modName, debugCounter);
+                Debug.WriteLine("Line after DirectoryCopy");
+                modIndex++;
+                if (modIndex >= modPack.Count) form1.ProgressLabelUpdate("All mods installed");
             }
-            Debug.WriteLine("Install finished");
-
-            // NOTE: doing this here to refreash modPack
-            // in case there are multiple mod pack downloads.
-            modPack = new List<Mod>();
+            
         }
 
-        
+        //private bool Installed(Mod mod)
+        //{
+        //    string modName = mod.ModName;
+        //    string fileName = mod.FileName;
+        //    int fileNameLength = fileName.Length;
+        //    string dirName = fileName.Remove((fileNameLength - 4), 4);
+
+        //    DirectoryInfo destDirInfo = new DirectoryInfo(destDir);
+
+        //    if ()
+
+
+        //}
 
         private void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs)
         {
@@ -365,31 +383,5 @@ namespace GPPInstaller
             return result;
         }
 
-        //private void StepDescription(string modPackName, string modName, int Step)
-        //{
-        //    if (modPackName == "Core")
-        //    {
-        //        if (Step == 0 || Step == 3 || Step == 6)
-        //        {
-        //            form1.ProgressLabelUpdate("Downloading " + modName + "...");
-        //        }
-
-        //        if (Step == 1 || Step == 4 || Step == 7)
-        //        {
-        //            form1.ProgressLabelUpdate("Extracting " + modName + "...");
-        //        }
-
-        //        if (Step == 2 || Step == 5 || Step == 8)
-        //        {
-        //            form1.ProgressLabelUpdate("Copying " + modName + " into GameData...");
-        //        }
-
-        //        if (Step == 9)
-        //        {
-        //            form1.ProgressLabelUpdate("Changes successfully applied!");
-        //        }
-        //    }
-
-        //}
     }
 }
