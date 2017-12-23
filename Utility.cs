@@ -13,49 +13,46 @@ using System.IO.Compression;
 using System.Net;
 using System.Diagnostics;
 
-
-// TODO: 
-// Start using modList to filter through different
-// download and install procedures.
+// TODO: Consider deleting the zip file after it is extracted
 
 namespace GPPInstaller
 {
-    class Mod
-    {
-        public string ModPackName { get; set; }
-        public string ModName { get; set; }
-        public string DownloadAddress { get; set; }
-        public string ArchiveFileName { get; set; }
-        // States: "Downloaded" == true : The archive file is present in .\GPPInstaller
-        //         "Extracted" == true  : An extracted dir exsists in .\GPPInstaller
-        //         "Installed" == true  : All required dirs and files are present inside of .\GameData
-        //         ""                   : Initial default state 
-        //public string[3] CurrentState { get; set; }
-        public bool State_Downloaded { get; set; }
-        public bool State_Extracted { get; set; }
-        public bool State_Installed { get; set; }
-        // Actions: "Install"  : Install the mod
-        //          "Uninstall": Uninstall the mod
-        //          ""         : Take no action
-        public string ActionToTake { get; set; }
-    }
-
     class Utility
     {
-        private static int modIndex = 0;
-        public static List<Mod> modList = new List<Mod>();
+        private int downloadCounter = 0;
+        private int downloadQueIndex = 0;
+        private int totalNumberOfDownloads = 0;
 
+        private static int modIndex = 0;
+
+        private int kopericusIndex = 0;
+        private int GPPIndex = 1;
+        private int GPPTexturesIndex = 2;
+        private int EVEIndex = 3;
+        private int scattererIndex = 4;
+        private int doeIndex = 5;
+        private int cloudsLowResIndex = 6;
+        private int cloudsHighResIndex = 7;
+
+        private Form1 form1;
+
+        // TODO: remove this
         Dictionary<string, bool> utilProcessedOptions = new Dictionary<string, bool>();
 
-        Form1 form1;
-
+        public static List<Mod> modList = new List<Mod>();
+        
         public Utility(Form1 form1)
         {
             this.form1 = form1;
         }
 
-        // TODO: left off here
-        
+        public event EventHandler DownloadsComplete;
+
+        protected virtual void OnDownloadsComplete(EventArgs e)
+        {
+            EventHandler handler = DownloadsComplete;
+            DownloadsComplete?.Invoke(this, e);
+        }
 
         public void InitModList()
         {
@@ -133,159 +130,409 @@ namespace GPPInstaller
 
             modList.Add(new Mod()
             {
-                ModPackName = "Visuals",
+                ModPackName = "Clouds",
                 ModName = "CloudsLowRes",
                 DownloadAddress = "",
                 ArchiveFileName = "",
-                State_Downloaded = true,
-                State_Extracted = true,
+                State_Downloaded = false,
+                State_Extracted = false,
                 State_Installed = false,
                 ActionToTake = ""
             });
 
             modList.Add(new Mod()
             {
-                ModPackName = "Visuals",
+                ModPackName = "Clouds",
                 ModName = "CloudsHighRes",
                 DownloadAddress = "",
                 ArchiveFileName = "",
-                State_Downloaded = true,
-                State_Extracted = true,
+                State_Downloaded = false,
+                State_Extracted = false,
                 State_Installed = false,
                 ActionToTake = ""
             });
-        }
 
-        public void DownloadFiles()
-        {
-            if (modList.Count == 0) return;
+            
 
-            form1.ProgressBar1Init(modList.Count);
+            // NOTE: Check if downloaded into .\GPPInstaller
+            string kopernicusZip_gppInstaller = @".\GPPInstaller\Kopernicus-1.3.1-2.zip";
+            string GPPZip_gppInstaller = @".\GPPInstaller\Galileos.Planet.Pack.1.5.88.zip";
+            string gppTexturesZip_gppInstaller = @".\GPPInstaller\GPP_Textures-3.0.0.zip";
 
-            if ()
+            string eveZip_gppInstaller = @".\GPPInstaller\EnvironmentalVisualEnhancements-1.2.2.1.zip";
+            string scattererZip_gppInstaller = @".\GPPInstaller\scatterer-0.0320b.zip";
+            string distantOEZip_gppInstaller = @".\GPPInstaller\DistantObject_1.9.1.zip";
+
+            if (File.Exists(kopernicusZip_gppInstaller))
             {
-
+                modList[kopericusIndex].State_Downloaded = true;
             }
 
-            //for (int i = 0; i < modPack.Count; i++)
+            if (File.Exists(GPPZip_gppInstaller))
+            {
+                modList[GPPIndex].State_Downloaded = true;
+            }
+
+            if (File.Exists(gppTexturesZip_gppInstaller))
+            {
+                modList[GPPTexturesIndex].State_Downloaded = true;
+            }
+
+            if (File.Exists(eveZip_gppInstaller))
+            {
+                modList[EVEIndex].State_Downloaded = true;
+            }
+
+            if (File.Exists(scattererZip_gppInstaller))
+            {
+                modList[scattererIndex].State_Downloaded = true;
+            }
+
+            if (File.Exists(distantOEZip_gppInstaller))
+            {
+                modList[doeIndex].State_Downloaded = true;
+            }
+
+            if (modList[GPPIndex].State_Downloaded == true)
+            {
+                modList[cloudsLowResIndex].State_Downloaded = true;
+                modList[cloudsHighResIndex].State_Downloaded = true;
+            }
+
+            // NOTE: Check if extracted into .\GPPInstaller
+            string kopernicusDir_gppInstaller = @".\GPPInstaller\Kopernicus-1.3.1-2";
+            string GPPDir_gppInstaller = @".\GPPInstaller\Galileos.Planet.Pack.1.5.88";
+            string gppTexturesDir_gppInstaller = @".\GPPInstaller\GPP_Textures-3.0.0";
+
+            string eveDir_gppInstaller = @".\GPPInstaller\EnvironmentalVisualEnhancements-1.2.2.1";
+            string scattererDir_gppInstaller = @".\GPPInstaller\scatterer-0.0320b";
+            string distantOEDir_gppInstaller = @".\GPPInstaller\DistantObject_1.9.1";
+
+            
+            if (Directory.Exists(kopernicusDir_gppInstaller))
+            {
+                modList[kopericusIndex].State_Extracted = true;
+            }
+
+            if (Directory.Exists(GPPDir_gppInstaller))
+            {
+                modList[GPPIndex].State_Extracted = true;
+            }
+
+            if (Directory.Exists(gppTexturesDir_gppInstaller))
+            {
+                modList[GPPTexturesIndex].State_Extracted = true;
+            }
+
+            if (Directory.Exists(eveDir_gppInstaller))
+            {
+                modList[EVEIndex].State_Extracted = true;
+            }
+
+            if (Directory.Exists(scattererDir_gppInstaller))
+            {
+                modList[scattererIndex].State_Extracted = true;
+            }
+
+            if (Directory.Exists(distantOEDir_gppInstaller))
+            {
+                modList[doeIndex].State_Extracted = true;
+            }
+
+            if (modList[GPPIndex].State_Extracted == true)
+            {
+                modList[cloudsLowResIndex].State_Extracted = true;
+                modList[cloudsHighResIndex].State_Extracted = true;
+            }
+            
+            // NOTE: Check if installed into .\GameData
+            string kopernicusDir_gamedata = @".\GameData\Kopernicus";
+            string modularFIDir_gamedata = @".\GameData\ModularFlightIntegrator";
+            string modManagerFile_gamedata = @".\GameData\ModuleManager.2.8.1.dll";
+            string GPPDir_gamedata = @".\GameData\GPP";
+            string GPPTextures_gamedata = @".\GameData\GPP\GPP_Textures";
+
+            string eveDir_gamedata = @".\GameData\EnvironmentalVisualEnhancements";
+            string scattererDir_gamedata = @".\GameData\scatterer";
+            string distantOEDir_gamedata = @".\GameData\DistantObject";
+
+            string cloudsLowResConfig_gamedata = @".\GameData\GPP\GPP_Clouds\Configs\GPPClouds_LowRes.cfg";
+            string cloudsHighResConfig_gamedata = @".\GameData\GPP\GPP_Clouds\Configs\GPPClouds_HighRes.cfg";
+
+            if (Directory.Exists(kopernicusDir_gamedata) &&
+                Directory.Exists(modularFIDir_gamedata) &&
+                File.Exists(modManagerFile_gamedata))
+            {
+                modList[kopericusIndex].State_Installed = true;
+            }
+
+            if (Directory.Exists(GPPDir_gamedata))
+            {
+                modList[GPPIndex].State_Installed = true;
+            }
+
+            if (Directory.Exists(GPPTextures_gamedata))
+            {
+                modList[GPPTexturesIndex].State_Installed = true;
+            }
+
+            if (Directory.Exists(eveDir_gamedata))
+            {
+                modList[EVEIndex].State_Installed = true;
+            }
+
+            if (Directory.Exists(scattererDir_gamedata))
+            {
+                modList[scattererIndex].State_Installed = true;
+            }
+
+            if (Directory.Exists(distantOEDir_gamedata))
+            {
+                modList[doeIndex].State_Installed = true;
+            }
+
+            if (File.Exists(cloudsLowResConfig_gamedata))
+            {
+                modList[cloudsLowResIndex].State_Installed = true;
+            }
+
+            if (File.Exists(cloudsHighResConfig_gamedata))
+            {
+                modList[cloudsHighResIndex].State_Installed = true;
+            }
+        }
+
+        public void SetCheckBoxes(
+            CheckBox coreCheckBox,
+            CheckBox visualsCheckBox,
+            CheckBox cloudsLowResCheckBox,
+            CheckBox cloudsHighResCheckBox)
+        {
+            if (modList[kopericusIndex].State_Installed == true &&
+                modList[GPPIndex].State_Installed == true &&
+                modList[GPPTexturesIndex].State_Installed == true)
+            {
+                coreCheckBox.Checked = true;
+            }
+
+            if (modList[EVEIndex].State_Installed == true &&
+                modList[scattererIndex].State_Installed == true &&
+                modList[doeIndex].State_Installed == true)
+            {
+                visualsCheckBox.Checked = true;
+            }
+
+            if (modList[cloudsLowResIndex].State_Installed == true)
+            {
+                cloudsLowResCheckBox.Checked = true;
+            }
+
+            if (modList[cloudsHighResIndex].State_Installed == true)
+            {
+                cloudsHighResCheckBox.Checked = true;
+            }
+        }
+
+        public void ProcessActionToTake(
+            CheckBox coreCheckBox,
+            CheckBox visualsCheckBox,
+            CheckBox cloudsLowResCheckBox,
+            CheckBox cloudsHighResCheckBox)
+        {
+            // Set to install
+            foreach (Mod mod in modList)
+            {
+                if (mod.ModPackName == "Core" &&
+                    mod.State_Installed == false &&
+                    coreCheckBox.Checked == true)
+                {
+                    mod.ActionToTake = "Install";
+                }
+
+                if (mod.ModPackName == "Visuals" &&
+                    mod.State_Installed == false &&
+                    visualsCheckBox.Checked)
+                {
+                    mod.ActionToTake = "Install";
+                }
+
+                if (mod.ModName == "CloudsLowRes" &&
+                    mod.State_Installed == false &&
+                    cloudsLowResCheckBox.Checked)
+                {
+                    mod.ActionToTake = "Install";
+                }
+
+                if (mod.ModName == "CloudsHighRes" &&
+                    mod.State_Installed == false &&
+                    cloudsHighResCheckBox.Checked)
+                {
+                    mod.ActionToTake = "Install";
+                }
+            }
+
+            totalNumberOfDownloads = GetNumberOfDownloads();
+            
+            // Set to uninstall
+            foreach (Mod mod in modList)
+            {
+                if (mod.ModPackName == "Core" &&
+                    mod.State_Installed == true &&
+                    coreCheckBox.Checked == false)
+                {
+                    mod.ActionToTake = "Uninstall";
+                }
+
+                if (mod.ModPackName == "Visuals" &&
+                    mod.State_Installed == true &&
+                    visualsCheckBox.Checked == false)
+                {
+                    mod.ActionToTake = "Uninstall";
+                }
+
+                if (mod.ModName == "CloudsLowRes" &&
+                    mod.State_Installed == true &&
+                    cloudsLowResCheckBox.Checked == false)
+                {
+                    mod.ActionToTake = "Uninstall";
+                }
+
+                if (mod.ModName == "CloudsHighRes" &&
+                    mod.State_Installed == true &&
+                    cloudsHighResCheckBox.Checked == false)
+                {
+                    mod.ActionToTake = "Uninstall";
+                }
+            }
+        }
+
+        
+        public int GetNumberOfDownloads()
+        {
+            int result = 0;
+
+            foreach (Mod mod in modList)
+            {
+                if (mod.ActionToTake == "Install" &&
+                    mod.State_Downloaded == false &&
+                    mod.DownloadAddress != "")
+                {
+                    result++;
+                }
+            }
+
+            return result;
+        }
+
+        public void DownloadFile()
+        {
+            if (downloadQueIndex < modList.Count)
+            {
+                if (modList[downloadQueIndex].State_Downloaded == false &&
+                modList[downloadQueIndex].ActionToTake == "Install" &&
+                modList[downloadQueIndex].DownloadAddress != "")
+                {
+                    string downloadAddress = modList[downloadQueIndex].DownloadAddress;
+                    string fileName = modList[downloadQueIndex].ArchiveFileName;
+                    string downloadDest = @".\GPPInstaller\" + fileName;
+
+                    WebClient webclient = new WebClient();
+                    Uri uri = new Uri(downloadAddress);
+
+                    webclient.DownloadProgressChanged += new DownloadProgressChangedEventHandler(webclient_DownloadProgressChanged);
+                    webclient.DownloadFileCompleted += new AsyncCompletedEventHandler(webclient_DownloadFileCompleted);
+                    webclient.DownloadFileAsync(uri, downloadDest);
+                }
+                else
+                {
+                    downloadQueIndex++;
+
+                    DownloadFile();
+                }
+            }
+            else
+            {
+                //OnDownloadsComplete(EventArgs.Empty);
+                downloadCounter = 0;
+                downloadQueIndex = 0;
+                totalNumberOfDownloads = 0;
+
+                ExtractFiles();
+            }
+        }
+
+        // TODO: left off here (need to make a custom event
+        // to handle all files downloaded event)
+        private void webclient_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
+        {
+            //Debug.WriteLine("DownloadProgress fired");
+            string output = e.ProgressPercentage + "% complete...";
+            form1.ProgressLabelUpdate(output);
+        }
+
+        private void webclient_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
+        {
+            downloadCounter++;
+            modList[downloadQueIndex].State_Downloaded = true;
+            downloadQueIndex++;
+
+            DownloadFile();
+        }
+
+        private void utility_DownloadsComplete(object sender, EventArgs e)
+        {
+            downloadCounter = 0;
+            downloadQueIndex = 0;
+            totalNumberOfDownloads = 0;
+
+            ExtractFiles();
+        }
+
+        private void ExtractFiles()
+        {
+            Debug.WriteLine("Reached ExtractFiles()");
+
+            //modIndex = 0;
+
+            //for (int i = 0; i < modList.Count; i++)
             //{
-            //    string downloadAddress = modPack[i].DownloadAddress;
-            //    string fileName = modPack[i].FileName;
+            //    string fileName = modList[i].ArchiveFileName;
+            //    int fileNameLength = fileName.Length;
+            //    string dirName = fileName.Remove((fileNameLength - 4), 4);
+            //    string destDir = @".\GPPInstaller\" + dirName;
 
-            //    string gppDir = ".\\GPPInstaller";
-            //    string downloadDest = gppDir + "\\" + fileName;
+            //    DirectoryInfo destDirInfo = new DirectoryInfo(destDir);
 
-            //    if (!File.Exists(downloadDest))
+            //    string zipFile = @".\GPPInstaller\" + fileName;
+
+            //    if (!destDirInfo.Exists)
             //    {
-            //        WebClient webclient = new WebClient();
-            //        Uri uri = new Uri(downloadAddress);
+            //        Directory.CreateDirectory(destDir);
+            //        // TODO: Fix "Central directory corrupt" exception
+            //        await Task.Factory.StartNew(() => ZipFile.ExtractToDirectory(zipFile, destDir));
 
-            //        webclient.DownloadFileCompleted += DownloadFileComplete(modPack[i], form1);
-            //        webclient.DownloadProgressChanged += new DownloadProgressChangedEventHandler(DownloadProgressCallback);
-            //        //await Task.Factory.StartNew(() => webclient.DownloadFileAsync(uri, downloadDest));
-            //        // TODO: Try placing logic here that is currently being run in the closure. 
+            //        modIndex++;
+            //        form1.ProgressBar1Step();
+            //        if (modIndex >= modList.Count)
+            //        {
+            //            form1.ProgressLabelUpdate("All files extracted");
+
+            //            InstallMods();
+            //        }
+                        
             //    }
             //    else
             //    {
             //        modIndex++;
             //        form1.ProgressBar1Step();
-
-            //        if (modIndex >= modPack.Count)
+            //        if (modIndex >= modList.Count)
             //        {
-            //            form1.ProgressLabelUpdate("All Downloads complete.");
+            //            form1.ProgressLabelUpdate("All files extracted");
 
-            //            ExtractFiles();
+            //            InstallMods();
             //        }
             //    }
             //}
-            // NOTE: After await, the rest of the function is still exicuted, still not sure what
-            // the threads are doing.
-        }
-
-        private void DownloadProgressCallback(object sender, DownloadProgressChangedEventArgs e)
-        {
-            string output = e.ProgressPercentage + "% complete...";
-            form1.ProgressLabelUpdate(output);
-        }
-
-        public static AsyncCompletedEventHandler DownloadFileComplete(Mod mod, Form1 form1)
-        {
-            // NOTE: Closure example
-            Action<object, AsyncCompletedEventArgs> action = (sender, e) =>
-            {
-                switch (mod.ModName)
-                {
-                    case "Kopernicus":
-                        mod.State = "Downloaded";
-                        break;
-                    case "GPP":
-                        mod.State = "Downloaded";
-                        break;
-                    case "GPP_Textures":
-                        mod.State = "Downloaded";
-                        break;
-                    default:
-                        break;
-                }
-
-                form1.ProgressBar1Step();
-
-                modIndex++;
-
-                if (modIndex >= modList.Count)
-                {
-                    form1.ProgressLabelUpdate("All Downloads complete.");
-
-                    Utility util = new Utility(form1);
-                    util.ExtractFiles();
-                }
-            };
-            return new AsyncCompletedEventHandler(action);
-        }
-
-        private async void ExtractFiles()
-        {
-            modIndex = 0;
-
-            for (int i = 0; i < modList.Count; i++)
-            {
-                string fileName = modList[i].ArchiveFileName;
-                int fileNameLength = fileName.Length;
-                string dirName = fileName.Remove((fileNameLength - 4), 4);
-                string destDir = @".\GPPInstaller\" + dirName;
-
-                DirectoryInfo destDirInfo = new DirectoryInfo(destDir);
-
-                string zipFile = @".\GPPInstaller\" + fileName;
-
-                if (!destDirInfo.Exists)
-                {
-                    Directory.CreateDirectory(destDir);
-                    // TODO: Fix "Central directory corrupt" exception
-                    await Task.Factory.StartNew(() => ZipFile.ExtractToDirectory(zipFile, destDir));
-
-                    modIndex++;
-                    form1.ProgressBar1Step();
-                    if (modIndex >= modList.Count)
-                    {
-                        form1.ProgressLabelUpdate("All files extracted");
-
-                        InstallMods();
-                    }
-                        
-                }
-                else
-                {
-                    modIndex++;
-                    form1.ProgressBar1Step();
-                    if (modIndex >= modList.Count)
-                    {
-                        form1.ProgressLabelUpdate("All files extracted");
-
-                        InstallMods();
-                    }
-                }
-            }
         }
 
         private async void InstallMods()
@@ -426,70 +673,67 @@ namespace GPPInstaller
             return versionNumber;
         }
 
-
-        public void Uninstall(Dictionary<string, bool> processedOptions)
+        // TODO: Left off here
+        public void Uninstall()
         {
-            if (processedOptions.ContainsKey("Core") &&
-                processedOptions["Core"] == false)
+            if (modList[kopericusIndex].ActionToTake == "Uninstall")
             {
                 if (Directory.Exists(".\\GameData\\Kopernicus")) Directory.Delete(".\\GameData\\Kopernicus", true);
                 if (Directory.Exists(".\\GameData\\ModularFlightIntegrator")) Directory.Delete(".\\GameData\\ModularFlightIntegrator", true);
-                if (Directory.Exists(".\\GameData\\GPP")) Directory.Delete(".\\GameData\\GPP", true);
-
                 File.Delete(".\\GameData\\ModuleManager.2.8.1.dll");
                 File.Delete(".\\GameData\\ModuleManagerLicense.md");
                 File.Delete(".\\GameData\\ModuleManager.ConfigCache");
                 File.Delete(".\\GameData\\ModuleManager.ConfigSHA");
                 File.Delete(".\\GameData\\ModuleManager.Physics");
                 File.Delete(".\\GameData\\ModuleManager.TechTree");
-
-                Debug.WriteLine("Core uninstallation complete");
+            }
+            
+            if (modList[GPPIndex].ActionToTake == "Uninstall")
+            {
+                if (Directory.Exists(".\\GameData\\GPP")) Directory.Delete(".\\GameData\\GPP", true);
             }
 
-            if (processedOptions.ContainsKey("Visuals") &&
-                processedOptions["Visuals"] == false)
+            if (modList[EVEIndex].ActionToTake == "Uninstall")
+            {
+                if (Directory.Exists(@".\GameData\EnvironmentalVisualEnhancements")) Directory.Delete(@".\GameData\EnvironmentalVisualEnhancements", true);
+            }
+
+            if (modList[scattererIndex].ActionToTake == "Uninstall")
+            {
+                if (Directory.Exists(@".\GameData\scatterer")) Directory.Delete(@".\GameData\scatterer", true);
+            }
+
+            if (modList[doeIndex].ActionToTake == "Uninstall")
             {
                 if (Directory.Exists(@".\GameData\DistantObject")) Directory.Delete(@".\GameData\DistantObject", true);
-                if (Directory.Exists(@".\GameData\EnvironmentalVisualEnhancements")) Directory.Delete(@".\GameData\EnvironmentalVisualEnhancements", true);
-                if (Directory.Exists(@".\GameData\scatterer")) Directory.Delete(@".\GameData\scatterer", true);
-
-                Debug.WriteLine("Visuals uninstallation complete");
             }
 
-            if (processedOptions.ContainsKey("CloudsLowRes") &&
-                processedOptions["CloudsLowRes"] == false)
-            {
-                if (Directory.Exists(@".\GameData\GPP\GPP_Clouds")) Directory.Delete(@".\GameData\GPP\GPP_Clouds", true);
-            }
-
-            if (processedOptions.ContainsKey("CloudsHighRes") &&
-                processedOptions["CloudsHighRes"] == false)
+            if (modList[cloudsLowResIndex].ActionToTake == "Uninstall" ||
+                modList[cloudsHighResIndex].ActionToTake == "Uninstall")
             {
                 if (Directory.Exists(@".\GameData\GPP\GPP_Clouds")) Directory.Delete(@".\GameData\GPP\GPP_Clouds", true);
             }
         }
 
-        public Dictionary<string, bool> ProcessOptions(Dictionary<string, bool> currentlyInstalledOptions, 
-            Dictionary<string, bool> newlySelectedOptions)
-        {
-            //Dictionary<string, bool> processedOptions = new Dictionary<string, bool>();
+    }
 
-            var processedOptions = newlySelectedOptions.Where(entry => currentlyInstalledOptions[entry.Key] != entry.Value)
-                .ToDictionary(entry => entry.Key, entry => entry.Value);
-
-            return processedOptions;
-            //utilProcessedOptions = processedOptions;
-
-            //Uninstall(processedOptions);
-
-            //BuildInstallPack(processedOptions);
-
-            //numberOfTasks = modPack.Count * 3;
-            
-
-            //DownloadFiles();
-
-            //Debug.WriteLine("End of ProcessOptions()");
-        }
+    class Mod
+    {
+        public string ModPackName { get; set; }
+        public string ModName { get; set; }
+        public string DownloadAddress { get; set; }
+        public string ArchiveFileName { get; set; }
+        // States: "Downloaded" == true : The archive file is present in .\GPPInstaller
+        //         "Extracted" == true  : An extracted dir exsists in .\GPPInstaller
+        //         "Installed" == true  : All required dirs and files are present inside of .\GameData
+        //         ""                   : Initial default state 
+        //public string[3] CurrentState { get; set; }
+        public bool State_Downloaded { get; set; }
+        public bool State_Extracted { get; set; }
+        public bool State_Installed { get; set; }
+        // Actions: "Install"  : Install the mod
+        //          "Uninstall": Uninstall the mod
+        //          ""         : Take no action
+        public string ActionToTake { get; set; }
     }
 }

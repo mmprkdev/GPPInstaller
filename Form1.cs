@@ -33,50 +33,21 @@ namespace GPPInstaller
             backgroundWorker1.WorkerReportsProgress = true;
             backgroundWorker1.WorkerSupportsCancellation = true;
 
-            CurrentlyInstalledOptionsInit();
-            SelectedOptionsInit();
-            CurrentlyInstalledOptionsCheck();
+            //CurrentlyInstalledOptionsInit();
+            //SelectedOptionsInit();
 
-            InitCheckBoxes();
+            //InitCheckBoxes();
 
             util = new Utility(this);
 
             util.InitModList();
+            util.SetCheckBoxes(checkBox1, checkBox2, checkBox3, checkBox4);
 
             label1.Text = "KSP Version: " + util.GetVersionNumber() + " (" + util.GetEXE() + ")";
 
             
 
         }
-
-
-
-        //private void button1_Click(object sender, EventArgs e)
-        //{
-        //    CurrentlyInstalledOptionsCheck();
-
-        //    if (checkBox1.Checked)
-        //    {
-        //        newlySelectedOptions["Core"] = true;
-        //    }
-
-        //    if (checkBox2.Checked)
-        //    {   
-        //        newlySelectedOptions["Visuals"] = true;
-        //
-        //        if (checkBox3.Checked)
-        //        {
-        //            newlySelectedOptions["CloudsLowRes"] = true;
-        //        }
-        //        else if (checkBox4.Checked)
-        //        {
-        //            newlySelectedOptions["CloudsHighRes"] = true;
-        //        }
-        //    }
-
-        //    util.ProcessOptions(currentlyInstalledOptions, newlySelectedOptions);
-
-        //}
 
         private void button2_Click(object sender, EventArgs e)
         {
@@ -89,14 +60,14 @@ namespace GPPInstaller
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
-            button1.Enabled = true;
+            // Core checkBox
 
             if (!checkBox1.Checked) checkBox2.Checked = false;
         }
 
         private void checkBox2_CheckedChanged(object sender, EventArgs e)
         {
-            button1.Enabled = true;
+            // Visuals checkBox
 
             if (checkBox2.Checked)
             {
@@ -120,7 +91,9 @@ namespace GPPInstaller
 
         private void checkBox3_CheckedChanged(object sender, EventArgs e)
         {
-            button1.Enabled = true;
+            // CloudsLowRes checkBox
+
+            applyButton.Enabled = true;
 
             if (checkBox3.Checked) checkBox4.Checked = false;
 
@@ -128,7 +101,9 @@ namespace GPPInstaller
 
         private void checkBox4_CheckedChanged(object sender, EventArgs e)
         {
-            button1.Enabled = true;
+            // CloudsHighRes checkBox
+
+            applyButton.Enabled = true;
 
             if (checkBox4.Checked) checkBox3.Checked = false;
         }
@@ -159,39 +134,26 @@ namespace GPPInstaller
 
         public void ProgressLabelUpdate(string Message)
         {
-            if (progressLabel.InvokeRequired)
-            {
-                progressLabel.Invoke(new MethodInvoker(delegate
-                {
-                    progressLabel.Visible = true;
-                    progressLabel.Text = Message;
-                }));
-            }
-            else
-            {
-                progressLabel.Visible = true;
-                progressLabel.Text = Message;
-            }
-            
+            //if (progressLabel.InvokeRequired)
+            //{
+            //    progressLabel.Invoke(new MethodInvoker(delegate
+            //    {
+            //        progressLabel.Visible = true;
+            //        progressLabel.Text = Message;
+            //    }));
+            //}
+            //else
+            //{
+            //    progressLabel.Visible = true;
+            //    progressLabel.Text = Message;
+            //}
+
+            progressLabel.Visible = true;
+            progressLabel.Text = Message;
+
         }
 
-        private void SelectedOptionsInit()
-        {
-            newlySelectedOptions.Add("Core", false);
-            newlySelectedOptions.Add("Visuals", false);
-            newlySelectedOptions.Add("CloudsLowRes", false);
-            newlySelectedOptions.Add("CloudsHighRes", false);
-        }
-
-        private void CurrentlyInstalledOptionsInit()
-        {
-            currentlyInstalledOptions.Add("Core", false);
-            currentlyInstalledOptions.Add("Visuals", false);
-            currentlyInstalledOptions.Add("CloudsLowRes", false);
-            currentlyInstalledOptions.Add("CloudsHighRes", false);
-        }
-
-        private void CurrentlyInstalledOptionsCheck()
+        private void SetModList()
         {
             string kopernicusDir = @".\GameData\Kopernicus";
             string GPPDir = @".\GameData\GPP";
@@ -210,7 +172,7 @@ namespace GPPInstaller
                 Directory.Exists(modularFIDir) &&
                 File.Exists(modManagerFile))
             {
-                currentlyInstalledOptions["Core"] = true;
+                //currentlyInstalledOptions["Core"] = true;
             }
             else currentlyInstalledOptions["Core"] = false;
 
@@ -244,7 +206,7 @@ namespace GPPInstaller
             if (currentlyInstalledOptions["CloudsLowRes"] == true) checkBox3.Checked = true;
             if (currentlyInstalledOptions["CloudsHighRes"] == true) checkBox4.Checked = true;
 
-            button1.Enabled = false;
+            applyButton.Enabled = false;
         }
 
         private void NewlySelectedOptionsCheck()
@@ -271,10 +233,16 @@ namespace GPPInstaller
 
         private void applyButton_Click(object sender, EventArgs e)
         {
-            if (backgroundWorker1.IsBusy == false)
-            {
-                backgroundWorker1.RunWorkerAsync();
-            }
+            // check the current checkbox checked vs mod install state
+            // and determine the mod action.
+
+            //if (backgroundWorker1.IsBusy == false)
+            //{
+            //    backgroundWorker1.RunWorkerAsync();
+            //}
+            util.ProcessActionToTake(checkBox1, checkBox2, checkBox3, checkBox4);
+            util.Uninstall();
+            util.DownloadFile();
         }
 
         private void cancelButton_Click(object sender, EventArgs e)
@@ -289,16 +257,15 @@ namespace GPPInstaller
         {
             BackgroundWorker worker = sender as BackgroundWorker;
 
-            CurrentlyInstalledOptionsCheck();
-            NewlySelectedOptionsCheck();
+            //NewlySelectedOptionsCheck();
 
-            Dictionary<string, bool> processedOptions = util.ProcessOptions(currentlyInstalledOptions, newlySelectedOptions);
+            //Dictionary<string, bool> processedOptions = util.ProcessOptions(currentlyInstalledOptions, newlySelectedOptions);
 
-            util.BuildInstallPack(processedOptions);
+            util.ProcessActionToTake(checkBox1, checkBox2, checkBox3, checkBox4);
 
-            util.Uninstall(processedOptions);
+            util.Uninstall();
 
-            util.DownloadFiles();
+            util.DownloadFile();
 
         }
     }
