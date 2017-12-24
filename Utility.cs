@@ -13,17 +13,17 @@ using System.IO.Compression;
 using System.Net;
 using System.Diagnostics;
 
+// TODO: Finish up extraction
+
 // TODO: Consider deleting the zip file after it is extracted
 
 namespace GPPInstaller
 {
     class Utility
     {
-        private int downloadCounter = 0;
-        private int downloadQueIndex = 0;
-        private int totalNumberOfDownloads = 0;
+        private int modIndex = 0;
 
-        private static int modIndex = 0;
+        //private static int modIndex = 0;
 
         private int kopericusIndex = 0;
         private int GPPIndex = 1;
@@ -46,13 +46,13 @@ namespace GPPInstaller
             this.form1 = form1;
         }
 
-        public event EventHandler DownloadsComplete;
+        //public event EventHandler DownloadsComplete;
 
-        protected virtual void OnDownloadsComplete(EventArgs e)
-        {
-            EventHandler handler = DownloadsComplete;
-            DownloadsComplete?.Invoke(this, e);
-        }
+        //protected virtual void OnDownloadsComplete(EventArgs e)
+        //{
+        //    EventHandler handler = DownloadsComplete;
+        //    DownloadsComplete?.Invoke(this, e);
+        //}
 
         public void InitModList()
         {
@@ -371,8 +371,6 @@ namespace GPPInstaller
                 }
             }
 
-            totalNumberOfDownloads = GetNumberOfDownloads();
-            
             // Set to uninstall
             foreach (Mod mod in modList)
             {
@@ -426,14 +424,14 @@ namespace GPPInstaller
 
         public void DownloadFile()
         {
-            if (downloadQueIndex < modList.Count)
+            if (modIndex < modList.Count)
             {
-                if (modList[downloadQueIndex].State_Downloaded == false &&
-                modList[downloadQueIndex].ActionToTake == "Install" &&
-                modList[downloadQueIndex].DownloadAddress != "")
+                if (modList[modIndex].State_Downloaded == false &&
+                modList[modIndex].ActionToTake == "Install" &&
+                modList[modIndex].DownloadAddress != "")
                 {
-                    string downloadAddress = modList[downloadQueIndex].DownloadAddress;
-                    string fileName = modList[downloadQueIndex].ArchiveFileName;
+                    string downloadAddress = modList[modIndex].DownloadAddress;
+                    string fileName = modList[modIndex].ArchiveFileName;
                     string downloadDest = @".\GPPInstaller\" + fileName;
 
                     WebClient webclient = new WebClient();
@@ -445,7 +443,7 @@ namespace GPPInstaller
                 }
                 else
                 {
-                    downloadQueIndex++;
+                    modIndex++;
 
                     DownloadFile();
                 }
@@ -453,151 +451,148 @@ namespace GPPInstaller
             else
             {
                 //OnDownloadsComplete(EventArgs.Empty);
-                downloadCounter = 0;
-                downloadQueIndex = 0;
-                totalNumberOfDownloads = 0;
+                modIndex = 0;
 
-                ExtractFiles();
+                ExtractFile();
             }
         }
 
-        // TODO: left off here (need to make a custom event
-        // to handle all files downloaded event)
         private void webclient_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {
-            //Debug.WriteLine("DownloadProgress fired");
             string output = e.ProgressPercentage + "% complete...";
             form1.ProgressLabelUpdate(output);
         }
 
         private void webclient_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
         {
-            downloadCounter++;
-            modList[downloadQueIndex].State_Downloaded = true;
-            downloadQueIndex++;
+            modList[modIndex].State_Downloaded = true;
+            modIndex++;
 
             DownloadFile();
         }
 
-        private void utility_DownloadsComplete(object sender, EventArgs e)
+        // TODO: Understand FileWatcher class. Need to raise and event
+        // when a directory is created.
+        private void ExtractFile()
         {
-            downloadCounter = 0;
-            downloadQueIndex = 0;
-            totalNumberOfDownloads = 0;
-
-            ExtractFiles();
-        }
-
-        private void ExtractFiles()
-        {
-            Debug.WriteLine("Reached ExtractFiles()");
-
-            //modIndex = 0;
-
-            //for (int i = 0; i < modList.Count; i++)
-            //{
-            //    string fileName = modList[i].ArchiveFileName;
-            //    int fileNameLength = fileName.Length;
-            //    string dirName = fileName.Remove((fileNameLength - 4), 4);
-            //    string destDir = @".\GPPInstaller\" + dirName;
-
-            //    DirectoryInfo destDirInfo = new DirectoryInfo(destDir);
-
-            //    string zipFile = @".\GPPInstaller\" + fileName;
-
-            //    if (!destDirInfo.Exists)
-            //    {
-            //        Directory.CreateDirectory(destDir);
-            //        // TODO: Fix "Central directory corrupt" exception
-            //        await Task.Factory.StartNew(() => ZipFile.ExtractToDirectory(zipFile, destDir));
-
-            //        modIndex++;
-            //        form1.ProgressBar1Step();
-            //        if (modIndex >= modList.Count)
-            //        {
-            //            form1.ProgressLabelUpdate("All files extracted");
-
-            //            InstallMods();
-            //        }
-                        
-            //    }
-            //    else
-            //    {
-            //        modIndex++;
-            //        form1.ProgressBar1Step();
-            //        if (modIndex >= modList.Count)
-            //        {
-            //            form1.ProgressLabelUpdate("All files extracted");
-
-            //            InstallMods();
-            //        }
-            //    }
-            //}
-        }
-
-        private async void InstallMods()
-        {
-            modIndex = 0;
-
-            string sourceDirName;
-            string destDirName;
-
-            for (int i = 0; i < modList.Count; i++)
+            if (modIndex < modList.Count)
             {
-                string modName = modList[i].ModName;
-                string fileName = modList[i].ArchiveFileName;
-                int fileNameLength = fileName.Length;
-                string dirName = fileName.Remove((fileNameLength - 4), 4);
-
-                if (modName == "GPP_Textures")
+                if (modList[modIndex].State_Extracted == false &&
+                    modList[modIndex].ActionToTake == "Install" &&
+                    modList[modIndex].State_Downloaded == true &&
+                    modList[modIndex].ArchiveFileName != "")
                 {
-                    sourceDirName = @".\GPPInstaller\" + dirName + @"\GameData\GPP";
-                    destDirName = @".\GameData\GPP";
+                    // extract the file
+                    string fileName = modList[modIndex].ArchiveFileName;
+                    int fileNameLength = fileName.Length;
+                    string dirName = fileName.Remove((fileNameLength - 4), 4);
+                    string destDir = @".\GPPInstaller\" + dirName;
+
+                    DirectoryInfo destDirInfo = new DirectoryInfo(destDir);
+
+                    string zipFile = @".\GPPInstaller\" + fileName;
+
+                    if (!destDirInfo.Exists) // TODO: maybe get rid of this check
+                    {
+                        Directory.CreateDirectory(destDir);
+
+                        BackgroundWorker worker = new BackgroundWorker();
+                        worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(worker_RunWorkerCompleted);
+                        worker.DoWork += (o, e) =>
+                        {
+                            ZipFile.ExtractToDirectory(zipFile, destDir);
+                        };
+                        worker.RunWorkerAsync();
+                        //Directory.CreateDirectory(destDir);
+                        //// TODO: Fix "Central directory corrupt" exception
+                        //await Task.Factory.StartNew(() => ZipFile.ExtractToDirectory(zipFile, destDir));
+                    }
                 }
                 else
                 {
-                    sourceDirName = @".\GPPInstaller\" + @"\" + dirName + @"\GameData";
-                    destDirName = @".\GameData";
+                    modIndex++;
+
+                    ExtractFile();
                 }
+            }
+            else
+            {
+                modIndex = 0;
 
-                string cloudDirSource;
-                string cloudDirDest;
+                InstallMods();
+            }
+        }
 
-                if (utilProcessedOptions.ContainsKey("CloudsLowRes"))
-                {
-                    if (utilProcessedOptions["CloudsLowRes"] == true)
-                    {
-                        if (Directory.Exists(@".\GameData\GPP\GPP_Clouds")) Directory.Delete(@".\GameData\GPP\GPP_Clouds", true);
+        private void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            modIndex++;
+            ExtractFile();
+        }
 
-                        cloudDirSource = @".\GPPInstaller\Galileos.Planet.Pack.1.5.88\Optional Mods\GPP_Clouds\Low-res Clouds_GameData inside\GameData\GPP";
-                        cloudDirDest = @".\GameData\GPP";
+        private void InstallMods()
+        {
+            Debug.WriteLine("Reached InstallMods()");
+            //modIndex = 0;
 
-                        DirectoryCopy(cloudDirSource, cloudDirDest, true);
-                    }
-                }
+            //string sourceDirName;
+            //string destDirName;
 
-                if (utilProcessedOptions.ContainsKey("CloudsHighRes"))
-                {
-                    if (utilProcessedOptions["CloudsHighRes"] == true)
-                    {
-                        if (Directory.Exists(@".\GameData\GPP\GPP_Clouds")) Directory.Delete(@".\GameData\GPP\GPP_Clouds", true);
+            //for (int i = 0; i < modList.Count; i++)
+            //{
+            //    string modName = modList[i].ModName;
+            //    string fileName = modList[i].ArchiveFileName;
+            //    int fileNameLength = fileName.Length;
+            //    string dirName = fileName.Remove((fileNameLength - 4), 4);
 
-                        cloudDirSource = @".\GPPInstaller\Galileos.Planet.Pack.1.5.88\Optional Mods\GPP_Clouds\High-res Clouds_GameData inside\GameData\GPP";
-                        cloudDirDest = @".\GameData\GPP";
+            //    if (modName == "GPP_Textures")
+            //    {
+            //        sourceDirName = @".\GPPInstaller\" + dirName + @"\GameData\GPP";
+            //        destDirName = @".\GameData\GPP";
+            //    }
+            //    else
+            //    {
+            //        sourceDirName = @".\GPPInstaller\" + @"\" + dirName + @"\GameData";
+            //        destDirName = @".\GameData";
+            //    }
 
-                        DirectoryCopy(cloudDirSource, cloudDirDest, true);
-                    }
-                }
+            //    string cloudDirSource;
+            //    string cloudDirDest;
+
+            //    if (utilProcessedOptions.ContainsKey("CloudsLowRes"))
+            //    {
+            //        if (utilProcessedOptions["CloudsLowRes"] == true)
+            //        {
+            //            if (Directory.Exists(@".\GameData\GPP\GPP_Clouds")) Directory.Delete(@".\GameData\GPP\GPP_Clouds", true);
+
+            //            cloudDirSource = @".\GPPInstaller\Galileos.Planet.Pack.1.5.88\Optional Mods\GPP_Clouds\Low-res Clouds_GameData inside\GameData\GPP";
+            //            cloudDirDest = @".\GameData\GPP";
+
+            //            DirectoryCopy(cloudDirSource, cloudDirDest, true);
+            //        }
+            //    }
+
+            //    if (utilProcessedOptions.ContainsKey("CloudsHighRes"))
+            //    {
+            //        if (utilProcessedOptions["CloudsHighRes"] == true)
+            //        {
+            //            if (Directory.Exists(@".\GameData\GPP\GPP_Clouds")) Directory.Delete(@".\GameData\GPP\GPP_Clouds", true);
+
+            //            cloudDirSource = @".\GPPInstaller\Galileos.Planet.Pack.1.5.88\Optional Mods\GPP_Clouds\High-res Clouds_GameData inside\GameData\GPP";
+            //            cloudDirDest = @".\GameData\GPP";
+
+            //            DirectoryCopy(cloudDirSource, cloudDirDest, true);
+            //        }
+            //    }
                 
 
-                await Task.Factory.StartNew(() => DirectoryCopy(sourceDirName, destDirName, true));
+            //    await Task.Factory.StartNew(() => DirectoryCopy(sourceDirName, destDirName, true));
 
-                Debug.WriteLine("Line after DirectoryCopy");
-                modIndex++;
-                form1.ProgressBar1Step();
+            //    Debug.WriteLine("Line after DirectoryCopy");
+            //    modIndex++;
+            //    form1.ProgressBar1Step();
 
-                if (modIndex >= modList.Count) form1.ProgressLabelUpdate("All mods installed");
-            }
+            //    if (modIndex >= modList.Count) form1.ProgressLabelUpdate("All mods installed");
+            //}
             
         }
 
@@ -673,7 +668,6 @@ namespace GPPInstaller
             return versionNumber;
         }
 
-        // TODO: Left off here
         public void Uninstall()
         {
             if (modList[kopericusIndex].ActionToTake == "Uninstall")
