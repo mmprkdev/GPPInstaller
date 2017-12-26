@@ -13,7 +13,14 @@ using System.IO.Compression;
 using System.Net;
 using System.Diagnostics;
 
-// TODO: Finish up extraction
+// TODO: Maybe add a few extra "utility" mods
+// (Kerbal Engineer, Kerbal Alarm Clock, etc)
+
+// TODO: Give option to delete save files when uninstalling core mods or
+// when installing a new version of GPP. 
+
+// TODO: Write a bash script that adds all
+// files in the github_repo\GPPInstaller dir automatically.
 
 // TODO: Consider deleting the zip file after it is extracted
 
@@ -36,23 +43,12 @@ namespace GPPInstaller
 
         private Form1 form1;
 
-        // TODO: remove this
-        Dictionary<string, bool> utilProcessedOptions = new Dictionary<string, bool>();
-
         public static List<Mod> modList = new List<Mod>();
         
         public Utility(Form1 form1)
         {
             this.form1 = form1;
         }
-
-        //public event EventHandler DownloadsComplete;
-
-        //protected virtual void OnDownloadsComplete(EventArgs e)
-        //{
-        //    EventHandler handler = DownloadsComplete;
-        //    DownloadsComplete?.Invoke(this, e);
-        //}
 
         public void InitModList()
         {
@@ -404,25 +400,7 @@ namespace GPPInstaller
             }
         }
 
-        
-        public int GetNumberOfDownloads()
-        {
-            int result = 0;
-
-            foreach (Mod mod in modList)
-            {
-                if (mod.ActionToTake == "Install" &&
-                    mod.State_Downloaded == false &&
-                    mod.DownloadAddress != "")
-                {
-                    result++;
-                }
-            }
-
-            return result;
-        }
-
-        public void DownloadFile()
+        public void DownloadMod()
         {
             if (modIndex < modList.Count)
             {
@@ -445,15 +423,13 @@ namespace GPPInstaller
                 {
                     modIndex++;
 
-                    DownloadFile();
+                    DownloadMod();
                 }
             }
             else
             {
-                //OnDownloadsComplete(EventArgs.Empty);
                 modIndex = 0;
-
-                ExtractFile();
+                ExtractMod();
             }
         }
 
@@ -466,15 +442,15 @@ namespace GPPInstaller
         private void webclient_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
         {
             modList[modIndex].State_Downloaded = true;
+            form1.ProgressBar1Step();
             modIndex++;
-
-            DownloadFile();
+            DownloadMod();
         }
 
-        // TODO: Understand FileWatcher class. Need to raise and event
-        // when a directory is created.
-        private void ExtractFile()
+        private void ExtractMod()
         {
+            form1.ProgressLabelUpdate("Extracting files...");
+
             if (modIndex < modList.Count)
             {
                 if (modList[modIndex].State_Extracted == false &&
@@ -482,6 +458,7 @@ namespace GPPInstaller
                     modList[modIndex].State_Downloaded == true &&
                     modList[modIndex].ArchiveFileName != "")
                 {
+                    Debug.WriteLine(modList[modIndex].ModName);
                     // extract the file
                     string fileName = modList[modIndex].ArchiveFileName;
                     int fileNameLength = fileName.Length;
@@ -496,13 +473,13 @@ namespace GPPInstaller
                     {
                         Directory.CreateDirectory(destDir);
 
-                        BackgroundWorker worker = new BackgroundWorker();
-                        worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(worker_RunWorkerCompleted);
-                        worker.DoWork += (o, e) =>
+                        BackgroundWorker workerExtractFile = new BackgroundWorker();
+                        workerExtractFile.RunWorkerCompleted += new RunWorkerCompletedEventHandler(workerExtractFile_RunWorkerCompleted);
+                        workerExtractFile.DoWork += (o, e) =>
                         {
                             ZipFile.ExtractToDirectory(zipFile, destDir);
                         };
-                        worker.RunWorkerAsync();
+                        workerExtractFile.RunWorkerAsync();
                         //Directory.CreateDirectory(destDir);
                         //// TODO: Fix "Central directory corrupt" exception
                         //await Task.Factory.StartNew(() => ZipFile.ExtractToDirectory(zipFile, destDir));
@@ -512,88 +489,123 @@ namespace GPPInstaller
                 {
                     modIndex++;
 
-                    ExtractFile();
+                    ExtractMod();
                 }
             }
             else
             {
                 modIndex = 0;
 
-                InstallMods();
+                form1.ProgressLabelUpdate("Copying mods to GameData...");
+                InstallMod();
             }
         }
 
-        private void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        private void workerExtractFile_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            modList[modIndex].State_Extracted = true;
+            form1.ProgressBar1Step();
             modIndex++;
-            ExtractFile();
+            ExtractMod();
         }
 
-        private void InstallMods()
+        private void InstallMod()
         {
-            Debug.WriteLine("Reached InstallMods()");
-            //modIndex = 0;
+            if (modIndex < modList.Count)
+            {
+                BackgroundWorker workerInstallMod = new BackgroundWorker();
+                workerInstallMod.RunWorkerCompleted += new RunWorkerCompletedEventHandler(workerInstallMods_RunWorkerCompleted);
 
-            //string sourceDirName;
-            //string destDirName;
+                if (modList[modIndex].State_Installed == false &&
+                    modList[modIndex].ActionToTake == "Install")
+                {
+                    if (modList[modIndex].ModPackName != "Clouds")
+                    {
+                        string sourceDirName;
+                        string destDirName;
 
-            //for (int i = 0; i < modList.Count; i++)
-            //{
-            //    string modName = modList[i].ModName;
-            //    string fileName = modList[i].ArchiveFileName;
-            //    int fileNameLength = fileName.Length;
-            //    string dirName = fileName.Remove((fileNameLength - 4), 4);
+                        // TODO: Maybe remove these variables and just give the
+                        // full string paths to source and dest dir
+                        string fileName = modList[modIndex].ArchiveFileName;
+                        int fileNameLength = fileName.Length;
+                        string dirName = fileName.Remove((fileNameLength - 4), 4);
+                        if (modList[modIndex].ModName == "GPP_Textures")
+                        {
+                            sourceDirName = @".\GPPInstaller\" + dirName + @"\GameData\GPP";
+                            destDirName = @".\GameData\GPP";
 
-            //    if (modName == "GPP_Textures")
-            //    {
-            //        sourceDirName = @".\GPPInstaller\" + dirName + @"\GameData\GPP";
-            //        destDirName = @".\GameData\GPP";
-            //    }
-            //    else
-            //    {
-            //        sourceDirName = @".\GPPInstaller\" + @"\" + dirName + @"\GameData";
-            //        destDirName = @".\GameData";
-            //    }
+                            workerInstallMod.DoWork += (o, e) =>
+                            {
+                                DirectoryCopy(sourceDirName, destDirName, true);
+                            };
+                            workerInstallMod.RunWorkerAsync();
+                        }
+                        else
+                        {
+                            sourceDirName = @".\GPPInstaller\" + dirName + @"\GameData";
+                            destDirName = @".\GameData";
 
-            //    string cloudDirSource;
-            //    string cloudDirDest;
+                            workerInstallMod.DoWork += (o, e) =>
+                            {
+                                DirectoryCopy(sourceDirName, destDirName, true);
+                            };
+                            workerInstallMod.RunWorkerAsync();
+                        }
+                    }
+                    else
+                    {
+                        string cloudDirSource;
+                        string cloudDirDest;
+                        // install cloud mods
+                        if (modList[modIndex].ModName == "CloudsLowRes")
+                        {
+                            if (Directory.Exists(@".\GameData\GPP\GPP_Clouds")) Directory.Delete(@".\GameData\GPP\GPP_Clouds", true);
 
-            //    if (utilProcessedOptions.ContainsKey("CloudsLowRes"))
-            //    {
-            //        if (utilProcessedOptions["CloudsLowRes"] == true)
-            //        {
-            //            if (Directory.Exists(@".\GameData\GPP\GPP_Clouds")) Directory.Delete(@".\GameData\GPP\GPP_Clouds", true);
+                            cloudDirSource = @".\GPPInstaller\Galileos.Planet.Pack.1.5.88\Optional Mods\GPP_Clouds\Low-res Clouds_GameData inside\GameData\GPP";
+                            cloudDirDest = @".\GameData\GPP";
 
-            //            cloudDirSource = @".\GPPInstaller\Galileos.Planet.Pack.1.5.88\Optional Mods\GPP_Clouds\Low-res Clouds_GameData inside\GameData\GPP";
-            //            cloudDirDest = @".\GameData\GPP";
+                            workerInstallMod.DoWork += (o, e) =>
+                            {
+                                DirectoryCopy(cloudDirSource, cloudDirDest, true);
+                            };
+                            workerInstallMod.RunWorkerAsync();
+                            // TODO: left off here
+                        }
+                        else if (modList[modIndex].ModName == "CloudsHighRes")
+                        {
+                            if (Directory.Exists(@".\GameData\GPP\GPP_Clouds")) Directory.Delete(@".\GameData\GPP\GPP_Clouds", true);
 
-            //            DirectoryCopy(cloudDirSource, cloudDirDest, true);
-            //        }
-            //    }
+                            cloudDirSource = @".\GPPInstaller\Galileos.Planet.Pack.1.5.88\Optional Mods\GPP_Clouds\High-res Clouds_GameData inside\GameData\GPP";
+                            cloudDirDest = @".\GameData\GPP";
 
-            //    if (utilProcessedOptions.ContainsKey("CloudsHighRes"))
-            //    {
-            //        if (utilProcessedOptions["CloudsHighRes"] == true)
-            //        {
-            //            if (Directory.Exists(@".\GameData\GPP\GPP_Clouds")) Directory.Delete(@".\GameData\GPP\GPP_Clouds", true);
-
-            //            cloudDirSource = @".\GPPInstaller\Galileos.Planet.Pack.1.5.88\Optional Mods\GPP_Clouds\High-res Clouds_GameData inside\GameData\GPP";
-            //            cloudDirDest = @".\GameData\GPP";
-
-            //            DirectoryCopy(cloudDirSource, cloudDirDest, true);
-            //        }
-            //    }
-                
-
-            //    await Task.Factory.StartNew(() => DirectoryCopy(sourceDirName, destDirName, true));
-
-            //    Debug.WriteLine("Line after DirectoryCopy");
-            //    modIndex++;
-            //    form1.ProgressBar1Step();
-
-            //    if (modIndex >= modList.Count) form1.ProgressLabelUpdate("All mods installed");
-            //}
+                            workerInstallMod.DoWork += (o, e) =>
+                            {
+                                DirectoryCopy(cloudDirSource, cloudDirDest, true);
+                            };
+                            workerInstallMod.RunWorkerAsync();
+                        }
+                    }
+                }
+                else
+                {
+                    modIndex++;
+                    InstallMod();
+                }
+            }
+            else
+            {
+                modIndex = 0;
+                form1.ProgressLabelUpdate("Installation complete");
+            }
             
+        }
+
+        private void workerInstallMods_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            modList[modIndex].State_Installed = true;
+            form1.ProgressBar1Step();
+            modIndex++;
+            InstallMod();
         }
 
         private void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs)
@@ -707,6 +719,46 @@ namespace GPPInstaller
             {
                 if (Directory.Exists(@".\GameData\GPP\GPP_Clouds")) Directory.Delete(@".\GameData\GPP\GPP_Clouds", true);
             }
+        }
+
+        public int NumberOfSteps()
+        {
+            int result = 0;
+
+            foreach (Mod mod in modList)
+            {
+                // Downloads
+                if (mod.State_Downloaded == false &&
+                mod.ActionToTake == "Install" &&
+                mod.DownloadAddress != "")
+                {
+                    result++;
+                }
+
+                // Extractions
+                if (mod.State_Extracted == false &&
+                    mod.ActionToTake == "Install" &&
+                    mod.ArchiveFileName != "")
+                {
+                    result++;
+                }
+
+                // Installations
+                if (mod.State_Installed == false &&
+                    mod.ActionToTake == "Install")
+                {
+                    if (mod.ModPackName != "Clouds")
+                    {
+                        result++;
+                    }
+                    else
+                    {
+                        result++;
+                    }
+                }
+            }
+
+            return result;
         }
 
     }

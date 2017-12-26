@@ -30,9 +30,6 @@ namespace GPPInstaller
 
             Directory.CreateDirectory(".\\GPPInstaller");
 
-            backgroundWorker1.WorkerReportsProgress = true;
-            backgroundWorker1.WorkerSupportsCancellation = true;
-
             //CurrentlyInstalledOptionsInit();
             //SelectedOptionsInit();
 
@@ -108,10 +105,12 @@ namespace GPPInstaller
             if (checkBox4.Checked) checkBox3.Checked = false;
         }
 
-        public void ProgressBar1Init(int modCount)
+        public void ProgressBar1Init()
         {
+            int numSteps = util.NumberOfSteps();
+
             progressBar1.Minimum = 0;
-            progressBar1.Maximum = modCount * 3;
+            progressBar1.Maximum = numSteps;
             progressBar1.Value = 0;
             progressBar1.Step = 1;
             progressBar1.Visible = true;
@@ -119,17 +118,18 @@ namespace GPPInstaller
 
         public void ProgressBar1Step()
         {
-            if (progressBar1.InvokeRequired)
-            {
-                progressBar1.Invoke(new MethodInvoker(delegate
-                {
-                    progressBar1.PerformStep();
-                }));
-            }
-            else
-            {
-                progressBar1.PerformStep();
-            }
+            //if (progressBar1.InvokeRequired)
+            //{
+            //    progressBar1.Invoke(new MethodInvoker(delegate
+            //    {
+            //        progressBar1.PerformStep();
+            //    }));
+            //}
+            //else
+            //{
+            //    progressBar1.PerformStep();
+            //}
+            progressBar1.PerformStep();
         }
 
         public void ProgressLabelUpdate(string Message)
@@ -233,16 +233,10 @@ namespace GPPInstaller
 
         private void applyButton_Click(object sender, EventArgs e)
         {
-            // check the current checkbox checked vs mod install state
-            // and determine the mod action.
-
-            //if (backgroundWorker1.IsBusy == false)
-            //{
-            //    backgroundWorker1.RunWorkerAsync();
-            //}
             util.ProcessActionToTake(checkBox1, checkBox2, checkBox3, checkBox4);
             util.Uninstall();
-            util.DownloadFile();
+            ProgressBar1Init();
+            util.DownloadMod();
         }
 
         private void cancelButton_Click(object sender, EventArgs e)
@@ -253,20 +247,20 @@ namespace GPPInstaller
             }
         }
 
-        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
-        {
-            BackgroundWorker worker = sender as BackgroundWorker;
+        //private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        //{
+        //    BackgroundWorker worker = sender as BackgroundWorker;
 
-            //NewlySelectedOptionsCheck();
+        //    //NewlySelectedOptionsCheck();
 
-            //Dictionary<string, bool> processedOptions = util.ProcessOptions(currentlyInstalledOptions, newlySelectedOptions);
+        //    //Dictionary<string, bool> processedOptions = util.ProcessOptions(currentlyInstalledOptions, newlySelectedOptions);
 
-            util.ProcessActionToTake(checkBox1, checkBox2, checkBox3, checkBox4);
+        //    util.ProcessActionToTake(checkBox1, checkBox2, checkBox3, checkBox4);
 
-            util.Uninstall();
+        //    util.Uninstall();
 
-            util.DownloadFile();
+        //    util.DownloadMod();
 
-        }
+        //}
     }
 }
