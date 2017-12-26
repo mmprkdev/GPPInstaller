@@ -40,6 +40,8 @@
             this.cloudTextureLabel = new System.Windows.Forms.Label();
             this.applyButton = new System.Windows.Forms.Button();
             this.cancelButton = new System.Windows.Forms.Button();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -104,7 +106,7 @@
             // progressLabel
             // 
             this.progressLabel.AutoSize = true;
-            this.progressLabel.Location = new System.Drawing.Point(249, 324);
+            this.progressLabel.Location = new System.Drawing.Point(159, 321);
             this.progressLabel.Name = "progressLabel";
             this.progressLabel.Size = new System.Drawing.Size(73, 13);
             this.progressLabel.TabIndex = 12;
@@ -147,7 +149,7 @@
             // 
             // applyButton
             // 
-            this.applyButton.Location = new System.Drawing.Point(181, 367);
+            this.applyButton.Location = new System.Drawing.Point(162, 367);
             this.applyButton.Name = "applyButton";
             this.applyButton.Size = new System.Drawing.Size(75, 23);
             this.applyButton.TabIndex = 16;
@@ -157,7 +159,7 @@
             // 
             // cancelButton
             // 
-            this.cancelButton.Location = new System.Drawing.Point(369, 367);
+            this.cancelButton.Location = new System.Drawing.Point(409, 367);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(75, 23);
             this.cancelButton.TabIndex = 17;
@@ -166,11 +168,22 @@
             this.cancelButton.Visible = false;
             this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
             // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Image = global::GPPInstaller.Properties.Resources.checkmark_green;
+            this.pictureBox1.Location = new System.Drawing.Point(287, 263);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(45, 45);
+            this.pictureBox1.TabIndex = 18;
+            this.pictureBox1.TabStop = false;
+            this.pictureBox1.Visible = false;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(680, 506);
+            this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.applyButton);
             this.Controls.Add(this.cloudTextureLabel);
@@ -188,6 +201,7 @@
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "GPP Installer (GPP v1.5.3) (KSP v1.3.1)";
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -207,6 +221,7 @@
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.Windows.Forms.Button applyButton;
         private System.Windows.Forms.Button cancelButton;
+        private System.Windows.Forms.PictureBox pictureBox1;
     }
 }
 

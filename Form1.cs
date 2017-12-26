@@ -42,7 +42,7 @@ namespace GPPInstaller
 
             label1.Text = "KSP Version: " + util.GetVersionNumber() + " (" + util.GetEXE() + ")";
 
-            
+
 
         }
 
@@ -184,7 +184,7 @@ namespace GPPInstaller
             }
             else currentlyInstalledOptions["Visuals"] = false;
 
-            if (File.Exists(cloudsLowResConfig) && 
+            if (File.Exists(cloudsLowResConfig) &&
                 currentlyInstalledOptions["Visuals"] == true)
             {
                 currentlyInstalledOptions["CloudsLowRes"] = true;
@@ -233,6 +233,8 @@ namespace GPPInstaller
 
         private void applyButton_Click(object sender, EventArgs e)
         {
+            pictureBox1.Visible = false;
+
             util.ProcessActionToTake(checkBox1, checkBox2, checkBox3, checkBox4);
             util.Uninstall();
             ProgressBar1Init();
@@ -247,20 +249,17 @@ namespace GPPInstaller
             }
         }
 
-        //private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
-        //{
-        //    BackgroundWorker worker = sender as BackgroundWorker;
+        public void RemoveProgressBar()
+        {
+            progressBar1.Visible = false;
+            progressBar1.Value = 0;
+        }
 
-        //    //NewlySelectedOptionsCheck();
-
-        //    //Dictionary<string, bool> processedOptions = util.ProcessOptions(currentlyInstalledOptions, newlySelectedOptions);
-
-        //    util.ProcessActionToTake(checkBox1, checkBox2, checkBox3, checkBox4);
-
-        //    util.Uninstall();
-
-        //    util.DownloadMod();
-
-        //}
+        public void DisplayGreenCheck()
+        {
+            pictureBox1.Image = Properties.Resources.checkmark_green;
+            pictureBox1.Refresh();
+            pictureBox1.Visible = true;
+        }
     }
 }

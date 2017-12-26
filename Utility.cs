@@ -435,7 +435,7 @@ namespace GPPInstaller
 
         private void webclient_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {
-            string output = e.ProgressPercentage + "% complete...";
+            string output = "Downloading: " + modList[modIndex].ArchiveFileName + " " + e.ProgressPercentage + "% complete...";
             form1.ProgressLabelUpdate(output);
         }
 
@@ -595,7 +595,9 @@ namespace GPPInstaller
             else
             {
                 modIndex = 0;
-                form1.ProgressLabelUpdate("Installation complete");
+                form1.RemoveProgressBar();
+                form1.DisplayGreenCheck();
+                form1.ProgressLabelUpdate("All changes applied.");
             }
             
         }
