@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -44,6 +45,11 @@ namespace GPPInstaller
 
 
 
+        }
+
+        public void RefreshCheckBoxes()
+        {
+            util.SetCheckBoxes(checkBox1, checkBox2, checkBox3, checkBox4);
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -103,6 +109,22 @@ namespace GPPInstaller
             applyButton.Enabled = true;
 
             if (checkBox4.Checked) checkBox3.Checked = false;
+        }
+
+        private void DisableCheckBoxes()
+        {
+            checkBox1.Enabled = false;
+            checkBox2.Enabled = false;
+            checkBox3.Enabled = false;
+            checkBox4.Enabled = false;
+        }
+
+        public void EnableCheckBoxes()
+        {
+            checkBox1.Enabled = true;
+            checkBox2.Enabled = true;
+            checkBox3.Enabled = true;
+            checkBox4.Enabled = true;
         }
 
         public void ProgressBar1Init()
@@ -233,7 +255,11 @@ namespace GPPInstaller
 
         private void applyButton_Click(object sender, EventArgs e)
         {
+            exitButton.Enabled = false;
+            cancelButton.Visible = true;
             pictureBox1.Visible = false;
+            applyButton.Enabled = false;
+            DisableCheckBoxes();
 
             util.ProcessActionToTake(checkBox1, checkBox2, checkBox3, checkBox4);
             util.Uninstall();
@@ -241,12 +267,25 @@ namespace GPPInstaller
             util.DownloadMod();
         }
 
+        private void exitButton_Click(object sender, EventArgs e)
+        {
+            Process process = new Process();
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.FileName = @".\KSP_x64.exe";
+            process.Start();
+
+            Application.Exit();
+        }
+
         private void cancelButton_Click(object sender, EventArgs e)
         {
-            if (backgroundWorker1.WorkerSupportsCancellation == true)
-            {
-                backgroundWorker1.CancelAsync();
-            }
+            util.WebClientCancel();
+            //util.ExtractCancel();
+        }
+
+        public void EnableApplyButton()
+        {
+            applyButton.Enabled = true;
         }
 
         public void RemoveProgressBar()
@@ -261,5 +300,29 @@ namespace GPPInstaller
             pictureBox1.Refresh();
             pictureBox1.Visible = true;
         }
+
+        public void DisplayRedCheck()
+        {
+            pictureBox1.Image = Properties.Resources.checkmark_red;
+            pictureBox1.Refresh();
+            pictureBox1.Visible = true;
+        }
+
+        public void EnableExitButton()
+        {
+            exitButton.Enabled = true;
+        }
+
+        public void RemoveCancelButton()
+        {
+            cancelButton.Visible = false;
+        }
+
+        public void DisplayTestLabel(string message)
+        {
+            testLabel.Visible = true;
+            testLabel.Text = message;
+        }
+
     }
 }

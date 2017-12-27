@@ -30,8 +30,6 @@ namespace GPPInstaller
     {
         private int modIndex = 0;
 
-        //private static int modIndex = 0;
-
         private int kopericusIndex = 0;
         private int GPPIndex = 1;
         private int GPPTexturesIndex = 2;
@@ -44,10 +42,15 @@ namespace GPPInstaller
         private Form1 form1;
 
         public static List<Mod> modList = new List<Mod>();
-        
+
+        private WebClient webclient = new WebClient();
+
         public Utility(Form1 form1)
         {
             this.form1 = form1;
+
+            webclient.DownloadProgressChanged += new DownloadProgressChangedEventHandler(webclient_DownloadProgressChanged);
+            webclient.DownloadFileCompleted += new AsyncCompletedEventHandler(webclient_DownloadFileCompleted);
         }
 
         public void InitModList()
@@ -148,8 +151,11 @@ namespace GPPInstaller
                 ActionToTake = ""
             });
 
-            
+            RefreshModState();
+        }
 
+        private void RefreshModState()
+        {
             // NOTE: Check if downloaded into .\GPPInstaller
             string kopernicusZip_gppInstaller = @".\GPPInstaller\Kopernicus-1.3.1-2.zip";
             string GPPZip_gppInstaller = @".\GPPInstaller\Galileos.Planet.Pack.1.5.88.zip";
@@ -204,7 +210,7 @@ namespace GPPInstaller
             string scattererDir_gppInstaller = @".\GPPInstaller\scatterer-0.0320b";
             string distantOEDir_gppInstaller = @".\GPPInstaller\DistantObject_1.9.1";
 
-            
+
             if (Directory.Exists(kopernicusDir_gppInstaller))
             {
                 modList[kopericusIndex].State_Extracted = true;
@@ -240,7 +246,7 @@ namespace GPPInstaller
                 modList[cloudsLowResIndex].State_Extracted = true;
                 modList[cloudsHighResIndex].State_Extracted = true;
             }
-            
+
             // NOTE: Check if installed into .\GameData
             string kopernicusDir_gamedata = @".\GameData\Kopernicus";
             string modularFIDir_gamedata = @".\GameData\ModularFlightIntegrator";
@@ -310,6 +316,7 @@ namespace GPPInstaller
             {
                 coreCheckBox.Checked = true;
             }
+            else coreCheckBox.Checked = false;
 
             if (modList[EVEIndex].State_Installed == true &&
                 modList[scattererIndex].State_Installed == true &&
@@ -317,17 +324,21 @@ namespace GPPInstaller
             {
                 visualsCheckBox.Checked = true;
             }
+            else visualsCheckBox.Checked = false;
 
             if (modList[cloudsLowResIndex].State_Installed == true)
             {
                 cloudsLowResCheckBox.Checked = true;
             }
+            else cloudsLowResCheckBox.Checked = false;
 
             if (modList[cloudsHighResIndex].State_Installed == true)
             {
                 cloudsHighResCheckBox.Checked = true;
             }
+            else cloudsHighResCheckBox.Checked = false;
         }
+
 
         public void ProcessActionToTake(
             CheckBox coreCheckBox,
@@ -335,68 +346,130 @@ namespace GPPInstaller
             CheckBox cloudsLowResCheckBox,
             CheckBox cloudsHighResCheckBox)
         {
-            // Set to install
+            // TODO: When coreCheckBox is selected, make sure to
+            // set all core mods to be installed
+
             foreach (Mod mod in modList)
             {
                 if (mod.ModPackName == "Core" &&
-                    mod.State_Installed == false &&
                     coreCheckBox.Checked == true)
                 {
                     mod.ActionToTake = "Install";
                 }
 
                 if (mod.ModPackName == "Visuals" &&
-                    mod.State_Installed == false &&
                     visualsCheckBox.Checked)
                 {
                     mod.ActionToTake = "Install";
                 }
 
                 if (mod.ModName == "CloudsLowRes" &&
-                    mod.State_Installed == false &&
                     cloudsLowResCheckBox.Checked)
                 {
                     mod.ActionToTake = "Install";
                 }
 
                 if (mod.ModName == "CloudsHighRes" &&
-                    mod.State_Installed == false &&
                     cloudsHighResCheckBox.Checked)
                 {
                     mod.ActionToTake = "Install";
                 }
-            }
 
-            // Set to uninstall
-            foreach (Mod mod in modList)
-            {
                 if (mod.ModPackName == "Core" &&
-                    mod.State_Installed == true &&
                     coreCheckBox.Checked == false)
                 {
                     mod.ActionToTake = "Uninstall";
                 }
 
                 if (mod.ModPackName == "Visuals" &&
-                    mod.State_Installed == true &&
                     visualsCheckBox.Checked == false)
                 {
                     mod.ActionToTake = "Uninstall";
                 }
 
                 if (mod.ModName == "CloudsLowRes" &&
-                    mod.State_Installed == true &&
                     cloudsLowResCheckBox.Checked == false)
                 {
                     mod.ActionToTake = "Uninstall";
                 }
 
                 if (mod.ModName == "CloudsHighRes" &&
-                    mod.State_Installed == true &&
                     cloudsHighResCheckBox.Checked == false)
                 {
                     mod.ActionToTake = "Uninstall";
                 }
+            }
+
+            // Set to install
+            //foreach (Mod mod in modList)
+            //{
+            //    if (mod.ModPackName == "Core" &&
+            //        mod.State_Installed == false &&
+            //        coreCheckBox.Checked == true)
+            //    {
+            //        mod.ActionToTake = "Install";
+            //    }
+
+            //    if (mod.ModPackName == "Visuals" &&
+            //        mod.State_Installed == false &&
+            //        visualsCheckBox.Checked)
+            //    {
+            //        mod.ActionToTake = "Install";
+            //    }
+
+            //    if (mod.ModName == "CloudsLowRes" &&
+            //        mod.State_Installed == false &&
+            //        cloudsLowResCheckBox.Checked)
+            //    {
+            //        mod.ActionToTake = "Install";
+            //    }
+
+            //    if (mod.ModName == "CloudsHighRes" &&
+            //        mod.State_Installed == false &&
+            //        cloudsHighResCheckBox.Checked)
+            //    {
+            //        mod.ActionToTake = "Install";
+            //    }
+            //}
+
+            //// Set to uninstall
+            //foreach (Mod mod in modList)
+            //{
+            //    if (mod.ModPackName == "Core" &&
+            //        mod.State_Installed == true &&
+            //        coreCheckBox.Checked == false)
+            //    {
+            //        mod.ActionToTake = "Uninstall";
+            //    }
+
+            //    if (mod.ModPackName == "Visuals" &&
+            //        mod.State_Installed == true &&
+            //        visualsCheckBox.Checked == false)
+            //    {
+            //        mod.ActionToTake = "Uninstall";
+            //    }
+
+            //    if (mod.ModName == "CloudsLowRes" &&
+            //        mod.State_Installed == true &&
+            //        cloudsLowResCheckBox.Checked == false)
+            //    {
+            //        mod.ActionToTake = "Uninstall";
+            //    }
+
+            //    if (mod.ModName == "CloudsHighRes" &&
+            //        mod.State_Installed == true &&
+            //        cloudsHighResCheckBox.Checked == false)
+            //    {
+            //        mod.ActionToTake = "Uninstall";
+            //    }
+            //}
+        }
+
+        private void ResetActionsToTake()
+        {
+            foreach (Mod mod in modList)
+            {
+                mod.ActionToTake = "";
             }
         }
 
@@ -412,11 +485,8 @@ namespace GPPInstaller
                     string fileName = modList[modIndex].ArchiveFileName;
                     string downloadDest = @".\GPPInstaller\" + fileName;
 
-                    WebClient webclient = new WebClient();
                     Uri uri = new Uri(downloadAddress);
 
-                    webclient.DownloadProgressChanged += new DownloadProgressChangedEventHandler(webclient_DownloadProgressChanged);
-                    webclient.DownloadFileCompleted += new AsyncCompletedEventHandler(webclient_DownloadFileCompleted);
                     webclient.DownloadFileAsync(uri, downloadDest);
                 }
                 else
@@ -428,6 +498,7 @@ namespace GPPInstaller
             }
             else
             {
+                form1.ProgressLabelUpdate("Extracting files...");
                 modIndex = 0;
                 ExtractMod();
             }
@@ -435,22 +506,77 @@ namespace GPPInstaller
 
         private void webclient_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {
-            string output = "Downloading: " + modList[modIndex].ArchiveFileName + " " + e.ProgressPercentage + "% complete...";
+            //if (cancelWebclient == true)
+            //{
+            //    DownloadMod(true);
+            //    File.Delete(@".\GPPInstaller\" + modList[modIndex].ArchiveFileName);
+
+            //    cancelWebclient = false;
+            //    modIndex = 0;
+            //    form1.DisplayRedCheck();
+            //    form1.ProgressLabelUpdate("Installation canceled.");
+
+            //    return;
+            //}
+
+            string websiteName = WebsiteNamePop(modList[modIndex].DownloadAddress);
+            string output = "Downloading: " + modList[modIndex].ArchiveFileName + " from " + websiteName + " " + e.ProgressPercentage + "% complete...";
             form1.ProgressLabelUpdate(output);
         }
 
         private void webclient_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
         {
+            if (e.Cancelled)
+            {
+                // delete partially downloaded file
+                File.Delete(@".\GPPInstaller\" + modList[modIndex].ArchiveFileName);
+
+                modIndex = 0;
+
+                form1.ProgressLabelUpdate("Installation canceled.");
+                form1.DisplayRedCheck();
+                form1.EnableCheckBoxes();
+                form1.EnableApplyButton();
+                form1.EnableExitButton();
+                form1.RemoveCancelButton();
+                form1.RemoveProgressBar();
+
+                RefreshModState();
+                form1.RefreshCheckBoxes();
+
+                return;
+            }
+
             modList[modIndex].State_Downloaded = true;
             form1.ProgressBar1Step();
             modIndex++;
             DownloadMod();
         }
 
+        public void WebClientCancel()
+        {
+            webclient.CancelAsync();
+        }
+
+        private string WebsiteNamePop(string url)
+        {
+            string websiteName;
+
+            int leadStartIndex = 0;
+            int leadEndIndex = url.IndexOf("/") + 2;
+            int leadCount = leadEndIndex - leadStartIndex;
+            websiteName = url.Remove(leadStartIndex, leadCount);
+
+            int trailingStartIndex = websiteName.IndexOf("/");
+            int trailingEndIndex = websiteName.Length;
+            int trailingCount = trailingEndIndex - trailingStartIndex;
+            websiteName = websiteName.Remove(trailingStartIndex, trailingCount);
+
+            return websiteName;
+        }
+
         private void ExtractMod()
         {
-            form1.ProgressLabelUpdate("Extracting files...");
-
             if (modIndex < modList.Count)
             {
                 if (modList[modIndex].State_Extracted == false &&
@@ -473,16 +599,15 @@ namespace GPPInstaller
                     {
                         Directory.CreateDirectory(destDir);
 
-                        BackgroundWorker workerExtractFile = new BackgroundWorker();
-                        workerExtractFile.RunWorkerCompleted += new RunWorkerCompletedEventHandler(workerExtractFile_RunWorkerCompleted);
-                        workerExtractFile.DoWork += (o, e) =>
+                        BackgroundWorker workerExtract = new BackgroundWorker();
+                        workerExtract.RunWorkerCompleted += new RunWorkerCompletedEventHandler(workerExtract_RunWorkerCompleted);
+
+                        workerExtract.DoWork += (o, e) =>
                         {
                             ZipFile.ExtractToDirectory(zipFile, destDir);
                         };
-                        workerExtractFile.RunWorkerAsync();
-                        //Directory.CreateDirectory(destDir);
+                        workerExtract.RunWorkerAsync();
                         //// TODO: Fix "Central directory corrupt" exception
-                        //await Task.Factory.StartNew(() => ZipFile.ExtractToDirectory(zipFile, destDir));
                     }
                 }
                 else
@@ -501,13 +626,41 @@ namespace GPPInstaller
             }
         }
 
-        private void workerExtractFile_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        private void workerExtract_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            if (e.Cancelled)
+            {
+                string fileName = modList[modIndex].ArchiveFileName;
+                int fileNameLength = fileName.Length;
+                string dirName = fileName.Remove((fileNameLength - 4), 4);
+                if (Directory.Exists(@".\GPPInstaller\" + dirName)) Directory.Delete(@".\GPPInstaller\" + dirName, true);
+
+                modIndex = 0;
+
+                form1.ProgressLabelUpdate("Installation canceled.");
+                form1.DisplayRedCheck();
+                form1.EnableCheckBoxes();
+                form1.EnableApplyButton();
+                form1.EnableExitButton();
+                form1.RemoveCancelButton();
+                form1.RemoveProgressBar();
+
+                RefreshModState();
+                form1.RefreshCheckBoxes();
+
+                return;
+            }
+
             modList[modIndex].State_Extracted = true;
             form1.ProgressBar1Step();
             modIndex++;
             ExtractMod();
         }
+
+        //public void ExtractCancel()
+        //{
+        //    workerExtract.CancelAsync();
+        //}
 
         private void InstallMod()
         {
@@ -595,8 +748,14 @@ namespace GPPInstaller
             else
             {
                 modIndex = 0;
+                ResetActionsToTake();
+
                 form1.RemoveProgressBar();
+                form1.RemoveCancelButton();
                 form1.DisplayGreenCheck();
+                form1.EnableExitButton();
+                form1.EnableCheckBoxes();
+                form1.EnableApplyButton();
                 form1.ProgressLabelUpdate("All changes applied.");
             }
             
@@ -694,32 +853,50 @@ namespace GPPInstaller
                 File.Delete(".\\GameData\\ModuleManager.ConfigSHA");
                 File.Delete(".\\GameData\\ModuleManager.Physics");
                 File.Delete(".\\GameData\\ModuleManager.TechTree");
+
+                modList[kopericusIndex].State_Installed = false;
             }
             
             if (modList[GPPIndex].ActionToTake == "Uninstall")
             {
                 if (Directory.Exists(".\\GameData\\GPP")) Directory.Delete(".\\GameData\\GPP", true);
+
+                modList[GPPIndex].State_Installed = false;
             }
 
             if (modList[EVEIndex].ActionToTake == "Uninstall")
             {
                 if (Directory.Exists(@".\GameData\EnvironmentalVisualEnhancements")) Directory.Delete(@".\GameData\EnvironmentalVisualEnhancements", true);
+
+                modList[EVEIndex].State_Installed = false;
             }
 
             if (modList[scattererIndex].ActionToTake == "Uninstall")
             {
                 if (Directory.Exists(@".\GameData\scatterer")) Directory.Delete(@".\GameData\scatterer", true);
+
+                modList[scattererIndex].State_Installed = false;
             }
 
             if (modList[doeIndex].ActionToTake == "Uninstall")
             {
                 if (Directory.Exists(@".\GameData\DistantObject")) Directory.Delete(@".\GameData\DistantObject", true);
+
+                modList[doeIndex].State_Installed = false;
             }
 
-            if (modList[cloudsLowResIndex].ActionToTake == "Uninstall" ||
-                modList[cloudsHighResIndex].ActionToTake == "Uninstall")
+            if (modList[cloudsLowResIndex].ActionToTake == "Uninstall")
             {
                 if (Directory.Exists(@".\GameData\GPP\GPP_Clouds")) Directory.Delete(@".\GameData\GPP\GPP_Clouds", true);
+
+                modList[cloudsLowResIndex].State_Installed = false;
+            }
+
+            if (modList[cloudsHighResIndex].ActionToTake == "Uninstall")
+            {
+                if (Directory.Exists(@".\GameData\GPP\GPP_Clouds")) Directory.Delete(@".\GameData\GPP\GPP_Clouds", true);
+
+                modList[cloudsHighResIndex].State_Installed = false;
             }
         }
 
@@ -762,7 +939,6 @@ namespace GPPInstaller
 
             return result;
         }
-
     }
 
     class Mod

@@ -41,6 +41,8 @@
             this.applyButton = new System.Windows.Forms.Button();
             this.cancelButton = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.exitButton = new System.Windows.Forms.Button();
+            this.testLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -159,7 +161,7 @@
             // 
             // cancelButton
             // 
-            this.cancelButton.Location = new System.Drawing.Point(409, 367);
+            this.cancelButton.Location = new System.Drawing.Point(365, 367);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(75, 23);
             this.cancelButton.TabIndex = 17;
@@ -178,11 +180,33 @@
             this.pictureBox1.TabStop = false;
             this.pictureBox1.Visible = false;
             // 
+            // exitButton
+            // 
+            this.exitButton.Location = new System.Drawing.Point(446, 367);
+            this.exitButton.Name = "exitButton";
+            this.exitButton.Size = new System.Drawing.Size(122, 23);
+            this.exitButton.TabIndex = 19;
+            this.exitButton.Text = "Exit and Run KSP";
+            this.exitButton.UseVisualStyleBackColor = true;
+            this.exitButton.Click += new System.EventHandler(this.exitButton_Click);
+            // 
+            // testLabel
+            // 
+            this.testLabel.AutoSize = true;
+            this.testLabel.Location = new System.Drawing.Point(46, 206);
+            this.testLabel.Name = "testLabel";
+            this.testLabel.Size = new System.Drawing.Size(35, 13);
+            this.testLabel.TabIndex = 20;
+            this.testLabel.Text = "label2";
+            this.testLabel.Visible = false;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(680, 506);
+            this.Controls.Add(this.testLabel);
+            this.Controls.Add(this.exitButton);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.applyButton);
@@ -222,6 +246,8 @@
         private System.Windows.Forms.Button applyButton;
         private System.Windows.Forms.Button cancelButton;
         private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.Button exitButton;
+        private System.Windows.Forms.Label testLabel;
     }
 }
 
