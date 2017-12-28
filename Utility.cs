@@ -53,7 +53,7 @@ namespace GPPInstaller
 
         private Form1 form1;
 
-        public static List<Mod> modList = new List<Mod>();
+        public List<Mod> modList = new List<Mod>();
 
         private WebClient webclient = new WebClient();
 
@@ -586,7 +586,28 @@ namespace GPPInstaller
                         {
                             workerExtract.DoWork += (o, e) =>
                             {
-                                ZipFile.ExtractToDirectory(zipFile, destDir);
+                                //ZipFile.ExtractToDirectory(zipFile, destDir);
+                                using (var archive = ZipFile.OpenRead(zipFile))
+                                {
+                                    foreach (var entry in archive.Entries)
+                                    {
+                                        if (workerExtract.CancellationPending)
+                                        {
+                                            e.Cancel = true;
+                                            break;
+                                        }
+
+                                        if (entry.IsFolder())
+                                        {
+                                            Directory.CreateDirectory(Path.Combine(destDir, entry.FullName));
+                                        }
+                                        else
+                                        {
+                                            entry.ExtractToFile(Path.Combine(destDir, entry.FullName));
+                                        }
+                                    }
+                                }
+                                if (e.Cancel) Directory.Delete(destDir, true);
                                 File.Delete(@".\GPPInstaller\" + fileName);
                             };
                         }
@@ -613,10 +634,10 @@ namespace GPPInstaller
         {
             if (e.Cancelled)
             {
-                string fileName = modList[modIndex].ArchiveFileName;
-                int fileNameLength = fileName.Length;
-                string dirName = fileName.Remove((fileNameLength - 4), 4);
-                if (Directory.Exists(@".\GPPInstaller\" + dirName)) Directory.Delete(@".\GPPInstaller\" + dirName, true);
+                //string fileName = modList[modIndex].ArchiveFileName;
+                //int fileNameLength = fileName.Length;
+                //string dirName = fileName.Remove((fileNameLength - 4), 4);
+                //if (Directory.Exists(@".\GPPInstaller\" + dirName)) Directory.Delete(@".\GPPInstaller\" + dirName, true);
 
                 modIndex = 0;
 
@@ -974,5 +995,13 @@ namespace GPPInstaller
         public bool State_Extracted { get; set; }
         public bool State_Installed { get; set; }
         public string ActionToTake { get; set; }
+    }
+
+    static class ZipArchiEntryExtensions
+    {
+        public static bool IsFolder(this ZipArchiveEntry entry)
+        {
+            return entry.FullName.EndsWith("/");
+        }
     }
 }

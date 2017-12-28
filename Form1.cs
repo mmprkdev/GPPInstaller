@@ -31,20 +31,13 @@ namespace GPPInstaller
 
             Directory.CreateDirectory(".\\GPPInstaller");
 
-            //CurrentlyInstalledOptionsInit();
-            //SelectedOptionsInit();
-
-            //InitCheckBoxes();
-
             util = new Utility(this);
 
             util.InitModList();
+            util.RefreshModState();
             util.SetCheckBoxes(checkBox1, checkBox2, checkBox3, checkBox4);
 
             label1.Text = "KSP Version: " + util.GetVersionNumber() + " (" + util.GetEXE() + ")";
-
-
-
         }
 
         public void RefreshCheckBoxes()
@@ -286,10 +279,13 @@ namespace GPPInstaller
 
         private void cancelButton_Click(object sender, EventArgs e)
         {
-            util.ExtractCancel();
+            //Application.Restart();
+            //Environment.Exit(0);
+
             util.WebClientCancel();
+            util.ExtractCancel();
             
-            util.InstallCancel();
+            //util.InstallCancel();
         }
 
         public void EnableApplyButton()
