@@ -87,6 +87,10 @@ namespace GPPInstaller
             else if (checkBox2.Checked == false)
             {
                 cloudTextureLabel.Visible = false;
+
+                checkBox3.Checked = false;
+                checkBox4.Checked = false;
+
                 checkBox3.Visible = false;
                 checkBox4.Visible = false;
             }
@@ -255,6 +259,9 @@ namespace GPPInstaller
 
         private void applyButton_Click(object sender, EventArgs e)
         {
+            util.RefreshModState();
+            util.ResetActionsToTake();
+
             exitButton.Enabled = false;
             cancelButton.Visible = true;
             pictureBox1.Visible = false;
@@ -262,7 +269,7 @@ namespace GPPInstaller
             DisableCheckBoxes();
 
             util.ProcessActionToTake(checkBox1, checkBox2, checkBox3, checkBox4);
-            util.Uninstall();
+            util.UninstallMod();
             ProgressBar1Init();
             util.DownloadMod();
         }
@@ -279,8 +286,10 @@ namespace GPPInstaller
 
         private void cancelButton_Click(object sender, EventArgs e)
         {
+            util.ExtractCancel();
             util.WebClientCancel();
-            //util.ExtractCancel();
+            
+            util.InstallCancel();
         }
 
         public void EnableApplyButton()
