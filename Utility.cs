@@ -13,8 +13,6 @@ using System.IO.Compression;
 using System.Net;
 using System.Diagnostics;
 
-// TODO: Make sure extraction and installation cancelation
-// is working (download cancelation is working)
 
 // TODO: Consider organizing the code base into a more clear
 // MVC archetecture.
@@ -28,9 +26,7 @@ using System.Diagnostics;
 // TODO: Write a bash script that adds all
 // files in the github_repo\GPPInstaller dir automatically.
 
-// TODO: there seems to be a bug when you cancel an installation
-// and then hit apply when no checkboxes are selected, it starts
-// downloading when it should be doing anything.
+// TODO: Get installation cancelation working
 
 namespace GPPInstaller
 {
@@ -65,9 +61,11 @@ namespace GPPInstaller
             webclient.DownloadFileCompleted += new AsyncCompletedEventHandler(webclient_DownloadFileCompleted);
 
             workerExtract.RunWorkerCompleted += new RunWorkerCompletedEventHandler(workerExtract_RunWorkerCompleted);
+            workerExtract.DoWork += new DoWorkEventHandler(workerExtract_DoWork);
             workerExtract.WorkerSupportsCancellation = true;
 
-            workerInstall.RunWorkerCompleted += new RunWorkerCompletedEventHandler(workerInstallMods_RunWorkerCompleted);
+            workerInstall.RunWorkerCompleted += new RunWorkerCompletedEventHandler(workerInstall_RunWorkerCompleted);
+            workerInstall.DoWork += new DoWorkEventHandler(workerInstall_DoWork);
             workerInstall.WorkerSupportsCancellation = true;
         }
 
@@ -563,7 +561,7 @@ namespace GPPInstaller
                     modList[modIndex].State_Downloaded == true &&
                     modList[modIndex].ArchiveFileName != "")
                 {
-                    Debug.WriteLine(modList[modIndex].ModName);
+                    //Debug.WriteLine(modList[modIndex].ModName);
                     // extract the file
                     string fileName = modList[modIndex].ArchiveFileName;
                     int fileNameLength = fileName.Length;
@@ -578,41 +576,19 @@ namespace GPPInstaller
                     {
                         Directory.CreateDirectory(destDir);
 
-                        // NOTE: There seems to be problems with moving the background worker initalization
-                        // out to the public scope, not sure tho.
-                        //BackgroundWorker workerExtract = new BackgroundWorker();
-                        //workerExtract.RunWorkerCompleted += new RunWorkerCompletedEventHandler(workerExtract_RunWorkerCompleted);
-                        if (File.Exists(@".\GPPInstaller\" + fileName))
+                        if (File.Exists(zipFile))
                         {
-                            workerExtract.DoWork += (o, e) =>
-                            {
-                                //ZipFile.ExtractToDirectory(zipFile, destDir);
-                                using (var archive = ZipFile.OpenRead(zipFile))
-                                {
-                                    foreach (var entry in archive.Entries)
-                                    {
-                                        if (workerExtract.CancellationPending)
-                                        {
-                                            e.Cancel = true;
-                                            break;
-                                        }
+                            // NOTE: It appears that when we enter the worker for
+                            // a second time (re-use the previous worker) the values
+                            // of variables are re-used. Might need to create a new worker
+                            // for each new loop through, or somehow flush all data from the
+                            // worker.
+                            // NOTE: The solution to this problem was to pass new arguments to the
+                            // background worker DoWork event, insted of modifying existing variables.
 
-                                        if (entry.IsFolder())
-                                        {
-                                            Directory.CreateDirectory(Path.Combine(destDir, entry.FullName));
-                                        }
-                                        else
-                                        {
-                                            entry.ExtractToFile(Path.Combine(destDir, entry.FullName));
-                                        }
-                                    }
-                                }
-                                if (e.Cancel) Directory.Delete(destDir, true);
-                                File.Delete(@".\GPPInstaller\" + fileName);
-                            };
+                            var args = new Tuple<string, string>(zipFile, destDir);
+                            workerExtract.RunWorkerAsync(args);
                         }
-                        
-                        workerExtract.RunWorkerAsync();
                     }
                 }
                 else
@@ -628,6 +604,35 @@ namespace GPPInstaller
                 form1.ProgressLabelUpdate("Copying mods to GameData...");
                 InstallMod();
             }
+        }
+
+        private void workerExtract_DoWork(object sender, DoWorkEventArgs e)
+        {
+            // NOTE: The args Tuple resurfaces here
+            var args = (Tuple<string, string>)e.Argument;
+
+            using (var archive = ZipFile.OpenRead(args.Item1))
+            {
+                foreach (var entry in archive.Entries)
+                {
+                    if (workerExtract.CancellationPending)
+                    {
+                        e.Cancel = true;
+                        break;
+                    }
+
+                    if (entry.IsFolder())
+                    {
+                        Directory.CreateDirectory(Path.Combine(args.Item2, entry.FullName));
+                    }
+                    else
+                    {
+                        entry.ExtractToFile(Path.Combine(args.Item2, entry.FullName));
+                    }
+                }
+            }
+            if (e.Cancel) Directory.Delete(args.Item2, true);
+            //File.Delete(@".\GPPInstaller\" + fileName);
         }
 
         private void workerExtract_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -670,8 +675,7 @@ namespace GPPInstaller
         {
             if (modIndex < modList.Count)
             {
-                //BackgroundWorker workerInstallMod = new BackgroundWorker();
-                //workerInstallMod.RunWorkerCompleted += new RunWorkerCompletedEventHandler(workerInstallMods_RunWorkerCompleted);
+                Debug.WriteLine("Inside InstallMod(): " + workerInstall.CancellationPending.ToString());
 
                 if (modList[modIndex].State_Installed == false &&
                     modList[modIndex].ActionToTake == "Install")
@@ -681,8 +685,6 @@ namespace GPPInstaller
                         string sourceDirName;
                         string destDirName;
 
-                        // TODO: Maybe remove these variables and just give the
-                        // full string paths to source and dest dir
                         string fileName = modList[modIndex].ArchiveFileName;
                         int fileNameLength = fileName.Length;
                         string dirName = fileName.Remove((fileNameLength - 4), 4);
@@ -691,22 +693,16 @@ namespace GPPInstaller
                             sourceDirName = @".\GPPInstaller\" + dirName + @"\GameData\GPP";
                             destDirName = @".\GameData\GPP";
 
-                            workerInstall.DoWork += (o, e) =>
-                            {
-                                DirectoryCopy(sourceDirName, destDirName, true);
-                            };
-                            workerInstall.RunWorkerAsync();
+                            var args = new Tuple<string, string, bool>(sourceDirName, destDirName, true);
+                            workerInstall.RunWorkerAsync(args);
                         }
                         else
                         {
                             sourceDirName = @".\GPPInstaller\" + dirName + @"\GameData";
                             destDirName = @".\GameData";
 
-                            workerInstall.DoWork += (o, e) =>
-                            {
-                                DirectoryCopy(sourceDirName, destDirName, true);
-                            };
-                            workerInstall.RunWorkerAsync();
+                            var args = new Tuple<string, string, bool>(sourceDirName, destDirName, true);
+                            workerInstall.RunWorkerAsync(args);
                         }
                     }
                     else
@@ -721,11 +717,8 @@ namespace GPPInstaller
                             cloudDirSource = @".\GPPInstaller\Galileos.Planet.Pack.1.5.88\Optional Mods\GPP_Clouds\Low-res Clouds_GameData inside\GameData\GPP";
                             cloudDirDest = @".\GameData\GPP";
 
-                            workerInstall.DoWork += (o, e) =>
-                            {
-                                DirectoryCopy(cloudDirSource, cloudDirDest, true);
-                            };
-                            workerInstall.RunWorkerAsync();
+                            var args = new Tuple<string, string, bool>(cloudDirSource, cloudDirDest, true);
+                            workerInstall.RunWorkerAsync(args);
                         }
                         else if (modList[modIndex].ModName == "CloudsHighRes")
                         {
@@ -734,11 +727,8 @@ namespace GPPInstaller
                             cloudDirSource = @".\GPPInstaller\Galileos.Planet.Pack.1.5.88\Optional Mods\GPP_Clouds\High-res Clouds_GameData inside\GameData\GPP";
                             cloudDirDest = @".\GameData\GPP";
 
-                            workerInstall.DoWork += (o, e) =>
-                            {
-                                DirectoryCopy(cloudDirSource, cloudDirDest, true);
-                            };
-                            workerInstall.RunWorkerAsync();
+                            var args = new Tuple<string, string, bool>(cloudDirSource, cloudDirDest, true);
+                            workerInstall.RunWorkerAsync(args);
                         }
                     }
                 }
@@ -764,7 +754,63 @@ namespace GPPInstaller
             
         }
 
-        private void workerInstallMods_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        // NOTE: Installation cancelation is set up to work, but it the CancelationPending
+        // property does not get set for some reason when CancelAsync is called. For right now
+        // I am just going to leave it.
+        private void workerInstall_DoWork(object sender, DoWorkEventArgs e)
+        {
+            Debug.WriteLine("Inside DoWork: " + workerInstall.CancellationPending.ToString());
+
+            if (workerInstall.CancellationPending)
+            {
+                e.Cancel = true;
+                Debug.WriteLine(e.Cancel.ToString());
+                return;
+            }
+
+            var args = (Tuple<string, string, bool>)e.Argument;
+
+            string sourceDirName = args.Item1;
+            string destDirName = args.Item2;
+            bool copySubDirs = args.Item3;
+
+            // Get subdirectories for the specified directory.
+            DirectoryInfo dir = new DirectoryInfo(sourceDirName);
+
+            if (!dir.Exists)
+            {
+                throw new DirectoryNotFoundException("Source directory does not exist: " + sourceDirName);
+            }
+
+            DirectoryInfo[] dirs = dir.GetDirectories();
+            if (!Directory.Exists(destDirName))
+            {
+                //throw new DirectoryNotFoundException("Destination directory does not exist: " + destDirName);
+                Directory.CreateDirectory(destDirName);
+            }
+
+            FileInfo[] files = dir.GetFiles();
+            foreach (FileInfo file in files)
+            {
+                string tempPath = Path.Combine(destDirName, file.Name);
+                file.CopyTo(tempPath, true);
+            }
+
+            // If copying subdirectories, copy them and their contents to new location.
+            if (copySubDirs)
+            {
+                foreach (DirectoryInfo subDir in dirs)
+                {
+                    string tempPath = Path.Combine(destDirName, subDir.Name);
+                    DirectoryCopy(subDir.FullName, tempPath, copySubDirs);
+                }
+            }
+
+            if (e.Cancel) Directory.Delete(destDirName);
+            //Debug.WriteLine(workerInstall.CancellationPending.ToString());
+        }
+
+        private void workerInstall_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             if (e.Cancelled)
             {

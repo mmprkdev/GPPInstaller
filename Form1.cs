@@ -281,11 +281,10 @@ namespace GPPInstaller
         {
             //Application.Restart();
             //Environment.Exit(0);
-
+            
             util.WebClientCancel();
             util.ExtractCancel();
-            
-            //util.InstallCancel();
+            util.InstallCancel();
         }
 
         public void EnableApplyButton()
