@@ -12,7 +12,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Net;
 
-// TODO: Make a good error checking system.
+
 
 namespace GPPInstaller
 {
@@ -21,7 +21,6 @@ namespace GPPInstaller
         Utility util;
         string[] installedModPacks = new string[2];
 
-        // TODO: Maybe go back to this method of processing selected options
         Dictionary<string, bool> currentlyInstalledOptions = new Dictionary<string, bool>();
         Dictionary<string, bool> newlySelectedOptions = new Dictionary<string, bool>();
 
@@ -37,7 +36,36 @@ namespace GPPInstaller
             util.RefreshModState();
             util.SetCheckBoxes(checkBox1, checkBox2, checkBox3, checkBox4);
 
-            label1.Text = "KSP Version: " + util.GetVersionNumber() + " (" + util.GetEXE() + ")";
+            CheckForCompatablity(util.GetVersionNumber(), util.GetEXE());
+
+            label1.Text = "KSP Version: " + util.GetVersionNumber() + " (" + util.GetEXE() + " bit)";
+        }
+
+        private void CheckForCompatablity(string versionNumber, string exe)
+        {
+            bool versionIsCompatable = false;
+            bool exeIsCompatable = false;
+
+            for (int i = 0; i < GlobalInfo.compatableKSPVersions.Length; i++)
+            {
+                if (versionNumber == GlobalInfo.compatableKSPVersions[i]) versionIsCompatable = true;
+            }
+
+            for (int i = 0; i < GlobalInfo.compatableKSPEXEs.Length; i++)
+            {
+                if (exe == GlobalInfo.compatableKSPEXEs[i]) exeIsCompatable = true;
+            }
+
+            // TODO: left off here
+            if (!versionIsCompatable)
+            {
+                // error
+            }
+
+            if (!exeIsCompatable)
+            {
+                // error
+            }
         }
 
         public void RefreshCheckBoxes()
@@ -137,117 +165,15 @@ namespace GPPInstaller
 
         public void ProgressBar1Step()
         {
-            //if (progressBar1.InvokeRequired)
-            //{
-            //    progressBar1.Invoke(new MethodInvoker(delegate
-            //    {
-            //        progressBar1.PerformStep();
-            //    }));
-            //}
-            //else
-            //{
-            //    progressBar1.PerformStep();
-            //}
+            
             progressBar1.PerformStep();
         }
 
         public void ProgressLabelUpdate(string Message)
         {
-            //if (progressLabel.InvokeRequired)
-            //{
-            //    progressLabel.Invoke(new MethodInvoker(delegate
-            //    {
-            //        progressLabel.Visible = true;
-            //        progressLabel.Text = Message;
-            //    }));
-            //}
-            //else
-            //{
-            //    progressLabel.Visible = true;
-            //    progressLabel.Text = Message;
-            //}
-
             progressLabel.Visible = true;
             progressLabel.Text = Message;
 
-        }
-
-        private void SetModList()
-        {
-            string kopernicusDir = @".\GameData\Kopernicus";
-            string GPPDir = @".\GameData\GPP";
-            string modularFIDir = @".\GameData\ModularFlightIntegrator";
-            string modManagerFile = @".\GameData\ModuleManager.2.8.1.dll";
-
-            string eveDir = @".\GameData\EnvironmentalVisualEnhancements";
-            string scattererDir = @".\GameData\scatterer";
-            string distantOEDir = @".\GameData\DistantObject";
-
-            string cloudsLowResConfig = @".\GameData\GPP\GPP_Clouds\Configs\GPPClouds_LowRes.cfg";
-            string cloudsHighResConfig = @".\GameData\GPP\GPP_Clouds\Configs\GPPClouds_HighRes.cfg";
-
-            if (Directory.Exists(kopernicusDir) &&
-                Directory.Exists(GPPDir) &&
-                Directory.Exists(modularFIDir) &&
-                File.Exists(modManagerFile))
-            {
-                //currentlyInstalledOptions["Core"] = true;
-            }
-            else currentlyInstalledOptions["Core"] = false;
-
-            if (Directory.Exists(eveDir) &&
-                Directory.Exists(scattererDir) &&
-                Directory.Exists(distantOEDir))
-            {
-                currentlyInstalledOptions["Visuals"] = true;
-            }
-            else currentlyInstalledOptions["Visuals"] = false;
-
-            if (File.Exists(cloudsLowResConfig) &&
-                currentlyInstalledOptions["Visuals"] == true)
-            {
-                currentlyInstalledOptions["CloudsLowRes"] = true;
-            }
-            else currentlyInstalledOptions["CloudsLowRes"] = false;
-
-            if (File.Exists(cloudsHighResConfig) &&
-                currentlyInstalledOptions["Visuals"] == true)
-            {
-                currentlyInstalledOptions["CloudsHighRes"] = true;
-            }
-            else currentlyInstalledOptions["CloudsHighRes"] = false;
-        }
-
-        private void InitCheckBoxes()
-        {
-            if (currentlyInstalledOptions["Core"] == true) checkBox1.Checked = true;
-            if (currentlyInstalledOptions["Visuals"] == true) checkBox2.Checked = true;
-            if (currentlyInstalledOptions["CloudsLowRes"] == true) checkBox3.Checked = true;
-            if (currentlyInstalledOptions["CloudsHighRes"] == true) checkBox4.Checked = true;
-
-            applyButton.Enabled = false;
-        }
-
-        private void NewlySelectedOptionsCheck()
-        {
-            if (checkBox1.Checked)
-            {
-                newlySelectedOptions["Core"] = true;
-            }
-
-            if (checkBox2.Checked)
-            {
-                newlySelectedOptions["Visuals"] = true;
-
-                if (checkBox3.Checked)
-                {
-                    newlySelectedOptions["CloudsLowRes"] = true;
-                }
-                else if (checkBox4.Checked)
-                {
-                    newlySelectedOptions["CloudsHighRes"] = true;
-                }
-            }
         }
 
         private void applyButton_Click(object sender, EventArgs e)
@@ -279,9 +205,6 @@ namespace GPPInstaller
 
         private void cancelButton_Click(object sender, EventArgs e)
         {
-            //Application.Restart();
-            //Environment.Exit(0);
-            
             util.WebClientCancel();
             util.ExtractCancel();
             util.InstallCancel();
@@ -320,12 +243,6 @@ namespace GPPInstaller
         public void RemoveCancelButton()
         {
             cancelButton.Visible = false;
-        }
-
-        public void DisplayTestLabel(string message)
-        {
-            testLabel.Visible = true;
-            testLabel.Text = message;
         }
 
     }

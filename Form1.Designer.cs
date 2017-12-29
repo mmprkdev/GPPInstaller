@@ -40,16 +40,19 @@
             this.cloudTextureLabel = new System.Windows.Forms.Label();
             this.applyButton = new System.Windows.Forms.Button();
             this.cancelButton = new System.Windows.Forms.Button();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.exitButton = new System.Windows.Forms.Button();
-            this.testLabel = new System.Windows.Forms.Label();
+            this.pictureBoxLeftPic = new System.Windows.Forms.PictureBox();
+            this.pictureBoxRightPic = new System.Windows.Forms.PictureBox();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLeftPic)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxRightPic)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 9);
+            this.label1.Location = new System.Drawing.Point(172, 9);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(69, 13);
             this.label1.TabIndex = 1;
@@ -58,18 +61,18 @@
             // checkBox1
             // 
             this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(162, 67);
+            this.checkBox1.Location = new System.Drawing.Point(175, 67);
             this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(94, 17);
+            this.checkBox1.Size = new System.Drawing.Size(73, 17);
             this.checkBox1.TabIndex = 7;
-            this.checkBox1.Text = "GPP Required";
+            this.checkBox1.Text = "GPP Core";
             this.checkBox1.UseVisualStyleBackColor = true;
             this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
             // 
             // checkBox2
             // 
             this.checkBox2.AutoSize = true;
-            this.checkBox2.Location = new System.Drawing.Point(162, 133);
+            this.checkBox2.Location = new System.Drawing.Point(175, 132);
             this.checkBox2.Name = "checkBox2";
             this.checkBox2.Size = new System.Drawing.Size(128, 17);
             this.checkBox2.TabIndex = 8;
@@ -99,7 +102,7 @@
             // 
             // progressBar1
             // 
-            this.progressBar1.Location = new System.Drawing.Point(162, 285);
+            this.progressBar1.Location = new System.Drawing.Point(209, 345);
             this.progressBar1.Name = "progressBar1";
             this.progressBar1.Size = new System.Drawing.Size(322, 23);
             this.progressBar1.TabIndex = 11;
@@ -108,7 +111,7 @@
             // progressLabel
             // 
             this.progressLabel.AutoSize = true;
-            this.progressLabel.Location = new System.Drawing.Point(159, 321);
+            this.progressLabel.Location = new System.Drawing.Point(206, 371);
             this.progressLabel.Name = "progressLabel";
             this.progressLabel.Size = new System.Drawing.Size(73, 13);
             this.progressLabel.TabIndex = 12;
@@ -151,7 +154,7 @@
             // 
             // applyButton
             // 
-            this.applyButton.Location = new System.Drawing.Point(162, 367);
+            this.applyButton.Location = new System.Drawing.Point(204, 466);
             this.applyButton.Name = "applyButton";
             this.applyButton.Size = new System.Drawing.Size(75, 23);
             this.applyButton.TabIndex = 16;
@@ -161,7 +164,7 @@
             // 
             // cancelButton
             // 
-            this.cancelButton.Location = new System.Drawing.Point(365, 367);
+            this.cancelButton.Location = new System.Drawing.Point(347, 466);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(75, 23);
             this.cancelButton.TabIndex = 17;
@@ -170,19 +173,9 @@
             this.cancelButton.Visible = false;
             this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
             // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Image = global::GPPInstaller.Properties.Resources.checkmark_green;
-            this.pictureBox1.Location = new System.Drawing.Point(287, 263);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(45, 45);
-            this.pictureBox1.TabIndex = 18;
-            this.pictureBox1.TabStop = false;
-            this.pictureBox1.Visible = false;
-            // 
             // exitButton
             // 
-            this.exitButton.Location = new System.Drawing.Point(446, 367);
+            this.exitButton.Location = new System.Drawing.Point(479, 466);
             this.exitButton.Name = "exitButton";
             this.exitButton.Size = new System.Drawing.Size(122, 23);
             this.exitButton.TabIndex = 19;
@@ -190,22 +183,41 @@
             this.exitButton.UseVisualStyleBackColor = true;
             this.exitButton.Click += new System.EventHandler(this.exitButton_Click);
             // 
-            // testLabel
+            // pictureBoxLeftPic
             // 
-            this.testLabel.AutoSize = true;
-            this.testLabel.Location = new System.Drawing.Point(46, 206);
-            this.testLabel.Name = "testLabel";
-            this.testLabel.Size = new System.Drawing.Size(35, 13);
-            this.testLabel.TabIndex = 20;
-            this.testLabel.Text = "label2";
-            this.testLabel.Visible = false;
+            this.pictureBoxLeftPic.Image = global::GPPInstaller.Properties.Resources.screenshot2_left;
+            this.pictureBoxLeftPic.Location = new System.Drawing.Point(1, 1);
+            this.pictureBoxLeftPic.Name = "pictureBoxLeftPic";
+            this.pictureBoxLeftPic.Size = new System.Drawing.Size(145, 563);
+            this.pictureBoxLeftPic.TabIndex = 21;
+            this.pictureBoxLeftPic.TabStop = false;
+            // 
+            // pictureBoxRightPic
+            // 
+            this.pictureBoxRightPic.Image = global::GPPInstaller.Properties.Resources.screenshot2_right;
+            this.pictureBoxRightPic.Location = new System.Drawing.Point(631, 1);
+            this.pictureBoxRightPic.Name = "pictureBoxRightPic";
+            this.pictureBoxRightPic.Size = new System.Drawing.Size(145, 563);
+            this.pictureBoxRightPic.TabIndex = 20;
+            this.pictureBoxRightPic.TabStop = false;
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Image = global::GPPInstaller.Properties.Resources.checkmark_green;
+            this.pictureBox1.Location = new System.Drawing.Point(347, 323);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(45, 45);
+            this.pictureBox1.TabIndex = 18;
+            this.pictureBox1.TabStop = false;
+            this.pictureBox1.Visible = false;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(680, 506);
-            this.Controls.Add(this.testLabel);
+            this.ClientSize = new System.Drawing.Size(777, 565);
+            this.Controls.Add(this.pictureBoxLeftPic);
+            this.Controls.Add(this.pictureBoxRightPic);
             this.Controls.Add(this.exitButton);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.cancelButton);
@@ -225,6 +237,8 @@
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "GPP Installer (GPP v1.5.3) (KSP v1.3.1)";
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLeftPic)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxRightPic)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -247,7 +261,8 @@
         private System.Windows.Forms.Button cancelButton;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Button exitButton;
-        private System.Windows.Forms.Label testLabel;
+        private System.Windows.Forms.PictureBox pictureBoxRightPic;
+        private System.Windows.Forms.PictureBox pictureBoxLeftPic;
     }
 }
 
