@@ -13,8 +13,9 @@ using System.IO.Compression;
 using System.Net;
 using System.Diagnostics;
 
-// TODO: Make a good error checking system.
-// Check for ksp version and exe compatability 
+
+// TODO: Make a good error checking system. Validate
+// file and directorys by checking for the number of files.
 
 // TODO: Maybe add a few extra "utility" mods
 // (Kerbal Engineer, Kerbal Alarm Clock, etc)
@@ -31,12 +32,13 @@ namespace GPPInstaller
 {
     class Utility
     {
+        private int numOfFilesInDir = 0;
+
         private int modIndex = 0;
 
         private BackgroundWorker workerExtract = new BackgroundWorker();
         private BackgroundWorker workerInstall = new BackgroundWorker();
         
-
         private Form1 form1;
 
         public List<Mod> modList = new List<Mod>();
@@ -434,6 +436,17 @@ namespace GPPInstaller
                     string downloadDest = @".\GPPInstaller\" + fileName;
 
                     Uri uri = new Uri(downloadAddress);
+                    // !GlobalInfo.IsConnectedToInternet()
+                    if (true)
+                    {
+                        // TODO: this works but I need to handle it better
+                        //form1.DisplayError("Error: No internet connection was detected.");
+                        Errors error = new Errors(form1);
+                        error.NoInternetConnectionError();
+
+                        webclient.CancelAsync();
+                        return;
+                    }
 
                     webclient.DownloadFileAsync(uri, downloadDest);
                 }
@@ -463,19 +476,16 @@ namespace GPPInstaller
         {
             if (e.Cancelled)
             {
-                // NOTE: Might want to use the former method, not sure
-                //File.Delete(@".\GPPInstaller\" + modList[modIndex].ArchiveFileName);
-                DeleteAllZips(@".\GPPInstaller");
-
-                modIndex = 0;
-
                 form1.ProgressLabelUpdate("Installation canceled.");
                 form1.DisplayRedCheck();
-                form1.EnableCheckBoxes();
-                form1.EnableApplyButton();
-                form1.EnableExitButton();
+
+                DeleteAllZips(@".\GPPInstaller");
+                modIndex = 0;
                 form1.RemoveCancelButton();
+                form1.EnableExitButton();
                 form1.RemoveProgressBar();
+                form1.EnableApplyButton();
+                form1.EnableCheckBoxes();
 
                 RefreshModState();
                 form1.RefreshCheckBoxes();
@@ -698,7 +708,7 @@ namespace GPPInstaller
                 form1.EnableExitButton();
                 form1.EnableCheckBoxes();
                 form1.EnableApplyButton();
-                form1.ProgressLabelUpdate("All changes applied.");
+                form1.ProgressLabelUpdate("All changes applied successfully.");
             }
             
         }
@@ -965,6 +975,24 @@ namespace GPPInstaller
             foreach (FileInfo file in files)
             {
                 if (file.Extension == ".zip") File.Delete(file.FullName);
+            }
+        }
+
+        private void NumberOfFilesInDir(string dirPath)
+        {
+            DirectoryInfo dir = new DirectoryInfo(dirPath);
+
+            FileInfo[] files = dir.GetFiles();
+            foreach (FileInfo file in files)
+            {
+                numOfFilesInDir++;
+            }
+
+            DirectoryInfo[] dirs = dir.GetDirectories();
+
+            foreach (DirectoryInfo subDir in dirs)
+            {
+                NumberOfFilesInDir(subDir.FullName);
             }
         }
     }

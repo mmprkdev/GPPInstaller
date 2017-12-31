@@ -18,16 +18,16 @@ namespace GPPInstaller
 {
     public partial class Form1 : Form
     {
-        Utility util;
-        string[] installedModPacks = new string[2];
+        private Utility util;
 
-        Dictionary<string, bool> currentlyInstalledOptions = new Dictionary<string, bool>();
-        Dictionary<string, bool> newlySelectedOptions = new Dictionary<string, bool>();
+        private int numOfFilesInDir = 0;
 
         public Form1()
         {
             InitializeComponent();
 
+            //if (GlobalInfo.IsConnectedToInternet()) label2.Text = "Connected to internet";
+            
             Directory.CreateDirectory(".\\GPPInstaller");
 
             util = new Utility(this);
@@ -36,36 +36,59 @@ namespace GPPInstaller
             util.RefreshModState();
             util.SetCheckBoxes(checkBox1, checkBox2, checkBox3, checkBox4);
 
-            CheckForCompatablity(util.GetVersionNumber(), util.GetEXE());
+            InitialCheckForErrors();
 
-            label1.Text = "KSP Version: " + util.GetVersionNumber() + " (" + util.GetEXE() + " bit)";
+            //label1.Text = "KSP Version: " + util.GetVersionNumber() + " (" + util.GetEXE() + " bit)";
         }
 
-        private void CheckForCompatablity(string versionNumber, string exe)
+        private void InitialCheckForErrors()
         {
-            bool versionIsCompatable = false;
-            bool exeIsCompatable = false;
+            // Version
+            string versionTarget = @".\readme.txt";
 
-            for (int i = 0; i < GlobalInfo.compatableKSPVersions.Length; i++)
+            if (!File.Exists(versionTarget))
             {
-                if (versionNumber == GlobalInfo.compatableKSPVersions[i]) versionIsCompatable = true;
+                DisplayError("Error: Could not determine KSP version. Make sure the \"readme.txt\" file exists.");
             }
 
-            for (int i = 0; i < GlobalInfo.compatableKSPEXEs.Length; i++)
+            string[] readmeLines = File.ReadAllLines(versionTarget);
+
+            string versionNumberLine = readmeLines[14];
+
+            char[] versionChars = new char[5];
+            for (int lineI = 8, charI = 0; lineI <= 12; lineI++, charI++)
             {
-                if (exe == GlobalInfo.compatableKSPEXEs[i]) exeIsCompatable = true;
+                versionChars[charI] = versionNumberLine[lineI];
             }
 
-            // TODO: left off here
-            if (!versionIsCompatable)
+            string detectedVersionNumber = new string(versionChars);
+
+            if (detectedVersionNumber != GlobalInfo.compatableKSPVersion)
             {
-                // error
+                DisplayError("Error: The detected KSP version " + detectedVersionNumber + " is not compatable. Version " + GlobalInfo.compatableKSPVersion + " is required.");
             }
 
-            if (!exeIsCompatable)
+            // EXE
+            string exeTarget64 = @".\KSP_x64.exe";
+            string exeTarget32 = @".\KSP.exe";
+            string currentExe = "";
+
+            if (File.Exists(exeTarget64))
             {
-                // error
+                currentExe = "64";
+
             }
+            else if (File.Exists(exeTarget32))
+            {
+                currentExe = "32";
+                DisplayError("Error: a 32 bit version of KSP was detected. GPP requires a 64 bit version of KSP in order to run.");
+            }
+            else
+            {
+                DisplayError("Error: could not determine the exe type. Make sure the KSP exicutable file exists.");
+            }
+
+            label1.Text = "KSP Version: " + detectedVersionNumber + " (" + currentExe + ") bit";
         }
 
         public void RefreshCheckBoxes()
@@ -245,5 +268,49 @@ namespace GPPInstaller
             cancelButton.Visible = false;
         }
 
+        public void DisplayError(string message)
+        {
+            DisplayYellowWarning();
+
+            progressBar1.Visible = false;
+
+            progressLabel.Visible = true;
+            progressLabel.Text += message + "\n";
+
+            DisableCheckBoxes();
+            restartButton.Visible = true;
+            applyButton.Visible = false;
+        }
+
+        public void DisplayYellowWarning()
+        {
+            pictureBox1.Image = Properties.Resources.warning;
+            pictureBox1.Refresh();
+            pictureBox1.Visible = true;
+        }
+
+        private void restartButton_Click(object sender, EventArgs e)
+        {
+            Application.Restart();
+            Environment.Exit(0);
+        }
+
+        private void NumberOfFilesInDir(string dirPath)
+        {
+            DirectoryInfo dir = new DirectoryInfo(dirPath);
+
+            FileInfo[] files = dir.GetFiles();
+            foreach (FileInfo file in files)
+            {
+                numOfFilesInDir++;
+            }
+
+            DirectoryInfo[] dirs = dir.GetDirectories();
+
+            foreach (DirectoryInfo subDir in dirs)
+            {
+                NumberOfFilesInDir(subDir.FullName);
+            }
+        }
     }
 }

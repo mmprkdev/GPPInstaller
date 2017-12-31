@@ -44,6 +44,7 @@
             this.pictureBoxLeftPic = new System.Windows.Forms.PictureBox();
             this.pictureBoxRightPic = new System.Windows.Forms.PictureBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.restartButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLeftPic)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxRightPic)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -52,18 +53,20 @@
             // label1
             // 
             this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.Location = new System.Drawing.Point(172, 9);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(69, 13);
+            this.label1.Size = new System.Drawing.Size(78, 15);
             this.label1.TabIndex = 1;
             this.label1.Text = "KSP Version:";
             // 
             // checkBox1
             // 
             this.checkBox1.AutoSize = true;
+            this.checkBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.checkBox1.Location = new System.Drawing.Point(175, 67);
             this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(73, 17);
+            this.checkBox1.Size = new System.Drawing.Size(80, 19);
             this.checkBox1.TabIndex = 7;
             this.checkBox1.Text = "GPP Core";
             this.checkBox1.UseVisualStyleBackColor = true;
@@ -72,9 +75,10 @@
             // checkBox2
             // 
             this.checkBox2.AutoSize = true;
+            this.checkBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.checkBox2.Location = new System.Drawing.Point(175, 132);
             this.checkBox2.Name = "checkBox2";
-            this.checkBox2.Size = new System.Drawing.Size(128, 17);
+            this.checkBox2.Size = new System.Drawing.Size(145, 19);
             this.checkBox2.TabIndex = 8;
             this.checkBox2.Text = "Visual Enhancements";
             this.checkBox2.UseVisualStyleBackColor = true;
@@ -83,9 +87,10 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(312, 68);
+            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.Location = new System.Drawing.Point(326, 67);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(289, 26);
+            this.label3.Size = new System.Drawing.Size(336, 30);
             this.label3.TabIndex = 9;
             this.label3.Text = "All required mods for the most basic GPP install: Kopernicus,\r\n GPP, and GPP_Text" +
     "ures.";
@@ -93,9 +98,10 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(312, 133);
+            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.Location = new System.Drawing.Point(326, 133);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(246, 26);
+            this.label4.Size = new System.Drawing.Size(279, 30);
             this.label4.TabIndex = 10;
             this.label4.Text = "A collection of visual encancment mods: Scatterer,\r\nEVE, and Distant Object Enhan" +
     "cement.";
@@ -111,19 +117,20 @@
             // progressLabel
             // 
             this.progressLabel.AutoSize = true;
+            this.progressLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.progressLabel.Location = new System.Drawing.Point(206, 371);
             this.progressLabel.Name = "progressLabel";
-            this.progressLabel.Size = new System.Drawing.Size(73, 13);
+            this.progressLabel.Size = new System.Drawing.Size(0, 15);
             this.progressLabel.TabIndex = 12;
-            this.progressLabel.Text = "progressLabel";
             this.progressLabel.Visible = false;
             // 
             // checkBox3
             // 
             this.checkBox3.AutoSize = true;
-            this.checkBox3.Location = new System.Drawing.Point(405, 169);
+            this.checkBox3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.checkBox3.Location = new System.Drawing.Point(424, 179);
             this.checkBox3.Name = "checkBox3";
-            this.checkBox3.Size = new System.Drawing.Size(68, 17);
+            this.checkBox3.Size = new System.Drawing.Size(74, 19);
             this.checkBox3.TabIndex = 13;
             this.checkBox3.Text = "Low Res";
             this.checkBox3.UseVisualStyleBackColor = true;
@@ -133,9 +140,10 @@
             // checkBox4
             // 
             this.checkBox4.AutoSize = true;
-            this.checkBox4.Location = new System.Drawing.Point(405, 192);
+            this.checkBox4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.checkBox4.Location = new System.Drawing.Point(424, 205);
             this.checkBox4.Name = "checkBox4";
-            this.checkBox4.Size = new System.Drawing.Size(70, 17);
+            this.checkBox4.Size = new System.Drawing.Size(77, 19);
             this.checkBox4.TabIndex = 14;
             this.checkBox4.Text = "High Res";
             this.checkBox4.UseVisualStyleBackColor = true;
@@ -145,15 +153,17 @@
             // cloudTextureLabel
             // 
             this.cloudTextureLabel.AutoSize = true;
-            this.cloudTextureLabel.Location = new System.Drawing.Point(206, 169);
+            this.cloudTextureLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cloudTextureLabel.Location = new System.Drawing.Point(206, 181);
             this.cloudTextureLabel.Name = "cloudTextureLabel";
-            this.cloudTextureLabel.Size = new System.Drawing.Size(176, 13);
+            this.cloudTextureLabel.Size = new System.Drawing.Size(202, 15);
             this.cloudTextureLabel.TabIndex = 15;
             this.cloudTextureLabel.Text = "Choose the cloud texture resolution:";
             this.cloudTextureLabel.Visible = false;
             // 
             // applyButton
             // 
+            this.applyButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.applyButton.Location = new System.Drawing.Point(204, 466);
             this.applyButton.Name = "applyButton";
             this.applyButton.Size = new System.Drawing.Size(75, 23);
@@ -164,6 +174,7 @@
             // 
             // cancelButton
             // 
+            this.cancelButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cancelButton.Location = new System.Drawing.Point(347, 466);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(75, 23);
@@ -175,6 +186,7 @@
             // 
             // exitButton
             // 
+            this.exitButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.exitButton.Location = new System.Drawing.Point(479, 466);
             this.exitButton.Name = "exitButton";
             this.exitButton.Size = new System.Drawing.Size(122, 23);
@@ -195,7 +207,7 @@
             // pictureBoxRightPic
             // 
             this.pictureBoxRightPic.Image = global::GPPInstaller.Properties.Resources.screenshot2_right;
-            this.pictureBoxRightPic.Location = new System.Drawing.Point(631, 1);
+            this.pictureBoxRightPic.Location = new System.Drawing.Point(686, 1);
             this.pictureBoxRightPic.Name = "pictureBoxRightPic";
             this.pictureBoxRightPic.Size = new System.Drawing.Size(145, 563);
             this.pictureBoxRightPic.TabIndex = 20;
@@ -204,18 +216,31 @@
             // pictureBox1
             // 
             this.pictureBox1.Image = global::GPPInstaller.Properties.Resources.checkmark_green;
-            this.pictureBox1.Location = new System.Drawing.Point(347, 323);
+            this.pictureBox1.Location = new System.Drawing.Point(377, 280);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(45, 45);
             this.pictureBox1.TabIndex = 18;
             this.pictureBox1.TabStop = false;
             this.pictureBox1.Visible = false;
             // 
+            // restartButton
+            // 
+            this.restartButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.restartButton.Location = new System.Drawing.Point(275, 466);
+            this.restartButton.Name = "restartButton";
+            this.restartButton.Size = new System.Drawing.Size(75, 23);
+            this.restartButton.TabIndex = 22;
+            this.restartButton.Text = "Restart";
+            this.restartButton.UseVisualStyleBackColor = true;
+            this.restartButton.Visible = false;
+            this.restartButton.Click += new System.EventHandler(this.restartButton_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(777, 565);
+            this.ClientSize = new System.Drawing.Size(831, 565);
+            this.Controls.Add(this.restartButton);
             this.Controls.Add(this.pictureBoxLeftPic);
             this.Controls.Add(this.pictureBoxRightPic);
             this.Controls.Add(this.exitButton);
@@ -263,6 +288,7 @@
         private System.Windows.Forms.Button exitButton;
         private System.Windows.Forms.PictureBox pictureBoxRightPic;
         private System.Windows.Forms.PictureBox pictureBoxLeftPic;
+        private System.Windows.Forms.Button restartButton;
     }
 }
 

@@ -3,14 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 
 namespace GPPInstaller
 {
     static class GlobalInfo
     {
+        // NOTE: These are all valid as of GPP v1.5.3
+
         // Compatable KSP Versions
-        public static string[] compatableKSPVersions = { "1.3.1" };
-        public static string [] compatableKSPEXEs = { "64" };
+        public static string compatableKSPVersion = "1.3.1";
+        public static string compatableKSPEXE = "64";
 
         public static int kopericusIndex = 0;
         public static int GPPIndex = 1;
@@ -43,11 +46,28 @@ namespace GPPInstaller
         public static string modManagerInstallPath = @".\GameData\ModuleManager.2.8.1.dll";
         public static string gppInstallPath = @".\GameData\GPP";
         public static string gppTexturesInstallPath = @".\GameData\GPP\GPP_Textures";
-
         public static string eveInstallPath = @".\GameData\EnvironmentalVisualEnhancements";
         public static string scattererInstallPath = @".\GameData\scatterer";
         public static string doeInstallPath = @".\GameData\DistantObject";
         public static string cloudsLowResInstallPath = @".\GameData\GPP\GPP_Clouds\Configs\GPPClouds_LowRes.cfg";
         public static string cloudsHighResInstallPath = @".\GameData\GPP\GPP_Clouds\Configs\GPPClouds_HighRes.cfg";
+
+        // Number of files in dir
+        public static int kopernicusNumOfFiles = 217;
+        public static int gppNumOfFiles = 1258;
+        public static int gppTexturesNumOfFiles = 126;
+        public static int eveNumOfFiles = 14;
+        public static int scattererNumOfFiles = 35;
+        public static int doeNumOfFiles = 16;
+
+
+        [DllImport("wininet.dll")]
+        private extern static bool InternetGetConnectedState(out int description, int reservedValue);
+
+        public static bool IsConnectedToInternet()
+        {
+            int description;
+            return InternetGetConnectedState(out description, 0);
+        }
     }
 }
