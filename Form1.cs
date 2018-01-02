@@ -284,7 +284,7 @@ namespace GPPInstaller
 
         public void DisplayYellowWarning()
         {
-            pictureBox1.Image = Properties.Resources.warning;
+            pictureBox1.Image = Properties.Resources.warning2;
             pictureBox1.Refresh();
             pictureBox1.Visible = true;
         }
@@ -295,22 +295,5 @@ namespace GPPInstaller
             Environment.Exit(0);
         }
 
-        private void NumberOfFilesInDir(string dirPath)
-        {
-            DirectoryInfo dir = new DirectoryInfo(dirPath);
-
-            FileInfo[] files = dir.GetFiles();
-            foreach (FileInfo file in files)
-            {
-                numOfFilesInDir++;
-            }
-
-            DirectoryInfo[] dirs = dir.GetDirectories();
-
-            foreach (DirectoryInfo subDir in dirs)
-            {
-                NumberOfFilesInDir(subDir.FullName);
-            }
-        }
     }
 }

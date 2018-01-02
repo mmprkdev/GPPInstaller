@@ -13,9 +13,8 @@ using System.IO.Compression;
 using System.Net;
 using System.Diagnostics;
 
-
-// TODO: Make a good error checking system. Validate
-// file and directorys by checking for the number of files.
+// TODO: Make the code for updating the checkboxes and 
+// other stuff more dynamic (use a loop).
 
 // TODO: Maybe add a few extra "utility" mods
 // (Kerbal Engineer, Kerbal Alarm Clock, etc)
@@ -158,6 +157,18 @@ namespace GPPInstaller
                 State_Installed = false,
                 ActionToTake = ""
             });
+
+            //modList.Add(new Mod()
+            //{
+            //    ModPackName = "Utility",
+            //    ModName = "KerbalEngineer",
+            //    DownloadAddress = "https://github.com/CYBUTEK/KerbalEngineer/releases/download/1.1.3.0/KerbalEngineer-1.1.3.0.zip",
+            //    ArchiveFileName = "KerbalEngineer-1.1.3.0.zip",
+            //    State_Downloaded = false,
+            //    State_Extracted = false,
+            //    State_Installed = false,
+            //    ActionToTake = ""
+            //});
 
             RefreshModState();
         }
@@ -414,6 +425,18 @@ namespace GPPInstaller
             }
         }
 
+        public void CancelProcess()
+        {
+            modIndex = 0;
+            form1.RemoveCancelButton();
+            form1.EnableExitButton();
+            form1.RemoveProgressBar();
+            form1.EnableApplyButton();
+            form1.EnableCheckBoxes();
+            RefreshModState();
+            form1.RefreshCheckBoxes();
+        }
+
         public void ResetActionsToTake()
         {
             foreach (Mod mod in modList)
@@ -436,15 +459,14 @@ namespace GPPInstaller
                     string downloadDest = @".\GPPInstaller\" + fileName;
 
                     Uri uri = new Uri(downloadAddress);
-                    // !GlobalInfo.IsConnectedToInternet()
-                    if (true)
-                    {
-                        // TODO: this works but I need to handle it better
-                        //form1.DisplayError("Error: No internet connection was detected.");
-                        Errors error = new Errors(form1);
-                        error.NoInternetConnectionError();
 
+                    // TODO: test for the Invalid data exception, disconnect internet
+                    if (!GlobalInfo.IsConnectedToInternet())
+                    {
+                        ErrorNoInternetConnection();
                         webclient.CancelAsync();
+                        CancelProcess();
+
                         return;
                     }
 
@@ -478,17 +500,9 @@ namespace GPPInstaller
             {
                 form1.ProgressLabelUpdate("Installation canceled.");
                 form1.DisplayRedCheck();
-
                 DeleteAllZips(@".\GPPInstaller");
-                modIndex = 0;
-                form1.RemoveCancelButton();
-                form1.EnableExitButton();
-                form1.RemoveProgressBar();
-                form1.EnableApplyButton();
-                form1.EnableCheckBoxes();
 
-                RefreshModState();
-                form1.RefreshCheckBoxes();
+                CancelProcess();
 
                 return;
             }
@@ -530,6 +544,8 @@ namespace GPPInstaller
                     modList[modIndex].State_Downloaded == true &&
                     modList[modIndex].ArchiveFileName != "")
                 {
+
+
                     string fileName = modList[modIndex].ArchiveFileName;
                     int fileNameLength = fileName.Length;
                     string dirName = fileName.Remove((fileNameLength - 4), 4);
@@ -554,7 +570,16 @@ namespace GPPInstaller
                             // background worker DoWork event, insted of modifying existing variables.
 
                             var args = new Tuple<string, string>(zipFile, destDir);
-                            workerExtract.RunWorkerAsync(args);
+
+                            try
+                            {
+                                workerExtract.RunWorkerAsync(args);
+                            }
+                            catch (InvalidDataException exception)
+                            {
+                                ErrorInvalidData();
+                                return;
+                            }
                         }
                     }
                 }
@@ -994,6 +1019,23 @@ namespace GPPInstaller
             {
                 NumberOfFilesInDir(subDir.FullName);
             }
+        }
+
+        public void ErrorNoInternetConnection()
+        {
+            form1.ProgressLabelUpdate("Error: No internet connection was detected. An internet connection is\n" +
+                " required to download the mod files.");
+            form1.DisplayYellowWarning();
+            form1.RemoveProgressBar();
+            form1.RemoveCancelButton();
+        }
+
+        public void ErrorInvalidData()
+        {
+            form1.ProgressLabelUpdate("Error: Download was incomplete.");
+            form1.DisplayYellowWarning();
+            form1.RemoveProgressBar();
+            form1.RemoveCancelButton();
         }
     }
 

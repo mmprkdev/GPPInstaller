@@ -41,10 +41,10 @@
             this.applyButton = new System.Windows.Forms.Button();
             this.cancelButton = new System.Windows.Forms.Button();
             this.exitButton = new System.Windows.Forms.Button();
+            this.restartButton = new System.Windows.Forms.Button();
             this.pictureBoxLeftPic = new System.Windows.Forms.PictureBox();
             this.pictureBoxRightPic = new System.Windows.Forms.PictureBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.restartButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLeftPic)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxRightPic)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -195,6 +195,18 @@
             this.exitButton.UseVisualStyleBackColor = true;
             this.exitButton.Click += new System.EventHandler(this.exitButton_Click);
             // 
+            // restartButton
+            // 
+            this.restartButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.restartButton.Location = new System.Drawing.Point(275, 466);
+            this.restartButton.Name = "restartButton";
+            this.restartButton.Size = new System.Drawing.Size(75, 23);
+            this.restartButton.TabIndex = 22;
+            this.restartButton.Text = "Restart";
+            this.restartButton.UseVisualStyleBackColor = true;
+            this.restartButton.Visible = false;
+            this.restartButton.Click += new System.EventHandler(this.restartButton_Click);
+            // 
             // pictureBoxLeftPic
             // 
             this.pictureBoxLeftPic.Image = global::GPPInstaller.Properties.Resources.screenshot2_left;
@@ -222,18 +234,6 @@
             this.pictureBox1.TabIndex = 18;
             this.pictureBox1.TabStop = false;
             this.pictureBox1.Visible = false;
-            // 
-            // restartButton
-            // 
-            this.restartButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.restartButton.Location = new System.Drawing.Point(275, 466);
-            this.restartButton.Name = "restartButton";
-            this.restartButton.Size = new System.Drawing.Size(75, 23);
-            this.restartButton.TabIndex = 22;
-            this.restartButton.Text = "Restart";
-            this.restartButton.UseVisualStyleBackColor = true;
-            this.restartButton.Visible = false;
-            this.restartButton.Click += new System.EventHandler(this.restartButton_Click);
             // 
             // Form1
             // 
