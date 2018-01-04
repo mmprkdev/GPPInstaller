@@ -13,6 +13,11 @@ using System.IO.Compression;
 using System.Net;
 using System.Diagnostics;
 
+// BUG: The Distant object extract dir is moved to 
+// GameData for some reason.
+
+// BUG: zipfiles get moved into GameData for some reason (maybe???)
+
 // TODO: Make the code for updating the checkboxes and 
 // other stuff more dynamic (use a loop).
 
@@ -64,10 +69,16 @@ namespace GPPInstaller
         {
             modList.Add(new Mod()
             {
-                ModPackName = "Core",
+                ModType = "Core",
                 ModName = "Kopernicus",
                 DownloadAddress = "https://github.com/Kopernicus/Kopernicus/releases/download/release-1.3.1-2/Kopernicus-1.3.1-2.zip",
                 ArchiveFileName = "Kopernicus-1.3.1-2.zip",
+                ArchiveFilePath = @".\GPPInstaller",
+                ExtractedDirName = "Kopernicus-1.3.1-2",
+                ExtractedPath = @".\GPPInstaller",
+                InstallDirName = "Kopernicus",
+                InstallSourcePath = @".\GPPInstaller\Kopernicus-1.3.1-2\GameData\",
+                InstallDestPath = @".\GameData",
                 State_Downloaded = false,
                 State_Extracted = false,
                 State_Installed = false,
@@ -76,10 +87,16 @@ namespace GPPInstaller
 
             modList.Add(new Mod()
             {
-                ModPackName = "Core",
+                ModType = "Core",
                 ModName = "GPP",
                 DownloadAddress = "https://github.com/Galileo88/Galileos-Planet-Pack/releases/download/1.5.88/Galileos.Planet.Pack.1.5.88.zip",
                 ArchiveFileName = "Galileos.Planet.Pack.1.5.88.zip",
+                ArchiveFilePath = @".\GPPInstaller",
+                ExtractedDirName = "Galileos.Planet.Pack.1.5.88",
+                ExtractedPath = @".\GPPInstaller",
+                InstallDirName = "GPP",
+                InstallSourcePath = @".\GPPInstaller\Galileos.Planet.Pack.1.5.88\GameData",
+                InstallDestPath = @".\GameData",
                 State_Downloaded = false,
                 State_Extracted = false,
                 State_Installed = false,
@@ -88,10 +105,16 @@ namespace GPPInstaller
 
             modList.Add(new Mod()
             {
-                ModPackName = "Core",
+                ModType = "Core",
                 ModName = "GPP_Textures",
                 DownloadAddress = "https://github.com/Galileo88/Galileos-Planet-Pack/releases/download/3.0.0/GPP_Textures-3.0.0.zip",
                 ArchiveFileName = "GPP_Textures-3.0.0.zip",
+                ArchiveFilePath = @".\GPPInstaller",
+                ExtractedDirName = "GPP_Textures-3.0.0",
+                ExtractedPath = @".\GPPInstaller",
+                InstallDirName = "GPP_Textures",
+                InstallSourcePath = @".\GPPInstaller\GPP_Textures-3.0.0\GameData\GPP",
+                InstallDestPath = @".\GameData\GPP",
                 State_Downloaded = false,
                 State_Extracted = false,
                 State_Installed = false,
@@ -100,10 +123,16 @@ namespace GPPInstaller
 
             modList.Add(new Mod()
             {
-                ModPackName = "Visuals",
+                ModType = "Visuals",
                 ModName = "EVE",
                 DownloadAddress = "https://github.com/WazWaz/EnvironmentalVisualEnhancements/releases/download/EVE-1.2.2-1/EnvironmentalVisualEnhancements-1.2.2.1.zip",
                 ArchiveFileName = "EnvironmentalVisualEnhancements-1.2.2.1.zip",
+                ArchiveFilePath = @".\GPPInstaller",
+                ExtractedDirName = "EnvironmentalVisualEnhancements-1.2.2.1",
+                ExtractedPath = @".\GPPInstaller",
+                InstallDirName = "EnvironmentalVisualEnhancements",
+                InstallSourcePath = @".\GPPInstaller\EnvironmentalVisualEnhancements-1.2.2.1\GameData",
+                InstallDestPath = @".\GameData",
                 State_Downloaded = false,
                 State_Extracted = false,
                 State_Installed = false,
@@ -112,10 +141,16 @@ namespace GPPInstaller
 
             modList.Add(new Mod()
             {
-                ModPackName = "Visuals",
+                ModType = "Visuals",
                 ModName = "Scatterer",
                 DownloadAddress = "https://spacedock.info/mod/141/scatterer/download/0.0320b",
                 ArchiveFileName = "scatterer-0.0320b.zip",
+                ArchiveFilePath = @".\GPPInstaller",
+                ExtractedDirName = "scatterer-0.0320b",
+                ExtractedPath = @".\GPPInstaller",
+                InstallDirName = "scatterer",
+                InstallSourcePath = @".\GPPInstaller\scatterer-0.0320b\GameData",
+                InstallDestPath = @".\GameData",
                 State_Downloaded = false,
                 State_Extracted = false,
                 State_Installed = false,
@@ -124,10 +159,19 @@ namespace GPPInstaller
 
             modList.Add(new Mod()
             {
-                ModPackName = "Visuals",
+                ModType = "Visuals",
                 ModName = "DistantObjectEnhancement",
                 DownloadAddress = "https://github.com/MOARdV/DistantObject/releases/download/v1.9.1/DistantObject_1.9.1.zip",
                 ArchiveFileName = "DistantObject_1.9.1.zip",
+                ArchiveFilePath = @".\GPPInstaller",
+
+                ExtractedDirName = "DistantObject_1.9.1",
+                ExtractedPath = @".\GPPInstaller",
+
+                InstallDirName = "DistantObject",
+                InstallSourcePath = @".\GPPInstaller\DistantObject_1.9.1\GameData",
+                InstallDestPath = @".\GameData",
+
                 State_Downloaded = false,
                 State_Extracted = false,
                 State_Installed = false,
@@ -136,10 +180,16 @@ namespace GPPInstaller
 
             modList.Add(new Mod()
             {
-                ModPackName = "Clouds",
+                ModType = "Clouds",
                 ModName = "CloudsLowRes",
                 DownloadAddress = "",
-                ArchiveFileName = "",
+                ArchiveFileName = "Galileos.Planet.Pack.1.5.88.zip",
+                ArchiveFilePath = @".\GPPInstaller",
+                ExtractedDirName = "GPP_Clouds",
+                ExtractedPath = @".\GPPInstaller\Galileos.Planet.Pack.1.5.88\Optional Mods\GPP_Clouds\Low-res Clouds_GameData inside\GameData\GPP",
+                InstallDirName = "GPP_Clouds",
+                InstallSourcePath = @".\GPPInstaller\Galileos.Planet.Pack.1.5.88\Optional Mods\GPP_Clouds\Low-res Clouds_GameData inside\GameData\GPP",
+                InstallDestPath = @".\GameData\GPP",
                 State_Downloaded = false,
                 State_Extracted = false,
                 State_Installed = false,
@@ -148,10 +198,19 @@ namespace GPPInstaller
 
             modList.Add(new Mod()
             {
-                ModPackName = "Clouds",
+                ModType = "Clouds",
                 ModName = "CloudsHighRes",
                 DownloadAddress = "",
-                ArchiveFileName = "",
+                ArchiveFileName = "Galileos.Planet.Pack.1.5.88.zip",
+                ArchiveFilePath = @".\GPPInstaller",
+
+                ExtractedDirName = "GPP_Clouds",
+                ExtractedPath = @".\GPPInstaller\Galileos.Planet.Pack.1.5.88\Optional Mods\GPP_Clouds\High-res Clouds_GameData inside\GameData\GPP",
+
+                InstallDirName = "GPP_Clouds",
+                InstallSourcePath = @".\GPPInstaller\Galileos.Planet.Pack.1.5.88\Optional Mods\GPP_Clouds\High-res Clouds_GameData inside\GameData\GPP",
+                InstallDestPath = @".\GameData\GPP",
+
                 State_Downloaded = false,
                 State_Extracted = false,
                 State_Installed = false,
@@ -175,154 +234,67 @@ namespace GPPInstaller
 
         public void RefreshModState()
         {
-            // TODO: Maybe shorten this method by using a for loop
-
-            // NOTE: Check if downloaded into .\GPPInstaller
-            if (File.Exists(GlobalInfo.kopernicusZipPath))
+            // downloaded
+            foreach (Mod mod in modList)
             {
-                modList[GlobalInfo.kopericusIndex].State_Downloaded = true;
-            }
-            else modList[GlobalInfo.kopericusIndex].State_Downloaded = false;
-
-            if (File.Exists(GlobalInfo.gppZipPath))
-            {
-                modList[GlobalInfo.GPPIndex].State_Downloaded = true;
-            }
-            else modList[GlobalInfo.GPPIndex].State_Downloaded = false;
-
-            if (File.Exists(GlobalInfo.gppTexturesZipPath))
-            {
-                modList[GlobalInfo.GPPTexturesIndex].State_Downloaded = true;
-            }
-            else modList[GlobalInfo.GPPTexturesIndex].State_Downloaded = false;
-
-            if (File.Exists(GlobalInfo.eveZipPath))
-            {
-                modList[GlobalInfo.EVEIndex].State_Downloaded = true;
-            }
-            else modList[GlobalInfo.EVEIndex].State_Downloaded = false;
-
-            if (File.Exists(GlobalInfo.scattererZipPath))
-            {
-                modList[GlobalInfo.scattererIndex].State_Downloaded = true;
-            }
-            else modList[GlobalInfo.scattererIndex].State_Downloaded = false;
-
-            if (File.Exists(GlobalInfo.doeZipPath))
-            {
-                modList[GlobalInfo.doeIndex].State_Downloaded = true;
-            }
-            else modList[GlobalInfo.doeIndex].State_Downloaded = false;
-
-            if (modList[GlobalInfo.GPPIndex].State_Downloaded == true)
-            {
-                modList[GlobalInfo.cloudsLowResIndex].State_Downloaded = true;
-                modList[GlobalInfo.cloudsHighResIndex].State_Downloaded = true;
-            }
-            else
-            {
-                modList[GlobalInfo.cloudsLowResIndex].State_Downloaded = false;
-                modList[GlobalInfo.cloudsHighResIndex].State_Downloaded = false;
+                if (File.Exists(mod.ArchiveFilePath + @"\" + mod.ArchiveFileName))
+                {
+                    mod.State_Downloaded = true;
+                }
+                else
+                {
+                    mod.State_Downloaded = false;
+                }
             }
 
-            // NOTE: Check if extracted into .\GPPInstaller
-            if (Directory.Exists(GlobalInfo.kopernicusExtractPath))
+            // extracted
+            foreach (Mod mod in modList)
             {
-                modList[GlobalInfo.kopericusIndex].State_Extracted = true;
-            }
-            else modList[GlobalInfo.kopericusIndex].State_Extracted = false;
-
-            if (Directory.Exists(GlobalInfo.gppExtractPath))
-            {
-                modList[GlobalInfo.GPPIndex].State_Extracted = true;
-            }
-            else modList[GlobalInfo.GPPIndex].State_Extracted = false;
-
-            if (Directory.Exists(GlobalInfo.gppTexturesExtractPath))
-            {
-                modList[GlobalInfo.GPPTexturesIndex].State_Extracted = true;
-            }
-            else modList[GlobalInfo.GPPTexturesIndex].State_Extracted = false;
-
-            if (Directory.Exists(GlobalInfo.eveExtractPath))
-            {
-                modList[GlobalInfo.EVEIndex].State_Extracted = true;
-            }
-            else modList[GlobalInfo.EVEIndex].State_Extracted = false;
-
-            if (Directory.Exists(GlobalInfo.scattererExtractPath))
-            {
-                modList[GlobalInfo.scattererIndex].State_Extracted = true;
-            }
-            else modList[GlobalInfo.scattererIndex].State_Extracted = false;
-
-            if (Directory.Exists(GlobalInfo.doeExtractPath))
-            {
-                modList[GlobalInfo.doeIndex].State_Extracted = true;
-            }
-            else modList[GlobalInfo.doeIndex].State_Extracted = false;
-
-            if (modList[GlobalInfo.GPPIndex].State_Extracted == true)
-            {
-                modList[GlobalInfo.cloudsLowResIndex].State_Extracted = true;
-                modList[GlobalInfo.cloudsHighResIndex].State_Extracted = true;
-            }
-            else
-            {
-                modList[GlobalInfo.cloudsLowResIndex].State_Extracted = false;
-                modList[GlobalInfo.cloudsHighResIndex].State_Extracted = false;
+                if (Directory.Exists(mod.ExtractedPath + @"\" + mod.ExtractedDirName))
+                {
+                    mod.State_Extracted = true;
+                }
+                else
+                {
+                    mod.State_Extracted = false;
+                }
             }
 
-            // NOTE: Check if installed into .\GameData
-            if (Directory.Exists(GlobalInfo.kopernicusInstallPath) &&
-                Directory.Exists(GlobalInfo.modularFIInstallPath) &&
-                File.Exists(GlobalInfo.modManagerInstallPath))
+            // installed
+            foreach (Mod mod in modList)
             {
-                modList[GlobalInfo.kopericusIndex].State_Installed = true;
-            }
-            else modList[GlobalInfo.kopericusIndex].State_Installed = false;
+                if (mod.ModType == "Clouds")
+                {
+                    if (mod.ModName == "CloudsLowRes")
+                    {
+                        if (File.Exists(@".\GameData\GPP\GPP_Clouds\Configs\GPPClouds_LowRes.cfg"))
+                        {
+                            mod.State_Installed = true;
+                        }
+                        else mod.State_Installed = false;
+                    }
 
-            if (Directory.Exists(GlobalInfo.gppInstallPath))
-            {
-                modList[GlobalInfo.GPPIndex].State_Installed = true;
+                    if (mod.ModName == "CloudsHighRes")
+                    {
+                        if (File.Exists(@".\GameData\GPP\GPP_Clouds\Configs\GPPClouds_HighRes.cfg"))
+                        {
+                            mod.State_Installed = true;
+                        }
+                        else mod.State_Installed = false;
+                    }
+                }
+                else
+                {
+                    if (Directory.Exists(mod.InstallDestPath + @"\" + mod.InstallDirName))
+                    {
+                        mod.State_Installed = true;
+                    }
+                    else
+                    {
+                        mod.State_Installed = false;
+                    }
+                }
             }
-            else modList[GlobalInfo.GPPIndex].State_Installed = false;
-
-            if (Directory.Exists(GlobalInfo.gppTexturesInstallPath))
-            {
-                modList[GlobalInfo.GPPTexturesIndex].State_Installed = true;
-            }
-            else modList[GlobalInfo.GPPTexturesIndex].State_Installed = false;
-
-            if (Directory.Exists(GlobalInfo.eveInstallPath))
-            {
-                modList[GlobalInfo.EVEIndex].State_Installed = true;
-            }
-            else modList[GlobalInfo.EVEIndex].State_Installed = false;
-
-            if (Directory.Exists(GlobalInfo.scattererInstallPath))
-            {
-                modList[GlobalInfo.scattererIndex].State_Installed = true;
-            }
-            else modList[GlobalInfo.scattererIndex].State_Installed = false;
-
-            if (Directory.Exists(GlobalInfo.doeInstallPath))
-            {
-                modList[GlobalInfo.doeIndex].State_Installed = true;
-            }
-            else modList[GlobalInfo.doeIndex].State_Installed = false;
-
-            if (File.Exists(GlobalInfo.cloudsLowResInstallPath))
-            {
-                modList[GlobalInfo.cloudsLowResIndex].State_Installed = true;
-            }
-            else modList[GlobalInfo.cloudsLowResIndex].State_Installed = false;
-
-            if (File.Exists(GlobalInfo.cloudsHighResInstallPath))
-            {
-                modList[GlobalInfo.cloudsHighResIndex].State_Installed = true;
-            }
-            else modList[GlobalInfo.cloudsHighResIndex].State_Installed = false;
         }
 
         public void SetCheckBoxes(
@@ -331,33 +303,49 @@ namespace GPPInstaller
             CheckBox cloudsLowResCheckBox,
             CheckBox cloudsHighResCheckBox)
         {
-            if (modList[GlobalInfo.kopericusIndex].State_Installed == true &&
-                modList[GlobalInfo.GPPIndex].State_Installed == true &&
-                modList[GlobalInfo.GPPTexturesIndex].State_Installed == true)
+            foreach (Mod mod in modList)
             {
-                coreCheckBox.Checked = true;
-            }
-            else coreCheckBox.Checked = false;
+                if (mod.ModType == "Core")
+                {
+                    if (mod.State_Installed == true)
+                    {
+                        coreCheckBox.Checked = true;
+                    }
+                    else coreCheckBox.Checked = false;
+                }
 
-            if (modList[GlobalInfo.EVEIndex].State_Installed == true &&
-                modList[GlobalInfo.scattererIndex].State_Installed == true &&
-                modList[GlobalInfo.doeIndex].State_Installed == true)
-            {
-                visualsCheckBox.Checked = true;
-            }
-            else visualsCheckBox.Checked = false;
+                if (mod.ModType == "Visuals") 
+                {
+                    if (mod.State_Installed == true)
+                    {
+                        visualsCheckBox.Checked = true;
+                    }
+                    else
+                    {
+                        visualsCheckBox.Checked = false;
+                        cloudsHighResCheckBox.Checked = false;
+                        cloudsLowResCheckBox.Checked = false;
+                    } 
+                }
 
-            if (modList[GlobalInfo.cloudsLowResIndex].State_Installed == true)
-            {
-                cloudsLowResCheckBox.Checked = true;
+                if (mod.ModName == "CloudsLowRes")
+                {
+                    if (mod.State_Installed == true)
+                    {
+                        cloudsLowResCheckBox.Checked = true;
+                    }
+                    else cloudsLowResCheckBox.Checked = false;
+                }
+                
+                if (mod.ModName == "CloudsHighRes")
+                {
+                    if (mod.State_Installed == true)
+                    {
+                        cloudsHighResCheckBox.Checked = true;
+                    }
+                    else cloudsHighResCheckBox.Checked = false;
+                }
             }
-            else cloudsLowResCheckBox.Checked = false;
-
-            if (modList[GlobalInfo.cloudsHighResIndex].State_Installed == true)
-            {
-                cloudsHighResCheckBox.Checked = true;
-            }
-            else cloudsHighResCheckBox.Checked = false;
         }
 
 
@@ -368,16 +356,16 @@ namespace GPPInstaller
             CheckBox cloudsHighResCheckBox)
         {
             foreach (Mod mod in modList)
-            {
+            { 
                 if (mod.State_Installed == false)
                 {
-                    if (mod.ModPackName == "Core" &&
+                    if (mod.ModType == "Core" &&
                     coreCheckBox.Checked == true)
                     {
                         mod.ActionToTake = "Install";
                     }
 
-                    if (mod.ModPackName == "Visuals" &&
+                    if (mod.ModType == "Visuals" &&
                              visualsCheckBox.Checked)
                     {
                         mod.ActionToTake = "Install";
@@ -398,13 +386,13 @@ namespace GPPInstaller
 
                 if (mod.State_Installed == true)
                 {
-                    if (mod.ModPackName == "Core" &&
+                    if (mod.ModType == "Core" &&
                         coreCheckBox.Checked == false)
                     {
                         mod.ActionToTake = "Uninstall";
                     }
 
-                    if (mod.ModPackName == "Visuals" &&
+                    if (mod.ModType == "Visuals" &&
                         visualsCheckBox.Checked == false)
                     {
                         mod.ActionToTake = "Uninstall";
@@ -460,7 +448,6 @@ namespace GPPInstaller
 
                     Uri uri = new Uri(downloadAddress);
 
-                    // TODO: test for the Invalid data exception, disconnect internet
                     if (!GlobalInfo.IsConnectedToInternet())
                     {
                         ErrorNoInternetConnection();
@@ -657,64 +644,21 @@ namespace GPPInstaller
             workerExtract.CancelAsync();
         }
 
+        // TODO: Fix bug where Installation process stalls
         private void InstallMod()
         {
             if (modIndex < modList.Count)
             {
-
                 if (modList[modIndex].State_Installed == false &&
                     modList[modIndex].ActionToTake == "Install")
                 {
-                    if (modList[modIndex].ModPackName != "Clouds")
-                    {
-                        string sourceDirName;
-                        string destDirName;
+                    string sourceDirName = modList[modIndex].InstallSourcePath;
+                    string destDirName = modList[modIndex].InstallDestPath;
 
-                        string fileName = modList[modIndex].ArchiveFileName;
-                        int fileNameLength = fileName.Length;
-                        string dirName = fileName.Remove((fileNameLength - 4), 4);
-                        if (modList[modIndex].ModName == "GPP_Textures")
-                        {
-                            sourceDirName = @".\GPPInstaller\" + dirName + @"\GameData\GPP";
-                            destDirName = @".\GameData\GPP";
+                    if (Directory.Exists(@".\GameData\GPP\GPP_Clouds")) Directory.Delete(@".\GameData\GPP\GPP_Clouds", true);
 
-                            var args = new Tuple<string, string, bool>(sourceDirName, destDirName, true);
-                            workerInstall.RunWorkerAsync(args);
-                        }
-                        else
-                        {
-                            sourceDirName = @".\GPPInstaller\" + dirName + @"\GameData";
-                            destDirName = @".\GameData";
-
-                            var args = new Tuple<string, string, bool>(sourceDirName, destDirName, true);
-                            workerInstall.RunWorkerAsync(args);
-                        }
-                    }
-                    else
-                    {
-                        string cloudDirSource;
-                        string cloudDirDest;
-                        if (modList[modIndex].ModName == "CloudsLowRes")
-                        {
-                            if (Directory.Exists(@".\GameData\GPP\GPP_Clouds")) Directory.Delete(@".\GameData\GPP\GPP_Clouds", true);
-
-                            cloudDirSource = @".\GPPInstaller\Galileos.Planet.Pack.1.5.88\Optional Mods\GPP_Clouds\Low-res Clouds_GameData inside\GameData\GPP";
-                            cloudDirDest = @".\GameData\GPP";
-
-                            var args = new Tuple<string, string, bool>(cloudDirSource, cloudDirDest, true);
-                            workerInstall.RunWorkerAsync(args);
-                        }
-                        else if (modList[modIndex].ModName == "CloudsHighRes")
-                        {
-                            if (Directory.Exists(@".\GameData\GPP\GPP_Clouds")) Directory.Delete(@".\GameData\GPP\GPP_Clouds", true);
-
-                            cloudDirSource = @".\GPPInstaller\Galileos.Planet.Pack.1.5.88\Optional Mods\GPP_Clouds\High-res Clouds_GameData inside\GameData\GPP";
-                            cloudDirDest = @".\GameData\GPP";
-
-                            var args = new Tuple<string, string, bool>(cloudDirSource, cloudDirDest, true);
-                            workerInstall.RunWorkerAsync(args);
-                        }
-                    }
+                    var args = new Tuple<string, string, bool>(sourceDirName, destDirName, true);
+                    workerInstall.RunWorkerAsync(args);
                 }
                 else
                 {
@@ -735,7 +679,9 @@ namespace GPPInstaller
                 form1.EnableApplyButton();
                 form1.ProgressLabelUpdate("All changes applied successfully.");
             }
+
             
+
         }
 
         // NOTE: Installation cancelation is set up to work, but it the CancelationPending
@@ -978,7 +924,7 @@ namespace GPPInstaller
                 if (mod.State_Installed == false &&
                     mod.ActionToTake == "Install")
                 {
-                    if (mod.ModPackName != "Clouds")
+                    if (mod.ModType != "Clouds")
                     {
                         result++;
                     }
@@ -1047,10 +993,16 @@ namespace GPPInstaller
         //         ""                   : Initial default state 
         // InstallTheMod:   true : install the mod
         //                  false: uninstall the mod
-        public string ModPackName { get; set; }
+        public string ModType { get; set; }
         public string ModName { get; set; }
         public string DownloadAddress { get; set; }
+        public string ArchiveFilePath { get; set; }
         public string ArchiveFileName { get; set; }
+        public string ExtractedPath { get; set; }
+        public string ExtractedDirName { get; set; }
+        public string InstallSourcePath { get; set; }
+        public string InstallDestPath { get; set; }
+        public string InstallDirName { get; set; }
         public bool State_Downloaded { get; set; }
         public bool State_Extracted { get; set; }
         public bool State_Installed { get; set; }

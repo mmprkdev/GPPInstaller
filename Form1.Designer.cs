@@ -261,7 +261,7 @@
             this.MaximizeBox = false;
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "GPP Installer (GPP v1.5.3) (KSP v1.3.1)";
+            this.Text = "GPP Installer (GPP v1.5.88) (KSP v1.3.1)";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLeftPic)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxRightPic)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();

@@ -144,8 +144,6 @@ namespace GPPInstaller
         {
             // CloudsLowRes checkBox
 
-            applyButton.Enabled = true;
-
             if (checkBox3.Checked) checkBox4.Checked = false;
 
         }
