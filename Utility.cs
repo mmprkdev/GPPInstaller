@@ -13,10 +13,8 @@ using System.IO.Compression;
 using System.Net;
 using System.Diagnostics;
 
-// BUG: The Distant object extract dir is moved to 
-// GameData for some reason.
-
-// BUG: zipfiles get moved into GameData for some reason (maybe???)
+// BUG: In a full download process, kopericus extract file gets
+// created but is empty, gpp is never made
 
 // TODO: Make the code for updating the checkboxes and 
 // other stuff more dynamic (use a loop).
@@ -164,10 +162,8 @@ namespace GPPInstaller
                 DownloadAddress = "https://github.com/MOARdV/DistantObject/releases/download/v1.9.1/DistantObject_1.9.1.zip",
                 ArchiveFileName = "DistantObject_1.9.1.zip",
                 ArchiveFilePath = @".\GPPInstaller",
-
                 ExtractedDirName = "DistantObject_1.9.1",
                 ExtractedPath = @".\GPPInstaller",
-
                 InstallDirName = "DistantObject",
                 InstallSourcePath = @".\GPPInstaller\DistantObject_1.9.1\GameData",
                 InstallDestPath = @".\GameData",
@@ -183,8 +179,8 @@ namespace GPPInstaller
                 ModType = "Clouds",
                 ModName = "CloudsLowRes",
                 DownloadAddress = "",
-                ArchiveFileName = "Galileos.Planet.Pack.1.5.88.zip",
-                ArchiveFilePath = @".\GPPInstaller",
+                ArchiveFileName = "",
+                ArchiveFilePath = "",
                 ExtractedDirName = "GPP_Clouds",
                 ExtractedPath = @".\GPPInstaller\Galileos.Planet.Pack.1.5.88\Optional Mods\GPP_Clouds\Low-res Clouds_GameData inside\GameData\GPP",
                 InstallDirName = "GPP_Clouds",
@@ -201,16 +197,13 @@ namespace GPPInstaller
                 ModType = "Clouds",
                 ModName = "CloudsHighRes",
                 DownloadAddress = "",
-                ArchiveFileName = "Galileos.Planet.Pack.1.5.88.zip",
-                ArchiveFilePath = @".\GPPInstaller",
-
+                ArchiveFileName = "",
+                ArchiveFilePath = "",
                 ExtractedDirName = "GPP_Clouds",
                 ExtractedPath = @".\GPPInstaller\Galileos.Planet.Pack.1.5.88\Optional Mods\GPP_Clouds\High-res Clouds_GameData inside\GameData\GPP",
-
                 InstallDirName = "GPP_Clouds",
                 InstallSourcePath = @".\GPPInstaller\Galileos.Planet.Pack.1.5.88\Optional Mods\GPP_Clouds\High-res Clouds_GameData inside\GameData\GPP",
                 InstallDestPath = @".\GameData\GPP",
-
                 State_Downloaded = false,
                 State_Extracted = false,
                 State_Installed = false,
@@ -237,6 +230,20 @@ namespace GPPInstaller
             // downloaded
             foreach (Mod mod in modList)
             {
+                if (mod.ModName == "CloudsLowRes" &&
+                    modList[GlobalInfo.GPPIndex].State_Downloaded == true)
+                {
+                    mod.State_Downloaded = true;       
+                }
+                else mod.State_Downloaded = false;
+
+                if (mod.ModName == "CloudsHighRes" &&
+                    modList[GlobalInfo.GPPIndex].State_Downloaded == true)
+                {
+                    mod.State_Downloaded = true;
+                }
+                else mod.State_Downloaded = false;
+
                 if (File.Exists(mod.ArchiveFilePath + @"\" + mod.ArchiveFileName))
                 {
                     mod.State_Downloaded = true;
@@ -470,6 +477,8 @@ namespace GPPInstaller
             {
                 form1.ProgressLabelUpdate("Extracting files...");
                 modIndex = 0;
+                // TODO: add this to the release version
+                //DeleteAllZips(@".\GPPInstaller");
                 ExtractMod();
             }
         }
@@ -522,6 +531,8 @@ namespace GPPInstaller
             return websiteName;
         }
 
+        // NOTE: Need to change the archive file name for Cloud mods
+        // to empty string
         private void ExtractMod()
         {
             if (modIndex < modList.Count)
@@ -531,17 +542,19 @@ namespace GPPInstaller
                     modList[modIndex].State_Downloaded == true &&
                     modList[modIndex].ArchiveFileName != "")
                 {
-
+                    Debug.WriteLine(modList[modIndex].ModName);
 
                     string fileName = modList[modIndex].ArchiveFileName;
                     int fileNameLength = fileName.Length;
                     string dirName = fileName.Remove((fileNameLength - 4), 4);
                     string destDir = @".\GPPInstaller\" + dirName;
 
+                    //string destDir = modList[modIndex].ExtractedPath + modList[modIndex].ExtractedDirName;
+
                     DirectoryInfo destDirInfo = new DirectoryInfo(destDir);
 
                     string zipFile = @".\GPPInstaller\" + fileName;
-
+                    
                     if (!destDirInfo.Exists)
                     {
                         Directory.CreateDirectory(destDir);
@@ -573,21 +586,22 @@ namespace GPPInstaller
                 else
                 {
                     modIndex++;
-
                     ExtractMod();
                 }
             }
             else
             {
                 modIndex = 0;
-                form1.ProgressLabelUpdate("Copying mods to GameData...");
+                form1.ProgressLabelUpdate("Copying to GameData...");
                 InstallMod();
             }
         }
 
+        // NOTE: When there are 2 processes, the first process does not
+        // complete fully. It get's past "Clouds"
+
         private void workerExtract_DoWork(object sender, DoWorkEventArgs e)
         {
-            // NOTE: The args Tuple resurfaces here
             var args = (Tuple<string, string>)e.Argument;
 
             using (var archive = ZipFile.OpenRead(args.Item1))
@@ -644,7 +658,6 @@ namespace GPPInstaller
             workerExtract.CancelAsync();
         }
 
-        // TODO: Fix bug where Installation process stalls
         private void InstallMod()
         {
             if (modIndex < modList.Count)
@@ -679,8 +692,6 @@ namespace GPPInstaller
                 form1.EnableApplyButton();
                 form1.ProgressLabelUpdate("All changes applied successfully.");
             }
-
-            
 
         }
 
