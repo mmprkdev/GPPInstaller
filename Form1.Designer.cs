@@ -45,6 +45,7 @@
             this.pictureBoxLeftPic = new System.Windows.Forms.PictureBox();
             this.pictureBoxRightPic = new System.Windows.Forms.PictureBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.label2 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLeftPic)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxRightPic)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -235,11 +236,22 @@
             this.pictureBox1.TabStop = false;
             this.pictureBox1.Visible = false;
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(587, 237);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(35, 13);
+            this.label2.TabIndex = 23;
+            this.label2.Text = "label2";
+            this.label2.Click += new System.EventHandler(this.label2_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(831, 565);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.restartButton);
             this.Controls.Add(this.pictureBoxLeftPic);
             this.Controls.Add(this.pictureBoxRightPic);
@@ -289,6 +301,7 @@
         private System.Windows.Forms.PictureBox pictureBoxRightPic;
         private System.Windows.Forms.PictureBox pictureBoxLeftPic;
         private System.Windows.Forms.Button restartButton;
+        private System.Windows.Forms.Label label2;
     }
 }
 

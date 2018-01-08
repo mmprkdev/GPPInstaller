@@ -13,26 +13,17 @@ using System.IO.Compression;
 using System.Net;
 using System.Diagnostics;
 
-// BUG: In a full download process, kopericus extract file gets
-// created but is empty, gpp is never made
+// TODO: Use xpath to grab the download links, insted of using
+// static links defined in GlobalInfo. 
 
-// TODO: Make the code for updating the checkboxes and 
-// other stuff more dynamic (use a loop).
+// TODO: reorganize the code base. Group similar functions
+// out into class files.
 
-// TODO: Maybe add a few extra "utility" mods
-// (Kerbal Engineer, Kerbal Alarm Clock, etc)
-
-// TODO: Give option to delete save files when uninstalling core mods or
-// when installing a new version of GPP. 
-
-// TODO: Write a bash script that adds all
-// files in the github_repo\GPPInstaller dir automatically.
-
-// TODO: Get installation cancelation working
+// TODO: Final bug fixing before release.
 
 namespace GPPInstaller
 {
-    class Utility
+    class Core
     {
         private int numOfFilesInDir = 0;
 
@@ -47,7 +38,7 @@ namespace GPPInstaller
 
         private WebClient webclient = new WebClient();
 
-        public Utility(Form1 form1)
+        public Core(Form1 form1)
         {
             this.form1 = form1;
 
@@ -69,7 +60,7 @@ namespace GPPInstaller
             {
                 ModType = "Core",
                 ModName = "Kopernicus",
-                DownloadAddress = "https://github.com/Kopernicus/Kopernicus/releases/download/release-1.3.1-2/Kopernicus-1.3.1-2.zip",
+                DownloadAddress = GlobalInfo.kopernicusLink,
                 ArchiveFileName = "Kopernicus-1.3.1-2.zip",
                 ArchiveFilePath = @".\GPPInstaller",
                 ExtractedDirName = "Kopernicus-1.3.1-2",
@@ -87,7 +78,7 @@ namespace GPPInstaller
             {
                 ModType = "Core",
                 ModName = "GPP",
-                DownloadAddress = "https://github.com/Galileo88/Galileos-Planet-Pack/releases/download/1.5.88/Galileos.Planet.Pack.1.5.88.zip",
+                DownloadAddress = GlobalInfo.gppLink,
                 ArchiveFileName = "Galileos.Planet.Pack.1.5.88.zip",
                 ArchiveFilePath = @".\GPPInstaller",
                 ExtractedDirName = "Galileos.Planet.Pack.1.5.88",
@@ -105,7 +96,7 @@ namespace GPPInstaller
             {
                 ModType = "Core",
                 ModName = "GPP_Textures",
-                DownloadAddress = "https://github.com/Galileo88/Galileos-Planet-Pack/releases/download/3.0.0/GPP_Textures-3.0.0.zip",
+                DownloadAddress = GlobalInfo.gppTexturesLink,
                 ArchiveFileName = "GPP_Textures-3.0.0.zip",
                 ArchiveFilePath = @".\GPPInstaller",
                 ExtractedDirName = "GPP_Textures-3.0.0",
@@ -123,7 +114,7 @@ namespace GPPInstaller
             {
                 ModType = "Visuals",
                 ModName = "EVE",
-                DownloadAddress = "https://github.com/WazWaz/EnvironmentalVisualEnhancements/releases/download/EVE-1.2.2-1/EnvironmentalVisualEnhancements-1.2.2.1.zip",
+                DownloadAddress = GlobalInfo.eveLink,
                 ArchiveFileName = "EnvironmentalVisualEnhancements-1.2.2.1.zip",
                 ArchiveFilePath = @".\GPPInstaller",
                 ExtractedDirName = "EnvironmentalVisualEnhancements-1.2.2.1",
@@ -141,7 +132,7 @@ namespace GPPInstaller
             {
                 ModType = "Visuals",
                 ModName = "Scatterer",
-                DownloadAddress = "https://spacedock.info/mod/141/scatterer/download/0.0320b",
+                DownloadAddress = GlobalInfo.scattererLink,
                 ArchiveFileName = "scatterer-0.0320b.zip",
                 ArchiveFilePath = @".\GPPInstaller",
                 ExtractedDirName = "scatterer-0.0320b",
@@ -159,7 +150,7 @@ namespace GPPInstaller
             {
                 ModType = "Visuals",
                 ModName = "DistantObjectEnhancement",
-                DownloadAddress = "https://github.com/MOARdV/DistantObject/releases/download/v1.9.1/DistantObject_1.9.1.zip",
+                DownloadAddress = GlobalInfo.doeLink,
                 ArchiveFileName = "DistantObject_1.9.1.zip",
                 ArchiveFilePath = @".\GPPInstaller",
                 ExtractedDirName = "DistantObject_1.9.1",
@@ -167,7 +158,6 @@ namespace GPPInstaller
                 InstallDirName = "DistantObject",
                 InstallSourcePath = @".\GPPInstaller\DistantObject_1.9.1\GameData",
                 InstallDestPath = @".\GameData",
-
                 State_Downloaded = false,
                 State_Extracted = false,
                 State_Installed = false,

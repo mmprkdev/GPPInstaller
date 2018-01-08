@@ -11,14 +11,14 @@ using System.Windows.Forms;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
-
+using HtmlAgilityPack;
 
 
 namespace GPPInstaller
 {
     public partial class Form1 : Form
     {
-        private Utility util;
+        private Core core;
 
         private int numOfFilesInDir = 0;
 
@@ -30,11 +30,13 @@ namespace GPPInstaller
             
             Directory.CreateDirectory(".\\GPPInstaller");
 
-            util = new Utility(this);
+            core = new Core(this);
 
-            util.InitModList();
-            util.RefreshModState();
-            util.SetCheckBoxes(checkBox1, checkBox2, checkBox3, checkBox4);
+            core.InitModList();
+            core.RefreshModState();
+            core.SetCheckBoxes(checkBox1, checkBox2, checkBox3, checkBox4);
+
+            CheckVersions();
 
             InitialCheckForErrors();
 
@@ -93,7 +95,7 @@ namespace GPPInstaller
 
         public void RefreshCheckBoxes()
         {
-            util.SetCheckBoxes(checkBox1, checkBox2, checkBox3, checkBox4);
+            core.SetCheckBoxes(checkBox1, checkBox2, checkBox3, checkBox4);
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -175,7 +177,7 @@ namespace GPPInstaller
 
         public void ProgressBar1Init()
         {
-            int numSteps = util.NumberOfSteps();
+            int numSteps = core.NumberOfSteps();
 
             progressBar1.Minimum = 0;
             progressBar1.Maximum = numSteps;
@@ -199,8 +201,8 @@ namespace GPPInstaller
 
         private void applyButton_Click(object sender, EventArgs e)
         {
-            util.RefreshModState();
-            util.ResetActionsToTake();
+            core.RefreshModState();
+            core.ResetActionsToTake();
 
             exitButton.Enabled = false;
             cancelButton.Visible = true;
@@ -208,10 +210,10 @@ namespace GPPInstaller
             applyButton.Enabled = false;
             DisableCheckBoxes();
 
-            util.ProcessActionToTake(checkBox1, checkBox2, checkBox3, checkBox4);
-            util.UninstallMod();
+            core.ProcessActionToTake(checkBox1, checkBox2, checkBox3, checkBox4);
+            core.UninstallMod();
             ProgressBar1Init();
-            util.DownloadMod();
+            core.DownloadMod();
         }
 
         private void exitButton_Click(object sender, EventArgs e)
@@ -226,9 +228,9 @@ namespace GPPInstaller
 
         private void cancelButton_Click(object sender, EventArgs e)
         {
-            util.WebClientCancel();
-            util.ExtractCancel();
-            util.InstallCancel();
+            core.WebClientCancel();
+            core.ExtractCancel();
+            core.InstallCancel();
         }
 
         public void EnableApplyButton()
@@ -268,7 +270,7 @@ namespace GPPInstaller
 
         public void DisplayError(string message)
         {
-            DisplayYellowWarning();
+            DisplayRedCheck();
 
             progressBar1.Visible = false;
 
@@ -293,5 +295,100 @@ namespace GPPInstaller
             Environment.Exit(0);
         }
 
+        private void CheckVersions()
+        {
+            string kopernicusUrl = "https://github.com/Kopernicus/Kopernicus/releases";
+            string gppUrl = "https://github.com/Galileo88/Galileos-Planet-Pack/releases";
+            string gppTexturesUrl = "https://github.com/Galileo88/Galileos-Planet-Pack/releases/tag/3.0.0";
+            string eveUrl = "https://github.com/WazWaz/EnvironmentalVisualEnhancements/releases";
+            string scattererUrl = "https://spacedock.info/mod/141/scatterer";
+            string doeUrl = "https://github.com/MOARdV/DistantObject/releases";
+
+            string kopernicusXpath = "/html/body/div[4]/div/div/div[2]/div[1]/div[2]/div[1]/div[2]/div[1]/h1/a";
+            string gppXpath = "/html/body/div[4]/div/div/div[2]/div[1]/div[2]/div[1]/div[2]/div[1]/h1/a";
+            string gppTexturesXpath = "/html/body/div[4]/div/div/div[2]/div[1]/div[2]/div/div[2]/div[1]/h1/a";
+            string eveXpath = "/html/body/div[4]/div/div/div[2]/div[1]/div[2]/div[1]/div[2]/div[1]/h1/a";
+            string scattererXpath = "/html/body/div[7]/div/div[2]/div/div[1]/div/div[2]/h2";
+            string doeXpath = "/html/body/div[4]/div/div/div[2]/div[1]/div[2]/div[1]/div[2]/div[1]/h1/a";
+
+
+            //*[@id="download-link-primary"]
+
+            //GetVersionNumberGitHub(kopernicusUrl, kopernicusXpath, GlobalInfo.kopernicusVersion, "Kopernicus");
+            //GetVersionNumberGitHub(gppUrl, gppXpath, GlobalInfo.gppVersion, "GPP");
+            //GetVersionNumberGitHub(gppTexturesUrl, gppTexturesXpath, GlobalInfo.gppTexturesVersion, "GPP_Textures");
+            //GetVersionNumberGitHub(eveUrl, eveXpath, GlobalInfo.eveVersion, "EVE");
+            GetVersionNumberSpaceDockScatterer(scattererUrl, scattererXpath, GlobalInfo.scattererVersion);
+            //GetVersionNumberGitHub(doeUrl, doeXpath, GlobalInfo.doeVersion, "DistantObject");
+
+            label2.Text = "Finished";
+        }
+
+        private void GetVersionNumberGitHub(string url, string xpath, string appVersion, string modName)
+        {
+            HtmlWeb web = new HtmlWeb();
+
+            var htmlDoc = web.Load(url);
+
+            var h1Anchor = htmlDoc.DocumentNode.SelectNodes(xpath);
+            var title = h1Anchor.Select(node => node.InnerText);
+
+            var item = title.ElementAt(0);
+
+            int end = item.LastIndexOf(" ") + 1;
+            int beginning = 0;
+            int count = end - beginning;
+
+            string versionNum = item.Remove(beginning, count);
+
+            if (versionNum != appVersion) DisplayWarning(modName + " version might not be compatable.\n" +
+                " Download the latest version of GPPInstaller to prevent any errors. ");
+
+        }
+
+        private void GetVersionNumberSpaceDockScatterer(string url, string xpath, string appVersion)
+        {
+            HtmlWeb web = new HtmlWeb();
+
+            var htmlDoc = web.Load(url);
+
+            var h2Anchor = htmlDoc.DocumentNode.SelectNodes(xpath);
+            var innerText = h2Anchor.Select(node => node.InnerText);
+
+            var item = innerText.ElementAt(0);
+
+            int leadingEnd = item.IndexOf(" ");
+            string versionNum = item.Remove(0, leadingEnd + 1);
+            int trailingStart = versionNum.IndexOf(" ");
+            int trailingCount = (versionNum.Length) - trailingStart;
+
+            versionNum = versionNum.Remove(trailingStart, trailingCount);
+
+
+            // if (versionNum != appVersion) DisplayWarning("Newer Scatter version is available.
+        }
+
+        private void CheckKopernicus()
+        {
+
+        }
+
+        private void CheckGPP(HtmlWeb web)
+        {
+            
+        }
+
+        public void DisplayWarning(string message)
+        {
+            DisplayYellowWarning();
+
+            progressLabel.Visible = true;
+            progressLabel.Text += message + "\n";
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
