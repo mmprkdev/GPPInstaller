@@ -13,14 +13,13 @@ using System.IO.Compression;
 using System.Net;
 using HtmlAgilityPack;
 
-
+// /html/body/div[3]/div/div[2]
 namespace GPPInstaller
 {
     public partial class Form1 : Form
     {
         private Core core;
 
-        private int numOfFilesInDir = 0;
 
         public Form1()
         {
@@ -32,15 +31,9 @@ namespace GPPInstaller
 
             core = new Core(this);
 
-            core.InitModList();
-            core.RefreshModState();
             core.SetCheckBoxes(checkBox1, checkBox2, checkBox3, checkBox4);
 
-            CheckVersions();
-
             InitialCheckForErrors();
-
-            //label1.Text = "KSP Version: " + util.GetVersionNumber() + " (" + util.GetEXE() + " bit)";
         }
 
         private void InitialCheckForErrors()

@@ -19,6 +19,8 @@ using System.Diagnostics;
 // TODO: reorganize the code base. Group similar functions
 // out into class files.
 
+// TODO: add extra utility mods (KER, Kerbal Alarm Clock)
+
 // TODO: Final bug fixing before release.
 
 namespace GPPInstaller
@@ -38,6 +40,11 @@ namespace GPPInstaller
 
         private WebClient webclient = new WebClient();
 
+        private Utility utility = new Utility();
+
+        private string[] downloadLinks;
+        
+
         public Core(Form1 form1)
         {
             this.form1 = form1;
@@ -52,6 +59,19 @@ namespace GPPInstaller
             workerInstall.RunWorkerCompleted += new RunWorkerCompletedEventHandler(workerInstall_RunWorkerCompleted);
             workerInstall.DoWork += new DoWorkEventHandler(workerInstall_DoWork);
             workerInstall.WorkerSupportsCancellation = true;
+
+            downloadLinks = utility.GetDownloadLinks();
+
+
+            InitModList();
+            RefreshModState();
+        }
+
+        // TODO: Parse the download links to get the names of
+        // the archive files.
+        private void ParseDownloadLinks()
+        {
+
         }
 
         public void InitModList()
@@ -60,7 +80,7 @@ namespace GPPInstaller
             {
                 ModType = "Core",
                 ModName = "Kopernicus",
-                DownloadAddress = GlobalInfo.kopernicusLink,
+                DownloadAddress = downloadLinks[0],
                 ArchiveFileName = "Kopernicus-1.3.1-2.zip",
                 ArchiveFilePath = @".\GPPInstaller",
                 ExtractedDirName = "Kopernicus-1.3.1-2",
@@ -78,7 +98,7 @@ namespace GPPInstaller
             {
                 ModType = "Core",
                 ModName = "GPP",
-                DownloadAddress = GlobalInfo.gppLink,
+                DownloadAddress = downloadLinks[1],
                 ArchiveFileName = "Galileos.Planet.Pack.1.5.88.zip",
                 ArchiveFilePath = @".\GPPInstaller",
                 ExtractedDirName = "Galileos.Planet.Pack.1.5.88",
@@ -690,7 +710,6 @@ namespace GPPInstaller
         // I am just going to leave it.
         private void workerInstall_DoWork(object sender, DoWorkEventArgs e)
         {
-
             if (workerInstall.CancellationPending)
             {
                 e.Cancel = true;
