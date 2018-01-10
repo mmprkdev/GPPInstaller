@@ -13,11 +13,9 @@ using System.IO.Compression;
 using System.Net;
 using System.Diagnostics;
 
-// TODO: Use xpath to grab the download links, insted of using
-// static links defined in GlobalInfo. 
+// TODO: Grab a dynamic copy of the current GPP version for the form title.
 
-// TODO: reorganize the code base. Group similar functions
-// out into class files.
+// TODO: enable the apply button only after new changes have been made.
 
 // TODO: add extra utility mods (KER, Kerbal Alarm Clock)
 
@@ -37,6 +35,9 @@ namespace GPPInstaller
         private Form1 form1;
 
         public List<Mod> modList = new List<Mod>();
+
+        private List<string> archives = new List<string>();
+        private List<string> extractedDirs = new List<string>();
 
         private WebClient webclient = new WebClient();
 
@@ -61,7 +62,8 @@ namespace GPPInstaller
             workerInstall.WorkerSupportsCancellation = true;
 
             downloadLinks = utility.GetDownloadLinks();
-
+            MakeArchiveList(downloadLinks);
+            MakeExtractedDirList(downloadLinks);
 
             InitModList();
             RefreshModState();
@@ -69,11 +71,30 @@ namespace GPPInstaller
 
         // TODO: Parse the download links to get the names of
         // the archive files.
-        private void ParseDownloadLinks()
+        private void MakeArchiveList(string[] downloadLinks)
         {
-
+            for (int i = 0; i < downloadLinks.Length; i++)
+            {
+                if (i == 4)
+                {
+                    archives.Add(utility.DownloadLinkToZip(downloadLinks[i], true));
+                } 
+                else archives.Add(utility.DownloadLinkToZip(downloadLinks[i]));
+            }
         }
 
+        private void MakeExtractedDirList(string[] downloadLinks)
+        {
+            for (int i = 0; i < downloadLinks.Length; i++)
+            {
+                if (i == 4)
+                {
+                    extractedDirs.Add(utility.DownloadLinkToExtractedDir(downloadLinks[i], true));
+                }
+                else extractedDirs.Add(utility.DownloadLinkToExtractedDir(downloadLinks[i]));
+            }
+        }
+        // NOTE: Apparently the .zip is not needed at the end of the zip file name
         public void InitModList()
         {
             modList.Add(new Mod()
@@ -81,12 +102,12 @@ namespace GPPInstaller
                 ModType = "Core",
                 ModName = "Kopernicus",
                 DownloadAddress = downloadLinks[0],
-                ArchiveFileName = "Kopernicus-1.3.1-2.zip",
+                ArchiveFileName = archives[0],
                 ArchiveFilePath = @".\GPPInstaller",
-                ExtractedDirName = "Kopernicus-1.3.1-2",
+                ExtractedDirName = extractedDirs[0],
                 ExtractedPath = @".\GPPInstaller",
                 InstallDirName = "Kopernicus",
-                InstallSourcePath = @".\GPPInstaller\Kopernicus-1.3.1-2\GameData\",
+                InstallSourcePath = @".\GPPInstaller\" + extractedDirs[0] + @"\GameData\",
                 InstallDestPath = @".\GameData",
                 State_Downloaded = false,
                 State_Extracted = false,
@@ -99,12 +120,12 @@ namespace GPPInstaller
                 ModType = "Core",
                 ModName = "GPP",
                 DownloadAddress = downloadLinks[1],
-                ArchiveFileName = "Galileos.Planet.Pack.1.5.88.zip",
+                ArchiveFileName = archives[1],
                 ArchiveFilePath = @".\GPPInstaller",
-                ExtractedDirName = "Galileos.Planet.Pack.1.5.88",
+                ExtractedDirName = extractedDirs[1],
                 ExtractedPath = @".\GPPInstaller",
                 InstallDirName = "GPP",
-                InstallSourcePath = @".\GPPInstaller\Galileos.Planet.Pack.1.5.88\GameData",
+                InstallSourcePath = @".\GPPInstaller\" + extractedDirs[1] + @"\GameData",
                 InstallDestPath = @".\GameData",
                 State_Downloaded = false,
                 State_Extracted = false,
@@ -116,13 +137,13 @@ namespace GPPInstaller
             {
                 ModType = "Core",
                 ModName = "GPP_Textures",
-                DownloadAddress = GlobalInfo.gppTexturesLink,
-                ArchiveFileName = "GPP_Textures-3.0.0.zip",
+                DownloadAddress = downloadLinks[2],
+                ArchiveFileName = archives[2],
                 ArchiveFilePath = @".\GPPInstaller",
-                ExtractedDirName = "GPP_Textures-3.0.0",
+                ExtractedDirName = extractedDirs[2],
                 ExtractedPath = @".\GPPInstaller",
                 InstallDirName = "GPP_Textures",
-                InstallSourcePath = @".\GPPInstaller\GPP_Textures-3.0.0\GameData\GPP",
+                InstallSourcePath = @".\GPPInstaller\" + extractedDirs[2] + @"\GameData\GPP",
                 InstallDestPath = @".\GameData\GPP",
                 State_Downloaded = false,
                 State_Extracted = false,
@@ -134,13 +155,13 @@ namespace GPPInstaller
             {
                 ModType = "Visuals",
                 ModName = "EVE",
-                DownloadAddress = GlobalInfo.eveLink,
-                ArchiveFileName = "EnvironmentalVisualEnhancements-1.2.2.1.zip",
+                DownloadAddress = downloadLinks[3],
+                ArchiveFileName = archives[3],
                 ArchiveFilePath = @".\GPPInstaller",
-                ExtractedDirName = "EnvironmentalVisualEnhancements-1.2.2.1",
+                ExtractedDirName = extractedDirs[3],
                 ExtractedPath = @".\GPPInstaller",
                 InstallDirName = "EnvironmentalVisualEnhancements",
-                InstallSourcePath = @".\GPPInstaller\EnvironmentalVisualEnhancements-1.2.2.1\GameData",
+                InstallSourcePath = @".\GPPInstaller\" + extractedDirs[3] + @"\GameData",
                 InstallDestPath = @".\GameData",
                 State_Downloaded = false,
                 State_Extracted = false,
@@ -152,13 +173,13 @@ namespace GPPInstaller
             {
                 ModType = "Visuals",
                 ModName = "Scatterer",
-                DownloadAddress = GlobalInfo.scattererLink,
-                ArchiveFileName = "scatterer-0.0320b.zip",
+                DownloadAddress = downloadLinks[4],
+                ArchiveFileName = archives[4],
                 ArchiveFilePath = @".\GPPInstaller",
-                ExtractedDirName = "scatterer-0.0320b",
+                ExtractedDirName = extractedDirs[4],
                 ExtractedPath = @".\GPPInstaller",
                 InstallDirName = "scatterer",
-                InstallSourcePath = @".\GPPInstaller\scatterer-0.0320b\GameData",
+                InstallSourcePath = @".\GPPInstaller\" + extractedDirs[4] + @"\GameData",
                 InstallDestPath = @".\GameData",
                 State_Downloaded = false,
                 State_Extracted = false,
@@ -170,13 +191,13 @@ namespace GPPInstaller
             {
                 ModType = "Visuals",
                 ModName = "DistantObjectEnhancement",
-                DownloadAddress = GlobalInfo.doeLink,
-                ArchiveFileName = "DistantObject_1.9.1.zip",
+                DownloadAddress = downloadLinks[5],
+                ArchiveFileName = archives[5],
                 ArchiveFilePath = @".\GPPInstaller",
-                ExtractedDirName = "DistantObject_1.9.1",
+                ExtractedDirName = extractedDirs[5],
                 ExtractedPath = @".\GPPInstaller",
                 InstallDirName = "DistantObject",
-                InstallSourcePath = @".\GPPInstaller\DistantObject_1.9.1\GameData",
+                InstallSourcePath = @".\GPPInstaller\" + extractedDirs[5] + @"\GameData",
                 InstallDestPath = @".\GameData",
                 State_Downloaded = false,
                 State_Extracted = false,
@@ -192,9 +213,9 @@ namespace GPPInstaller
                 ArchiveFileName = "",
                 ArchiveFilePath = "",
                 ExtractedDirName = "GPP_Clouds",
-                ExtractedPath = @".\GPPInstaller\Galileos.Planet.Pack.1.5.88\Optional Mods\GPP_Clouds\Low-res Clouds_GameData inside\GameData\GPP",
+                ExtractedPath = @".\GPPInstaller\" + extractedDirs[1] + @"\Optional Mods\GPP_Clouds\Low-res Clouds_GameData inside\GameData\GPP",
                 InstallDirName = "GPP_Clouds",
-                InstallSourcePath = @".\GPPInstaller\Galileos.Planet.Pack.1.5.88\Optional Mods\GPP_Clouds\Low-res Clouds_GameData inside\GameData\GPP",
+                InstallSourcePath = @".\GPPInstaller\" + extractedDirs[1] + @"\Optional Mods\GPP_Clouds\Low-res Clouds_GameData inside\GameData\GPP",
                 InstallDestPath = @".\GameData\GPP",
                 State_Downloaded = false,
                 State_Extracted = false,
@@ -210,9 +231,9 @@ namespace GPPInstaller
                 ArchiveFileName = "",
                 ArchiveFilePath = "",
                 ExtractedDirName = "GPP_Clouds",
-                ExtractedPath = @".\GPPInstaller\Galileos.Planet.Pack.1.5.88\Optional Mods\GPP_Clouds\High-res Clouds_GameData inside\GameData\GPP",
+                ExtractedPath = @".\GPPInstaller\" + extractedDirs[1] + @"\Optional Mods\GPP_Clouds\High-res Clouds_GameData inside\GameData\GPP",
                 InstallDirName = "GPP_Clouds",
-                InstallSourcePath = @".\GPPInstaller\Galileos.Planet.Pack.1.5.88\Optional Mods\GPP_Clouds\High-res Clouds_GameData inside\GameData\GPP",
+                InstallSourcePath = @".\GPPInstaller\" + extractedDirs[1] + @"\Optional Mods\GPP_Clouds\High-res Clouds_GameData inside\GameData\GPP",
                 InstallDestPath = @".\GameData\GPP",
                 State_Downloaded = false,
                 State_Extracted = false,

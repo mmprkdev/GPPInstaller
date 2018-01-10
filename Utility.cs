@@ -80,5 +80,65 @@ namespace GPPInstaller
             string link = "https://spacedock.info" + href;
             return link;
         }
+
+        public string DownloadLinkToExtractedDir(string downloadLink)
+        {
+            int subStart = downloadLink.LastIndexOf('/') + 1;
+            int subEnd = downloadLink.LastIndexOf('.');
+            int length = subEnd - subStart;
+            string extractedDir = downloadLink.Substring(subStart, length);
+
+            return extractedDir;
+        }
+
+        public string DownloadLinkToExtractedDir(string downloadLink, bool isScatterer)
+        {
+            string extractedDir;
+
+            int offset = downloadLink.IndexOf('/');
+            offset = downloadLink.IndexOf('/', offset + 1);
+            offset = downloadLink.IndexOf('/', offset + 1);
+            offset = downloadLink.IndexOf('/', offset + 1);
+            int count = downloadLink.Length - offset;
+            extractedDir = downloadLink.Remove(0, count);
+
+            int start = extractedDir.IndexOf('/');
+            int end = extractedDir.LastIndexOf('/');
+            count = end - start;
+            extractedDir = extractedDir.Remove(start, count);
+            extractedDir = extractedDir.Replace('/', '-');
+
+            return extractedDir;
+        }
+
+        public string DownloadLinkToZip(string downloadLink)
+        {
+            int subStart = downloadLink.LastIndexOf('/') + 1;
+            int length = downloadLink.Length - subStart;
+            string archive = downloadLink.Substring(subStart, length);
+
+            return archive;
+        }
+
+        public string DownloadLinkToZip(string downloadLink, bool isScatterer)
+        {
+            string archive;
+            
+            int offset = downloadLink.IndexOf('/');
+            offset = downloadLink.IndexOf('/', offset + 1);
+            offset = downloadLink.IndexOf('/', offset + 1);
+            offset = downloadLink.IndexOf('/', offset + 1);
+            int count = downloadLink.Length - offset;
+            archive = downloadLink.Remove(0, count);
+
+            int start = archive.IndexOf('/');
+            int end = archive.LastIndexOf('/');
+            count = end - start;
+            archive = archive.Remove(start, count);
+            archive = archive.Replace('/', '-');
+            archive += ".zip"; 
+
+            return archive;
+        }
     }
 }

@@ -13,7 +13,6 @@ using System.IO.Compression;
 using System.Net;
 using HtmlAgilityPack;
 
-// /html/body/div[3]/div/div[2]
 namespace GPPInstaller
 {
     public partial class Form1 : Form
@@ -25,8 +24,6 @@ namespace GPPInstaller
         {
             InitializeComponent();
 
-            //if (GlobalInfo.IsConnectedToInternet()) label2.Text = "Connected to internet";
-            
             Directory.CreateDirectory(".\\GPPInstaller");
 
             core = new Core(this);
@@ -34,6 +31,10 @@ namespace GPPInstaller
             core.SetCheckBoxes(checkBox1, checkBox2, checkBox3, checkBox4);
 
             InitialCheckForErrors();
+
+            // TODO: Grab a dynamic copy of the current GPP version
+            //GPP Installer(GPP v1.5.88) (KSP v1.3.1)
+            //this.Text = "GPP Installer(GPP v" +  + ") (KSP v1.3.1)";
         }
 
         private void InitialCheckForErrors()
@@ -288,78 +289,78 @@ namespace GPPInstaller
             Environment.Exit(0);
         }
 
-        private void CheckVersions()
-        {
-            string kopernicusUrl = "https://github.com/Kopernicus/Kopernicus/releases";
-            string gppUrl = "https://github.com/Galileo88/Galileos-Planet-Pack/releases";
-            string gppTexturesUrl = "https://github.com/Galileo88/Galileos-Planet-Pack/releases/tag/3.0.0";
-            string eveUrl = "https://github.com/WazWaz/EnvironmentalVisualEnhancements/releases";
-            string scattererUrl = "https://spacedock.info/mod/141/scatterer";
-            string doeUrl = "https://github.com/MOARdV/DistantObject/releases";
+        //private void CheckVersions()
+        //{
+        //    string kopernicusUrl = "https://github.com/Kopernicus/Kopernicus/releases";
+        //    string gppUrl = "https://github.com/Galileo88/Galileos-Planet-Pack/releases";
+        //    string gppTexturesUrl = "https://github.com/Galileo88/Galileos-Planet-Pack/releases/tag/3.0.0";
+        //    string eveUrl = "https://github.com/WazWaz/EnvironmentalVisualEnhancements/releases";
+        //    string scattererUrl = "https://spacedock.info/mod/141/scatterer";
+        //    string doeUrl = "https://github.com/MOARdV/DistantObject/releases";
 
-            string kopernicusXpath = "/html/body/div[4]/div/div/div[2]/div[1]/div[2]/div[1]/div[2]/div[1]/h1/a";
-            string gppXpath = "/html/body/div[4]/div/div/div[2]/div[1]/div[2]/div[1]/div[2]/div[1]/h1/a";
-            string gppTexturesXpath = "/html/body/div[4]/div/div/div[2]/div[1]/div[2]/div/div[2]/div[1]/h1/a";
-            string eveXpath = "/html/body/div[4]/div/div/div[2]/div[1]/div[2]/div[1]/div[2]/div[1]/h1/a";
-            string scattererXpath = "/html/body/div[7]/div/div[2]/div/div[1]/div/div[2]/h2";
-            string doeXpath = "/html/body/div[4]/div/div/div[2]/div[1]/div[2]/div[1]/div[2]/div[1]/h1/a";
-
-
-            //*[@id="download-link-primary"]
-
-            //GetVersionNumberGitHub(kopernicusUrl, kopernicusXpath, GlobalInfo.kopernicusVersion, "Kopernicus");
-            //GetVersionNumberGitHub(gppUrl, gppXpath, GlobalInfo.gppVersion, "GPP");
-            //GetVersionNumberGitHub(gppTexturesUrl, gppTexturesXpath, GlobalInfo.gppTexturesVersion, "GPP_Textures");
-            //GetVersionNumberGitHub(eveUrl, eveXpath, GlobalInfo.eveVersion, "EVE");
-            GetVersionNumberSpaceDockScatterer(scattererUrl, scattererXpath, GlobalInfo.scattererVersion);
-            //GetVersionNumberGitHub(doeUrl, doeXpath, GlobalInfo.doeVersion, "DistantObject");
-
-            label2.Text = "Finished";
-        }
-
-        private void GetVersionNumberGitHub(string url, string xpath, string appVersion, string modName)
-        {
-            HtmlWeb web = new HtmlWeb();
-
-            var htmlDoc = web.Load(url);
-
-            var h1Anchor = htmlDoc.DocumentNode.SelectNodes(xpath);
-            var title = h1Anchor.Select(node => node.InnerText);
-
-            var item = title.ElementAt(0);
-
-            int end = item.LastIndexOf(" ") + 1;
-            int beginning = 0;
-            int count = end - beginning;
-
-            string versionNum = item.Remove(beginning, count);
-
-            if (versionNum != appVersion) DisplayWarning(modName + " version might not be compatable.\n" +
-                " Download the latest version of GPPInstaller to prevent any errors. ");
-
-        }
-
-        private void GetVersionNumberSpaceDockScatterer(string url, string xpath, string appVersion)
-        {
-            HtmlWeb web = new HtmlWeb();
-
-            var htmlDoc = web.Load(url);
-
-            var h2Anchor = htmlDoc.DocumentNode.SelectNodes(xpath);
-            var innerText = h2Anchor.Select(node => node.InnerText);
-
-            var item = innerText.ElementAt(0);
-
-            int leadingEnd = item.IndexOf(" ");
-            string versionNum = item.Remove(0, leadingEnd + 1);
-            int trailingStart = versionNum.IndexOf(" ");
-            int trailingCount = (versionNum.Length) - trailingStart;
-
-            versionNum = versionNum.Remove(trailingStart, trailingCount);
+        //    string kopernicusXpath = "/html/body/div[4]/div/div/div[2]/div[1]/div[2]/div[1]/div[2]/div[1]/h1/a";
+        //    string gppXpath = "/html/body/div[4]/div/div/div[2]/div[1]/div[2]/div[1]/div[2]/div[1]/h1/a";
+        //    string gppTexturesXpath = "/html/body/div[4]/div/div/div[2]/div[1]/div[2]/div/div[2]/div[1]/h1/a";
+        //    string eveXpath = "/html/body/div[4]/div/div/div[2]/div[1]/div[2]/div[1]/div[2]/div[1]/h1/a";
+        //    string scattererXpath = "/html/body/div[7]/div/div[2]/div/div[1]/div/div[2]/h2";
+        //    string doeXpath = "/html/body/div[4]/div/div/div[2]/div[1]/div[2]/div[1]/div[2]/div[1]/h1/a";
 
 
-            // if (versionNum != appVersion) DisplayWarning("Newer Scatter version is available.
-        }
+        //    //*[@id="download-link-primary"]
+
+        //    //GetVersionNumberGitHub(kopernicusUrl, kopernicusXpath, GlobalInfo.kopernicusVersion, "Kopernicus");
+        //    //GetVersionNumberGitHub(gppUrl, gppXpath, GlobalInfo.gppVersion, "GPP");
+        //    //GetVersionNumberGitHub(gppTexturesUrl, gppTexturesXpath, GlobalInfo.gppTexturesVersion, "GPP_Textures");
+        //    //GetVersionNumberGitHub(eveUrl, eveXpath, GlobalInfo.eveVersion, "EVE");
+        //    GetVersionNumberSpaceDockScatterer(scattererUrl, scattererXpath, GlobalInfo.scattererVersion);
+        //    //GetVersionNumberGitHub(doeUrl, doeXpath, GlobalInfo.doeVersion, "DistantObject");
+
+        //    label2.Text = "Finished";
+        //}
+
+        //private void GetVersionNumberGitHub(string url, string xpath, string appVersion, string modName)
+        //{
+        //    HtmlWeb web = new HtmlWeb();
+
+        //    var htmlDoc = web.Load(url);
+
+        //    var h1Anchor = htmlDoc.DocumentNode.SelectNodes(xpath);
+        //    var title = h1Anchor.Select(node => node.InnerText);
+
+        //    var item = title.ElementAt(0);
+
+        //    int end = item.LastIndexOf(" ") + 1;
+        //    int beginning = 0;
+        //    int count = end - beginning;
+
+        //    string versionNum = item.Remove(beginning, count);
+
+        //    if (versionNum != appVersion) DisplayWarning(modName + " version might not be compatable.\n" +
+        //        " Download the latest version of GPPInstaller to prevent any errors. ");
+
+        //}
+
+        //private void GetVersionNumberSpaceDockScatterer(string url, string xpath, string appVersion)
+        //{
+        //    HtmlWeb web = new HtmlWeb();
+
+        //    var htmlDoc = web.Load(url);
+
+        //    var h2Anchor = htmlDoc.DocumentNode.SelectNodes(xpath);
+        //    var innerText = h2Anchor.Select(node => node.InnerText);
+
+        //    var item = innerText.ElementAt(0);
+
+        //    int leadingEnd = item.IndexOf(" ");
+        //    string versionNum = item.Remove(0, leadingEnd + 1);
+        //    int trailingStart = versionNum.IndexOf(" ");
+        //    int trailingCount = (versionNum.Length) - trailingStart;
+
+        //    versionNum = versionNum.Remove(trailingStart, trailingCount);
+
+
+        //    // if (versionNum != appVersion) DisplayWarning("Newer Scatter version is available.
+        //}
 
         private void CheckKopernicus()
         {
