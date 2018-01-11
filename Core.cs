@@ -1,19 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
 using System.Diagnostics;
-
-// TODO: Grab a dynamic copy of the current GPP version for the form title.
 
 // TODO: enable the apply button only after new changes have been made.
 
@@ -25,26 +17,19 @@ namespace GPPInstaller
 {
     class Core
     {
-        private int numOfFilesInDir = 0;
+        Form1 form1;
+        Scraper scraper = new Scraper();
 
-        private int modIndex = 0;
+        BackgroundWorker workerExtract = new BackgroundWorker();
+        BackgroundWorker workerInstall = new BackgroundWorker();
 
-        private BackgroundWorker workerExtract = new BackgroundWorker();
-        private BackgroundWorker workerInstall = new BackgroundWorker();
-        
-        private Form1 form1;
+        WebClient webclient = new WebClient();
 
-        public List<Mod> modList = new List<Mod>();
+        static List<Mod> modList = new List<Mod>();
 
-        private List<string> archives = new List<string>();
-        private List<string> extractedDirs = new List<string>();
+        int numOfFilesInDir = 0;
 
-        private WebClient webclient = new WebClient();
-
-        private Utility utility = new Utility();
-
-        private string[] downloadLinks;
-        
+        int modIndex = 0;
 
         public Core(Form1 form1)
         {
@@ -61,53 +46,25 @@ namespace GPPInstaller
             workerInstall.DoWork += new DoWorkEventHandler(workerInstall_DoWork);
             workerInstall.WorkerSupportsCancellation = true;
 
-            downloadLinks = utility.GetDownloadLinks();
-            MakeArchiveList(downloadLinks);
-            MakeExtractedDirList(downloadLinks);
-
             InitModList();
+
+            scraper.AddLinks(ref modList);
+
             RefreshModState();
         }
 
-        // TODO: Parse the download links to get the names of
-        // the archive files.
-        private void MakeArchiveList(string[] downloadLinks)
-        {
-            for (int i = 0; i < downloadLinks.Length; i++)
-            {
-                if (i == 4)
-                {
-                    archives.Add(utility.DownloadLinkToZip(downloadLinks[i], true));
-                } 
-                else archives.Add(utility.DownloadLinkToZip(downloadLinks[i]));
-            }
-        }
-
-        private void MakeExtractedDirList(string[] downloadLinks)
-        {
-            for (int i = 0; i < downloadLinks.Length; i++)
-            {
-                if (i == 4)
-                {
-                    extractedDirs.Add(utility.DownloadLinkToExtractedDir(downloadLinks[i], true));
-                }
-                else extractedDirs.Add(utility.DownloadLinkToExtractedDir(downloadLinks[i]));
-            }
-        }
-        // NOTE: Apparently the .zip is not needed at the end of the zip file name
         public void InitModList()
         {
             modList.Add(new Mod()
             {
                 ModType = "Core",
                 ModName = "Kopernicus",
-                DownloadAddress = downloadLinks[0],
-                ArchiveFileName = archives[0],
+                DownloadAddress = "",
+                ArchiveFileName = "",
                 ArchiveFilePath = @".\GPPInstaller",
-                ExtractedDirName = extractedDirs[0],
+                ExtractedDirName = "",
                 ExtractedPath = @".\GPPInstaller",
                 InstallDirName = "Kopernicus",
-                InstallSourcePath = @".\GPPInstaller\" + extractedDirs[0] + @"\GameData\",
                 InstallDestPath = @".\GameData",
                 State_Downloaded = false,
                 State_Extracted = false,
@@ -119,13 +76,12 @@ namespace GPPInstaller
             {
                 ModType = "Core",
                 ModName = "GPP",
-                DownloadAddress = downloadLinks[1],
-                ArchiveFileName = archives[1],
+                DownloadAddress = "",
+                ArchiveFileName = "",
                 ArchiveFilePath = @".\GPPInstaller",
-                ExtractedDirName = extractedDirs[1],
+                ExtractedDirName = "",
                 ExtractedPath = @".\GPPInstaller",
                 InstallDirName = "GPP",
-                InstallSourcePath = @".\GPPInstaller\" + extractedDirs[1] + @"\GameData",
                 InstallDestPath = @".\GameData",
                 State_Downloaded = false,
                 State_Extracted = false,
@@ -137,13 +93,12 @@ namespace GPPInstaller
             {
                 ModType = "Core",
                 ModName = "GPP_Textures",
-                DownloadAddress = downloadLinks[2],
-                ArchiveFileName = archives[2],
+                DownloadAddress = "",
+                ArchiveFileName = "",
                 ArchiveFilePath = @".\GPPInstaller",
-                ExtractedDirName = extractedDirs[2],
+                ExtractedDirName = "",
                 ExtractedPath = @".\GPPInstaller",
                 InstallDirName = "GPP_Textures",
-                InstallSourcePath = @".\GPPInstaller\" + extractedDirs[2] + @"\GameData\GPP",
                 InstallDestPath = @".\GameData\GPP",
                 State_Downloaded = false,
                 State_Extracted = false,
@@ -155,13 +110,12 @@ namespace GPPInstaller
             {
                 ModType = "Visuals",
                 ModName = "EVE",
-                DownloadAddress = downloadLinks[3],
-                ArchiveFileName = archives[3],
+                DownloadAddress = "",
+                ArchiveFileName = "",
                 ArchiveFilePath = @".\GPPInstaller",
-                ExtractedDirName = extractedDirs[3],
+                ExtractedDirName = "",
                 ExtractedPath = @".\GPPInstaller",
                 InstallDirName = "EnvironmentalVisualEnhancements",
-                InstallSourcePath = @".\GPPInstaller\" + extractedDirs[3] + @"\GameData",
                 InstallDestPath = @".\GameData",
                 State_Downloaded = false,
                 State_Extracted = false,
@@ -173,13 +127,12 @@ namespace GPPInstaller
             {
                 ModType = "Visuals",
                 ModName = "Scatterer",
-                DownloadAddress = downloadLinks[4],
-                ArchiveFileName = archives[4],
+                DownloadAddress = "",
+                ArchiveFileName = "",
                 ArchiveFilePath = @".\GPPInstaller",
-                ExtractedDirName = extractedDirs[4],
+                ExtractedDirName = "",
                 ExtractedPath = @".\GPPInstaller",
                 InstallDirName = "scatterer",
-                InstallSourcePath = @".\GPPInstaller\" + extractedDirs[4] + @"\GameData",
                 InstallDestPath = @".\GameData",
                 State_Downloaded = false,
                 State_Extracted = false,
@@ -191,13 +144,12 @@ namespace GPPInstaller
             {
                 ModType = "Visuals",
                 ModName = "DistantObjectEnhancement",
-                DownloadAddress = downloadLinks[5],
-                ArchiveFileName = archives[5],
+                DownloadAddress = "",
+                ArchiveFileName = "",
                 ArchiveFilePath = @".\GPPInstaller",
-                ExtractedDirName = extractedDirs[5],
+                ExtractedDirName = "",
                 ExtractedPath = @".\GPPInstaller",
                 InstallDirName = "DistantObject",
-                InstallSourcePath = @".\GPPInstaller\" + extractedDirs[5] + @"\GameData",
                 InstallDestPath = @".\GameData",
                 State_Downloaded = false,
                 State_Extracted = false,
@@ -213,9 +165,8 @@ namespace GPPInstaller
                 ArchiveFileName = "",
                 ArchiveFilePath = "",
                 ExtractedDirName = "GPP_Clouds",
-                ExtractedPath = @".\GPPInstaller\" + extractedDirs[1] + @"\Optional Mods\GPP_Clouds\Low-res Clouds_GameData inside\GameData\GPP",
+                ExtractedPath = "", 
                 InstallDirName = "GPP_Clouds",
-                InstallSourcePath = @".\GPPInstaller\" + extractedDirs[1] + @"\Optional Mods\GPP_Clouds\Low-res Clouds_GameData inside\GameData\GPP",
                 InstallDestPath = @".\GameData\GPP",
                 State_Downloaded = false,
                 State_Extracted = false,
@@ -231,9 +182,8 @@ namespace GPPInstaller
                 ArchiveFileName = "",
                 ArchiveFilePath = "",
                 ExtractedDirName = "GPP_Clouds",
-                ExtractedPath = @".\GPPInstaller\" + extractedDirs[1] + @"\Optional Mods\GPP_Clouds\High-res Clouds_GameData inside\GameData\GPP",
+                ExtractedPath = "", 
                 InstallDirName = "GPP_Clouds",
-                InstallSourcePath = @".\GPPInstaller\" + extractedDirs[1] + @"\Optional Mods\GPP_Clouds\High-res Clouds_GameData inside\GameData\GPP",
                 InstallDestPath = @".\GameData\GPP",
                 State_Downloaded = false,
                 State_Extracted = false,
@@ -255,6 +205,7 @@ namespace GPPInstaller
 
             RefreshModState();
         }
+
 
         public void RefreshModState()
         {
@@ -696,7 +647,8 @@ namespace GPPInstaller
                 if (modList[modIndex].State_Installed == false &&
                     modList[modIndex].ActionToTake == "Install")
                 {
-                    string sourceDirName = modList[modIndex].InstallSourcePath;
+                    // TODO: Get rid of InstallSourcePath and just use the ExtractedDirPath for this variable.
+                    string sourceDirName = modList[modIndex].ExtractedPath;
                     string destDirName = modList[modIndex].InstallDestPath;
 
                     if (Directory.Exists(@".\GameData\GPP\GPP_Clouds")) Directory.Delete(@".\GameData\GPP\GPP_Clouds", true);
@@ -856,13 +808,14 @@ namespace GPPInstaller
             return result;
         }
 
-        public string GetVersionNumber()
+        public string GetKSPVersionNumber()
         {
             string target = ".\\readme.txt";
 
             if (!File.Exists(target))
             {
-                return "Error: Could not determine KSP version";
+                form1.DisplayError("Could not determine KSP version. Make sure KSP is installed properly.");
+                return "";
             }
 
             string[] readmeLines = File.ReadAllLines(target);
@@ -878,6 +831,18 @@ namespace GPPInstaller
             string versionNumber = new string(versionChars);
 
             return versionNumber;
+        }
+
+        public string GetGPPVersion()
+        {
+            string dirName = modList[GlobalInfo.GPPIndex].ExtractedDirName;
+            int offset = dirName.LastIndexOf(".");
+            offset = dirName.LastIndexOf(".", offset - 1);
+            int leadingEnd = dirName.LastIndexOf(".", offset - 1) + 1;
+            string result = dirName.Remove(0, leadingEnd);
+
+            return result;
+            //int leadingEnd = dirName.LastIndexOf()
         }
 
         public void UninstallMod()
@@ -1041,7 +1006,6 @@ namespace GPPInstaller
         public string ArchiveFileName { get; set; }
         public string ExtractedPath { get; set; }
         public string ExtractedDirName { get; set; }
-        public string InstallSourcePath { get; set; }
         public string InstallDestPath { get; set; }
         public string InstallDirName { get; set; }
         public bool State_Downloaded { get; set; }

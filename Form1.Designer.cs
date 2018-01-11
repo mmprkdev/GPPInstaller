@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.label1 = new System.Windows.Forms.Label();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.label3 = new System.Windows.Forms.Label();
@@ -50,21 +49,11 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(172, 9);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(78, 15);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "KSP Version:";
-            // 
             // checkBox1
             // 
             this.checkBox1.AutoSize = true;
             this.checkBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBox1.Location = new System.Drawing.Point(175, 67);
+            this.checkBox1.Location = new System.Drawing.Point(175, 29);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(80, 19);
             this.checkBox1.TabIndex = 7;
@@ -76,7 +65,7 @@
             // 
             this.checkBox2.AutoSize = true;
             this.checkBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBox2.Location = new System.Drawing.Point(175, 132);
+            this.checkBox2.Location = new System.Drawing.Point(175, 82);
             this.checkBox2.Name = "checkBox2";
             this.checkBox2.Size = new System.Drawing.Size(145, 19);
             this.checkBox2.TabIndex = 8;
@@ -88,7 +77,7 @@
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(326, 67);
+            this.label3.Location = new System.Drawing.Point(326, 30);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(336, 30);
             this.label3.TabIndex = 9;
@@ -99,7 +88,7 @@
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(326, 133);
+            this.label4.Location = new System.Drawing.Point(326, 83);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(279, 30);
             this.label4.TabIndex = 10;
@@ -128,7 +117,7 @@
             // 
             this.checkBox3.AutoSize = true;
             this.checkBox3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBox3.Location = new System.Drawing.Point(424, 179);
+            this.checkBox3.Location = new System.Drawing.Point(424, 138);
             this.checkBox3.Name = "checkBox3";
             this.checkBox3.Size = new System.Drawing.Size(74, 19);
             this.checkBox3.TabIndex = 13;
@@ -141,7 +130,7 @@
             // 
             this.checkBox4.AutoSize = true;
             this.checkBox4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBox4.Location = new System.Drawing.Point(424, 205);
+            this.checkBox4.Location = new System.Drawing.Point(424, 163);
             this.checkBox4.Name = "checkBox4";
             this.checkBox4.Size = new System.Drawing.Size(77, 19);
             this.checkBox4.TabIndex = 14;
@@ -154,7 +143,7 @@
             // 
             this.cloudTextureLabel.AutoSize = true;
             this.cloudTextureLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cloudTextureLabel.Location = new System.Drawing.Point(206, 181);
+            this.cloudTextureLabel.Location = new System.Drawing.Point(206, 138);
             this.cloudTextureLabel.Name = "cloudTextureLabel";
             this.cloudTextureLabel.Size = new System.Drawing.Size(202, 15);
             this.cloudTextureLabel.TabIndex = 15;
@@ -256,7 +245,6 @@
             this.Controls.Add(this.label3);
             this.Controls.Add(this.checkBox2);
             this.Controls.Add(this.checkBox1);
-            this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.Name = "Form1";
@@ -270,7 +258,6 @@
         }
 
         #endregion
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.CheckBox checkBox1;
         private System.Windows.Forms.CheckBox checkBox2;
         private System.Windows.Forms.Label label3;

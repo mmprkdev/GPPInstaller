@@ -1,24 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
-using System.IO.Compression;
-using System.Net;
-using HtmlAgilityPack;
 
 namespace GPPInstaller
 {
     public partial class Form1 : Form
     {
-        private Core core;
-
+        Core core;
 
         public Form1()
         {
@@ -32,9 +21,7 @@ namespace GPPInstaller
 
             InitialCheckForErrors();
 
-            // TODO: Grab a dynamic copy of the current GPP version
-            //GPP Installer(GPP v1.5.88) (KSP v1.3.1)
-            //this.Text = "GPP Installer(GPP v" +  + ") (KSP v1.3.1)";
+            Text = "GPP Installer(GPP v" +  core.GetGPPVersion() + ") (KSP v" + core.GetKSPVersionNumber() +")";
         }
 
         private void InitialCheckForErrors()
@@ -44,7 +31,7 @@ namespace GPPInstaller
 
             if (!File.Exists(versionTarget))
             {
-                DisplayError("Error: Could not determine KSP version. Make sure the \"readme.txt\" file exists.");
+                DisplayError("Could not determine KSP version. Make sure the \"readme.txt\" file exists.");
             }
 
             string[] readmeLines = File.ReadAllLines(versionTarget);
@@ -61,7 +48,7 @@ namespace GPPInstaller
 
             if (detectedVersionNumber != GlobalInfo.compatableKSPVersion)
             {
-                DisplayError("Error: The detected KSP version " + detectedVersionNumber + " is not compatable. Version " + GlobalInfo.compatableKSPVersion + " is required.");
+                DisplayError("The detected KSP version " + detectedVersionNumber + " is not compatable. Version " + GlobalInfo.compatableKSPVersion + " is required.");
             }
 
             // EXE
@@ -77,14 +64,13 @@ namespace GPPInstaller
             else if (File.Exists(exeTarget32))
             {
                 currentExe = "32";
-                DisplayError("Error: a 32 bit version of KSP was detected. GPP requires a 64 bit version of KSP in order to run.");
+                DisplayError("32 bit version of KSP was detected. GPP requires a 64 bit version of KSP in order to run.");
             }
             else
             {
-                DisplayError("Error: could not determine the exe type. Make sure the KSP exicutable file exists.");
+                DisplayError("Could not determine the exe type. Make sure the KSP exicutable file exists.");
             }
 
-            label1.Text = "KSP Version: " + detectedVersionNumber + " (" + currentExe + ") bit";
         }
 
         public void RefreshCheckBoxes()
@@ -269,7 +255,7 @@ namespace GPPInstaller
             progressBar1.Visible = false;
 
             progressLabel.Visible = true;
-            progressLabel.Text += message + "\n";
+            progressLabel.Text += "Error: " + message + "\n";
 
             DisableCheckBoxes();
             restartButton.Visible = true;
@@ -287,89 +273,6 @@ namespace GPPInstaller
         {
             Application.Restart();
             Environment.Exit(0);
-        }
-
-        //private void CheckVersions()
-        //{
-        //    string kopernicusUrl = "https://github.com/Kopernicus/Kopernicus/releases";
-        //    string gppUrl = "https://github.com/Galileo88/Galileos-Planet-Pack/releases";
-        //    string gppTexturesUrl = "https://github.com/Galileo88/Galileos-Planet-Pack/releases/tag/3.0.0";
-        //    string eveUrl = "https://github.com/WazWaz/EnvironmentalVisualEnhancements/releases";
-        //    string scattererUrl = "https://spacedock.info/mod/141/scatterer";
-        //    string doeUrl = "https://github.com/MOARdV/DistantObject/releases";
-
-        //    string kopernicusXpath = "/html/body/div[4]/div/div/div[2]/div[1]/div[2]/div[1]/div[2]/div[1]/h1/a";
-        //    string gppXpath = "/html/body/div[4]/div/div/div[2]/div[1]/div[2]/div[1]/div[2]/div[1]/h1/a";
-        //    string gppTexturesXpath = "/html/body/div[4]/div/div/div[2]/div[1]/div[2]/div/div[2]/div[1]/h1/a";
-        //    string eveXpath = "/html/body/div[4]/div/div/div[2]/div[1]/div[2]/div[1]/div[2]/div[1]/h1/a";
-        //    string scattererXpath = "/html/body/div[7]/div/div[2]/div/div[1]/div/div[2]/h2";
-        //    string doeXpath = "/html/body/div[4]/div/div/div[2]/div[1]/div[2]/div[1]/div[2]/div[1]/h1/a";
-
-
-        //    //*[@id="download-link-primary"]
-
-        //    //GetVersionNumberGitHub(kopernicusUrl, kopernicusXpath, GlobalInfo.kopernicusVersion, "Kopernicus");
-        //    //GetVersionNumberGitHub(gppUrl, gppXpath, GlobalInfo.gppVersion, "GPP");
-        //    //GetVersionNumberGitHub(gppTexturesUrl, gppTexturesXpath, GlobalInfo.gppTexturesVersion, "GPP_Textures");
-        //    //GetVersionNumberGitHub(eveUrl, eveXpath, GlobalInfo.eveVersion, "EVE");
-        //    GetVersionNumberSpaceDockScatterer(scattererUrl, scattererXpath, GlobalInfo.scattererVersion);
-        //    //GetVersionNumberGitHub(doeUrl, doeXpath, GlobalInfo.doeVersion, "DistantObject");
-
-        //    label2.Text = "Finished";
-        //}
-
-        //private void GetVersionNumberGitHub(string url, string xpath, string appVersion, string modName)
-        //{
-        //    HtmlWeb web = new HtmlWeb();
-
-        //    var htmlDoc = web.Load(url);
-
-        //    var h1Anchor = htmlDoc.DocumentNode.SelectNodes(xpath);
-        //    var title = h1Anchor.Select(node => node.InnerText);
-
-        //    var item = title.ElementAt(0);
-
-        //    int end = item.LastIndexOf(" ") + 1;
-        //    int beginning = 0;
-        //    int count = end - beginning;
-
-        //    string versionNum = item.Remove(beginning, count);
-
-        //    if (versionNum != appVersion) DisplayWarning(modName + " version might not be compatable.\n" +
-        //        " Download the latest version of GPPInstaller to prevent any errors. ");
-
-        //}
-
-        //private void GetVersionNumberSpaceDockScatterer(string url, string xpath, string appVersion)
-        //{
-        //    HtmlWeb web = new HtmlWeb();
-
-        //    var htmlDoc = web.Load(url);
-
-        //    var h2Anchor = htmlDoc.DocumentNode.SelectNodes(xpath);
-        //    var innerText = h2Anchor.Select(node => node.InnerText);
-
-        //    var item = innerText.ElementAt(0);
-
-        //    int leadingEnd = item.IndexOf(" ");
-        //    string versionNum = item.Remove(0, leadingEnd + 1);
-        //    int trailingStart = versionNum.IndexOf(" ");
-        //    int trailingCount = (versionNum.Length) - trailingStart;
-
-        //    versionNum = versionNum.Remove(trailingStart, trailingCount);
-
-
-        //    // if (versionNum != appVersion) DisplayWarning("Newer Scatter version is available.
-        //}
-
-        private void CheckKopernicus()
-        {
-
-        }
-
-        private void CheckGPP(HtmlWeb web)
-        {
-            
         }
 
         public void DisplayWarning(string message)
