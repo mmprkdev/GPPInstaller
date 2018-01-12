@@ -18,6 +18,8 @@ namespace GPPInstaller
         public static int doeIndex = 5;
         public static int cloudsLowResIndex = 6;
         public static int cloudsHighResIndex = 7;
+        public static int kerIndex = 8;
+        public static int kacIndex = 9;
 
         // Zip Path
         public static string kopernicusZipPath = @".\GPPInstaller\Kopernicus-1.3.1-2.zip";

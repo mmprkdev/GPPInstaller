@@ -7,9 +7,19 @@ using System.IO.Compression;
 using System.Net;
 using System.Diagnostics;
 
-// TODO: enable the apply button only after new changes have been made.
+// NOTE: Ideally we want the process of adding a new mod to be
+// as simple as adding the checkbox to the UI and adding a new
+// Mod entry to modList. Everything else should work dynamically.
+// Instances in code where you still need to change things statically:
+// - Core.SetCheckBoxes()
+// - Core.ProcessActionToTake()
+// - Core.UninstallMod()
+// - Scraper.AddLinks()
+// - Scraper.AddExtractedPath()
+// - Form1.DisableCheckBoxes()
+// - Form1.EnableCheckBoxes()
 
-// TODO: add extra utility mods (KER, Kerbal Alarm Clock)
+// TODO: redo the code base structure
 
 // TODO: Final bug fixing before release.
 
@@ -191,19 +201,40 @@ namespace GPPInstaller
                 ActionToTake = ""
             });
 
-            //modList.Add(new Mod()
-            //{
-            //    ModPackName = "Utility",
-            //    ModName = "KerbalEngineer",
-            //    DownloadAddress = "https://github.com/CYBUTEK/KerbalEngineer/releases/download/1.1.3.0/KerbalEngineer-1.1.3.0.zip",
-            //    ArchiveFileName = "KerbalEngineer-1.1.3.0.zip",
-            //    State_Downloaded = false,
-            //    State_Extracted = false,
-            //    State_Installed = false,
-            //    ActionToTake = ""
-            //});
+            modList.Add(new Mod()
+            {
+                ModType = "Utility",
+                ModName = "KerbalEngineer",
+                DownloadAddress = "",
+                ArchiveFileName = "",
+                ArchiveFilePath = @".\GPPInstaller",
+                ExtractedDirName = "",
+                ExtractedPath = @".\GPPInstaller",
+                InstallDirName = "KerbalEngineer",
+                InstallDestPath = @".\GameData",
+                State_Downloaded = false,
+                State_Extracted = false,
+                State_Installed = false,
+                ActionToTake = ""
+            });
 
-            RefreshModState();
+            modList.Add(new Mod()
+            {
+                ModType = "Utility",
+                ModName = "KerbalAlarmClock",
+                DownloadAddress = "",
+                ArchiveFileName = "",
+                ArchiveFilePath = @".\GPPInstaller",
+                ExtractedDirName = "",
+                ExtractedPath = @".\GPPInstaller",
+                InstallDirName = "TriggerTech",
+                InstallDestPath = @".\GameData",
+                State_Downloaded = false,
+                State_Extracted = false,
+                State_Installed = false,
+                ActionToTake = ""
+            });
+
         }
 
 
@@ -239,7 +270,7 @@ namespace GPPInstaller
             // extracted
             foreach (Mod mod in modList)
             {
-                if (Directory.Exists(mod.ExtractedPath + @"\" + mod.ExtractedDirName))
+                if (Directory.Exists(mod.ExtractedPath + @"\" + mod.InstallDirName))
                 {
                     mod.State_Extracted = true;
                 }
@@ -288,6 +319,7 @@ namespace GPPInstaller
 
         public void SetCheckBoxes(
             CheckBox coreCheckBox,
+            CheckBox utilityCheckBox,
             CheckBox visualsCheckBox,
             CheckBox cloudsLowResCheckBox,
             CheckBox cloudsHighResCheckBox)
@@ -301,6 +333,15 @@ namespace GPPInstaller
                         coreCheckBox.Checked = true;
                     }
                     else coreCheckBox.Checked = false;
+                }
+
+                if (mod.ModType == "Utility")
+                {
+                    if (mod.State_Installed == true)
+                    {
+                        utilityCheckBox.Checked = true;
+                    }
+                    else utilityCheckBox.Checked = false;
                 }
 
                 if (mod.ModType == "Visuals") 
@@ -340,6 +381,7 @@ namespace GPPInstaller
 
         public void ProcessActionToTake(
             CheckBox coreCheckBox,
+            CheckBox utilityCheckBox,
             CheckBox visualsCheckBox,
             CheckBox cloudsLowResCheckBox,
             CheckBox cloudsHighResCheckBox)
@@ -349,7 +391,13 @@ namespace GPPInstaller
                 if (mod.State_Installed == false)
                 {
                     if (mod.ModType == "Core" &&
-                    coreCheckBox.Checked == true)
+                        coreCheckBox.Checked == true)
+                    {
+                        mod.ActionToTake = "Install";
+                    }
+
+                    if (mod.ModType == "Utility" &&
+                        utilityCheckBox.Checked == true)
                     {
                         mod.ActionToTake = "Install";
                     }
@@ -377,6 +425,12 @@ namespace GPPInstaller
                 {
                     if (mod.ModType == "Core" &&
                         coreCheckBox.Checked == false)
+                    {
+                        mod.ActionToTake = "Uninstall";
+                    }
+
+                    if (mod.ModType == "Utility" &&
+                        utilityCheckBox.Checked == false)
                     {
                         mod.ActionToTake = "Uninstall";
                     }
@@ -579,9 +633,6 @@ namespace GPPInstaller
             }
         }
 
-        // NOTE: When there are 2 processes, the first process does not
-        // complete fully. It get's past "Clouds"
-
         private void workerExtract_DoWork(object sender, DoWorkEventArgs e)
         {
             var args = (Tuple<string, string>)e.Argument;
@@ -640,6 +691,8 @@ namespace GPPInstaller
             workerExtract.CancelAsync();
         }
 
+        // BUG: When Utility is installed, high res clouds are not installed.
+        // When utility is not intalled high res clouds will install.
         private void InstallMod()
         {
             if (modIndex < modList.Count)
@@ -647,11 +700,13 @@ namespace GPPInstaller
                 if (modList[modIndex].State_Installed == false &&
                     modList[modIndex].ActionToTake == "Install")
                 {
-                    // TODO: Get rid of InstallSourcePath and just use the ExtractedDirPath for this variable.
                     string sourceDirName = modList[modIndex].ExtractedPath;
                     string destDirName = modList[modIndex].InstallDestPath;
 
-                    if (Directory.Exists(@".\GameData\GPP\GPP_Clouds")) Directory.Delete(@".\GameData\GPP\GPP_Clouds", true);
+                    if (modList[modIndex].ModType == "Clouds")
+                    {
+                        if (Directory.Exists(@".\GameData\GPP\GPP_Clouds")) Directory.Delete(@".\GameData\GPP\GPP_Clouds", true);
+                    }
 
                     var args = new Tuple<string, string, bool>(sourceDirName, destDirName, true);
                     workerInstall.RunWorkerAsync(args);
@@ -666,13 +721,11 @@ namespace GPPInstaller
             {
                 modIndex = 0;
                 ResetActionsToTake();
-
                 form1.RemoveProgressBar();
                 form1.RemoveCancelButton();
                 form1.DisplayGreenCheck();
                 form1.EnableExitButton();
                 form1.EnableCheckBoxes();
-                form1.EnableApplyButton();
                 form1.ProgressLabelUpdate("All changes applied successfully.");
             }
 
@@ -868,6 +921,8 @@ namespace GPPInstaller
                 modList[GlobalInfo.GPPIndex].State_Installed = false;
             }
 
+            
+
             if (modList[GlobalInfo.EVEIndex].ActionToTake == "Uninstall")
             {
                 if (Directory.Exists(@".\GameData\EnvironmentalVisualEnhancements")) Directory.Delete(@".\GameData\EnvironmentalVisualEnhancements", true);
@@ -901,6 +956,23 @@ namespace GPPInstaller
                 if (Directory.Exists(@".\GameData\GPP\GPP_Clouds")) Directory.Delete(@".\GameData\GPP\GPP_Clouds", true);
 
                 modList[GlobalInfo.cloudsHighResIndex].State_Installed = false;
+            }
+
+            if (modList[GlobalInfo.kerIndex].ActionToTake == "Uninstall")
+            {
+                if (Directory.Exists(@".\GameData\KerbalEngineer")) Directory.Delete(@".\GameData\KerbalEngineer", true);
+                File.Delete(@".\GameData\CHANGES.txt");
+                File.Delete(@".\GameData\LICENCE.txt");
+                File.Delete(@".\GameData\README.htm");
+
+                modList[GlobalInfo.kerIndex].State_Installed = false;
+            }
+
+            if (modList[GlobalInfo.kacIndex].ActionToTake == "Uninstall")
+            {
+                if (Directory.Exists(@".\GameData\TriggerTech")) Directory.Delete(@".\GameData\TriggerTech", true);
+
+                modList[GlobalInfo.kacIndex].State_Installed = false;
             }
         }
 
@@ -989,6 +1061,7 @@ namespace GPPInstaller
             form1.RemoveProgressBar();
             form1.RemoveCancelButton();
         }
+
     }
 
     class Mod

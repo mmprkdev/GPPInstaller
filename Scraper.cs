@@ -18,6 +18,8 @@ namespace GPPInstaller
             string eveUrl = "https://github.com/WazWaz/EnvironmentalVisualEnhancements/releases";
             string scattererUrl = "https://spacedock.info/mod/141/scatterer";
             string doeUrl = "https://github.com/MOARdV/DistantObject/releases";
+            string kerUrl = "https://github.com/CYBUTEK/KerbalEngineer/releases";
+            string kacUrl = "https://github.com/TriggerAu/KerbalAlarmClock/releases";
 
             string kopernicusXpath = "/html/body/div[4]/div/div/div[2]/div[1]/div[2]/div[1]/div[2]/div[2]/ul/li[1]/a";
             string gppXpath = "/html/body/div[4]/div/div/div[2]/div[1]/div[2]/div[1]/div[2]/div[2]/ul/li[1]/a";
@@ -25,7 +27,10 @@ namespace GPPInstaller
             string eveXpath = "/html/body/div[4]/div/div/div[2]/div[1]/div[2]/div[1]/div[2]/div[2]/ul/li[1]/a";
             string scattererXpath = "/html[1]/body[1]/div[3]/div[1]/div[2]/a[1]";
             string doeXpath = "/html/body/div[4]/div/div/div[2]/div[1]/div[2]/div[1]/div[2]/div[2]/ul/li[1]/a";
+            string kerXpath = "/html/body/div[4]/div/div/div[2]/div[1]/div[2]/div[1]/div[2]/div[2]/ul/li[1]/a";
+            string kacXpath = "/html/body/div[4]/div/div/div[2]/div[1]/div[2]/div[1]/div[2]/div[2]/ul/li[1]/a";
 
+            // TODO: use a for loop for these.
             // DownloadAddress
             modList[0].DownloadAddress = GetLink(kopernicusUrl, kopernicusXpath);
             modList[1].DownloadAddress = GetLink(gppUrl, gppXpath);
@@ -33,6 +38,8 @@ namespace GPPInstaller
             modList[3].DownloadAddress = GetLink(eveUrl, eveXpath);
             modList[4].DownloadAddress = GetLink(scattererUrl, scattererXpath);
             modList[5].DownloadAddress = GetLink(doeUrl, doeXpath);
+            modList[8].DownloadAddress = GetLink(kerUrl, kerXpath);
+            modList[9].DownloadAddress = GetLink(kacUrl, kacXpath);
 
             // ArchiveFileName
             modList[0].ArchiveFileName = GetArchiveFileName(modList[0].DownloadAddress);
@@ -41,6 +48,8 @@ namespace GPPInstaller
             modList[3].ArchiveFileName = GetArchiveFileName(modList[3].DownloadAddress);
             modList[4].ArchiveFileName = GetArchiveFileName(modList[4].DownloadAddress, true);
             modList[5].ArchiveFileName = GetArchiveFileName(modList[5].DownloadAddress);
+            modList[8].ArchiveFileName = GetArchiveFileName(modList[8].DownloadAddress);
+            modList[9].ArchiveFileName = GetArchiveFileName(modList[9].DownloadAddress);
 
             // ExtractedDirName
             modList[0].ExtractedDirName = RemoveZip(modList[0].ArchiveFileName);
@@ -49,9 +58,11 @@ namespace GPPInstaller
             modList[3].ExtractedDirName = RemoveZip(modList[3].ArchiveFileName);
             modList[4].ExtractedDirName = RemoveZip(modList[4].ArchiveFileName);
             modList[5].ExtractedDirName = RemoveZip(modList[5].ArchiveFileName);
+            modList[8].ExtractedDirName = RemoveZip(modList[8].ArchiveFileName);
+            modList[9].ExtractedDirName = RemoveZip(modList[9].ArchiveFileName);
 
-            // ExtractedPath 
-            for (int i = 0; i < 8; i++)
+            // ExtractedPathClouds 
+            for (int i = 0; i < modList.Count; i++)
             {
                 if (modList[i].ModType == "Clouds")
                 {
@@ -153,10 +164,18 @@ namespace GPPInstaller
             {
                 return @".\GPPInstaller\" + extractedDirName + @"\Optional Mods\GPP_Clouds\High-res Clouds_GameData inside\GameData\GPP";
             }
-            else
+            else if (modName == "KerbalEngineer")
+            {
+                return @".\GPPInstaller\" + extractedDirName;
+            }
+            else if (modName == "GPP_Textures")
             {
                 return @".\GPPInstaller\" + extractedDirName + @"\GameData\GPP";
-            } 
+            }
+            else
+            {
+                return @".\GPPInstaller\" + extractedDirName + @"\GameData";
+            }
         }
 
     }

@@ -17,11 +17,13 @@ namespace GPPInstaller
 
             core = new Core(this);
 
-            core.SetCheckBoxes(checkBox1, checkBox2, checkBox3, checkBox4);
+            core.SetCheckBoxes(core_checkBox, utility_checkBox, visuals_checkBox, lowResClouds_checkBox, highResClouds_checkBox);
 
             InitialCheckForErrors();
 
-            Text = "GPP Installer(GPP v" +  core.GetGPPVersion() + ") (KSP v" + core.GetKSPVersionNumber() +")";
+            Text = "GPP Installer(GPP v" + core.GetGPPVersion() + ") (KSP v" + core.GetKSPVersionNumber() + ")";
+
+            DisableApplyButton();
         }
 
         private void InitialCheckForErrors()
@@ -75,7 +77,7 @@ namespace GPPInstaller
 
         public void RefreshCheckBoxes()
         {
-            core.SetCheckBoxes(checkBox1, checkBox2, checkBox3, checkBox4);
+            core.SetCheckBoxes(core_checkBox, utility_checkBox, visuals_checkBox, lowResClouds_checkBox, highResClouds_checkBox);
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -87,72 +89,78 @@ namespace GPPInstaller
             Application.Exit();
         }
 
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        private void core_checkBox_CheckedChanged(object sender, EventArgs e)
         {
-            // Core checkBox
+            EnableApplyButton();
 
-            if (!checkBox1.Checked) checkBox2.Checked = false;
+            if (!core_checkBox.Checked) visuals_checkBox.Checked = false;
         }
 
-        private void checkBox2_CheckedChanged(object sender, EventArgs e)
+        private void utility_checkBox_CheckedChanged(object sender, EventArgs e)
         {
-            // Visuals checkBox
+            EnableApplyButton();
+        }
 
-            if (checkBox2.Checked)
+        private void visuals_checkBox_CheckedChanged(object sender, EventArgs e)
+        {
+            EnableApplyButton();
+
+            if (visuals_checkBox.Checked)
             {
                 cloudTextureLabel.Visible = true;
-                checkBox3.Visible = true;
-                checkBox4.Visible = true;
+                lowResClouds_checkBox.Visible = true;
+                highResClouds_checkBox.Visible = true;
 
-                // NOTE:
-                // Automatically check checkBox1 when checkBox2 is checked,
+                // Automatically check core_checkBox when visuals_checkBox is checked,
                 // because we can only install the visual mods if the core mods
                 // are also installed.
-                if (!checkBox1.Checked) checkBox1.Checked = true;
+                if (!core_checkBox.Checked) core_checkBox.Checked = true;
             }
-            else if (checkBox2.Checked == false)
+            else if (visuals_checkBox.Checked == false)
             {
                 cloudTextureLabel.Visible = false;
 
-                checkBox3.Checked = false;
-                checkBox4.Checked = false;
+                lowResClouds_checkBox.Checked = false;
+                highResClouds_checkBox.Checked = false;
 
-                checkBox3.Visible = false;
-                checkBox4.Visible = false;
+                lowResClouds_checkBox.Visible = false;
+                highResClouds_checkBox.Visible = false;
             }
         }
 
-        private void checkBox3_CheckedChanged(object sender, EventArgs e)
+        private void lowResClouds_checkBox_CheckedChanged(object sender, EventArgs e)
         {
-            // CloudsLowRes checkBox
+            EnableApplyButton();
 
-            if (checkBox3.Checked) checkBox4.Checked = false;
+            if (lowResClouds_checkBox.Checked) highResClouds_checkBox.Checked = false;
 
         }
 
-        private void checkBox4_CheckedChanged(object sender, EventArgs e)
+        private void highResClouds_checkBox_CheckedChanged(object sender, EventArgs e)
         {
-            // CloudsHighRes checkBox
+            EnableApplyButton();
 
             applyButton.Enabled = true;
 
-            if (checkBox4.Checked) checkBox3.Checked = false;
+            if (highResClouds_checkBox.Checked) lowResClouds_checkBox.Checked = false;
         }
 
         private void DisableCheckBoxes()
         {
-            checkBox1.Enabled = false;
-            checkBox2.Enabled = false;
-            checkBox3.Enabled = false;
-            checkBox4.Enabled = false;
+            core_checkBox.Enabled = false;
+            utility_checkBox.Enabled = false;
+            visuals_checkBox.Enabled = false;
+            lowResClouds_checkBox.Enabled = false;
+            highResClouds_checkBox.Enabled = false;
         }
 
         public void EnableCheckBoxes()
         {
-            checkBox1.Enabled = true;
-            checkBox2.Enabled = true;
-            checkBox3.Enabled = true;
-            checkBox4.Enabled = true;
+            core_checkBox.Enabled = true;
+            utility_checkBox.Enabled = true;
+            visuals_checkBox.Enabled = true;
+            lowResClouds_checkBox.Enabled = true;
+            highResClouds_checkBox.Enabled = true;
         }
 
         public void ProgressBar1Init()
@@ -168,7 +176,7 @@ namespace GPPInstaller
 
         public void ProgressBar1Step()
         {
-            
+
             progressBar1.PerformStep();
         }
 
@@ -190,7 +198,7 @@ namespace GPPInstaller
             applyButton.Enabled = false;
             DisableCheckBoxes();
 
-            core.ProcessActionToTake(checkBox1, checkBox2, checkBox3, checkBox4);
+            core.ProcessActionToTake(core_checkBox, utility_checkBox, visuals_checkBox, lowResClouds_checkBox, highResClouds_checkBox);
             core.UninstallMod();
             ProgressBar1Init();
             core.DownloadMod();
@@ -283,9 +291,11 @@ namespace GPPInstaller
             progressLabel.Text += message + "\n";
         }
 
-        private void label2_Click(object sender, EventArgs e)
+        public void DisableApplyButton()
         {
-
+            applyButton.Enabled = false;
         }
+
+        
     }
 }
