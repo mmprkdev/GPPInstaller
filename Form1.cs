@@ -13,17 +13,28 @@ namespace GPPInstaller
         {
             InitializeComponent();
 
-            Directory.CreateDirectory(".\\GPPInstaller");
-
             core = new Core(this);
 
             core.SetCheckBoxes(core_checkBox, utility_checkBox, visuals_checkBox, lowResClouds_checkBox, highResClouds_checkBox);
 
+            Text = "GPP Installer(GPP v" + core.GetGPPVersion() + ") (KSP v" + GetKSPVersionNumber() + ")";
+
             InitialCheckForErrors();
 
-            Text = "GPP Installer(GPP v" + core.GetGPPVersion() + ") (KSP v" + core.GetKSPVersionNumber() + ")";
-
             DisableApplyButton();
+
+            Directory.CreateDirectory(".\\GPPInstaller");
+        }
+
+        public string GetGPPVersion()
+        {
+            string dirName = core.modList[GlobalInfo.gppIndex].ExtractedDirName;
+            int offset = dirName.LastIndexOf(".");
+            offset = dirName.LastIndexOf(".", offset - 1);
+            int leadingEnd = dirName.LastIndexOf(".", offset - 1) + 1;
+            string result = dirName.Remove(0, leadingEnd);
+
+            return result;
         }
 
         private void InitialCheckForErrors()
@@ -33,7 +44,7 @@ namespace GPPInstaller
 
             if (!File.Exists(versionTarget))
             {
-                DisplayError("Could not determine KSP version. Make sure the \"readme.txt\" file exists.");
+                ErrorGeneral("Could not determine KSP version. Make sure the \"readme.txt\" file exists.");
             }
 
             string[] readmeLines = File.ReadAllLines(versionTarget);
@@ -50,7 +61,7 @@ namespace GPPInstaller
 
             if (detectedVersionNumber != GlobalInfo.compatableKSPVersion)
             {
-                DisplayError("The detected KSP version " + detectedVersionNumber + " is not compatable. Version " + GlobalInfo.compatableKSPVersion + " is required.");
+                ErrorGeneral("The detected KSP version " + detectedVersionNumber + " is not compatable. Version " + GlobalInfo.compatableKSPVersion + " is required.");
             }
 
             // EXE
@@ -66,11 +77,11 @@ namespace GPPInstaller
             else if (File.Exists(exeTarget32))
             {
                 currentExe = "32";
-                DisplayError("32 bit version of KSP was detected. GPP requires a 64 bit version of KSP in order to run.");
+                ErrorGeneral("32 bit version of KSP was detected. GPP requires a 64 bit version of KSP in order to run.");
             }
             else
             {
-                DisplayError("Could not determine the exe type. Make sure the KSP exicutable file exists.");
+                ErrorGeneral("Could not determine the exe type. Make sure the KSP exicutable file exists.");
             }
 
         }
@@ -256,19 +267,7 @@ namespace GPPInstaller
             cancelButton.Visible = false;
         }
 
-        public void DisplayError(string message)
-        {
-            DisplayRedCheck();
-
-            progressBar1.Visible = false;
-
-            progressLabel.Visible = true;
-            progressLabel.Text += "Error: " + message + "\n";
-
-            DisableCheckBoxes();
-            restartButton.Visible = true;
-            applyButton.Visible = false;
-        }
+        
 
         public void DisplayYellowWarning()
         {
@@ -296,6 +295,69 @@ namespace GPPInstaller
             applyButton.Enabled = false;
         }
 
-        
+        public string GetKSPVersionNumber()
+        {
+            string target = ".\\readme.txt";
+
+            if (!File.Exists(target))
+            {
+                ErrorGeneral("Could not determine KSP version. Make sure KSP is installed properly.");
+                return "";
+            }
+
+            string[] readmeLines = File.ReadAllLines(target);
+
+            string versionNumberLine = readmeLines[14];
+
+            char[] versionChars = new char[5];
+            for (int lineI = 8, charI = 0; lineI <= 12; lineI++, charI++)
+            {
+                versionChars[charI] = versionNumberLine[lineI];
+            }
+
+            string versionNumber = new string(versionChars);
+
+            return versionNumber;
+        }
+
+        public void ErrorGeneral(string message)
+        {
+            DisplayRedCheck();
+
+            progressBar1.Visible = false;
+
+            progressLabel.Visible = true;
+            progressLabel.Text += "Error: " + message + "\n";
+
+            DisableCheckBoxes();
+            restartButton.Visible = true;
+            applyButton.Visible = false;
+        }
+
+        public void ErrorNoInternetConnection(string message)
+        {
+            progressLabel.Text += "Error: " + message + "\n";
+            DisplayRedCheck();
+            RemoveProgressBar();
+            RemoveCancelButton();
+        }
+
+        public void ErrorInvalidData(string message)
+        {
+            progressLabel.Text += "Error: " + message + "\n";
+            DisplayRedCheck();
+            RemoveProgressBar();
+            RemoveCancelButton();
+        }
+
+        public void ErrorScraperFail(string message)
+        {
+            DisplayRedCheck();
+            progressLabel.Text += message + "\n";
+            progressLabel.Visible = true;
+            DisableCheckBoxes();
+
+        }
+
     }
 }
