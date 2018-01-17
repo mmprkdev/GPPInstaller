@@ -21,12 +21,14 @@ namespace GPPInstaller
         public string ArchiveFileName { get; set; }
         public string ExtractedPath { get; set; }
         public string ExtractedDirName { get; set; }
+        public string InstallSourcePath { get; set; }
         public string InstallDestPath { get; set; }
         public string InstallDirName { get; set; }
         public bool State_Downloaded { get; set; }
         public bool State_Extracted { get; set; }
         public bool State_Installed { get; set; }
         public string ActionToTake { get; set; }
+        public string VersionNumber { get; set; }
     }
 
 }

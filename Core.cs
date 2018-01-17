@@ -19,7 +19,15 @@ using System.Linq;
 // - Form1.DisableCheckBoxes()
 // - Form1.EnableCheckBoxes()
 
-// TODO: Handle situations where a download site may not be accessable (spacedock scatterer)
+// NOTE: I'm deciding to use static download links instead of scraping them from the 
+// web and using the latest mod releasees because using the latest mod releases without
+// manually checking for compatibility between all the different mods could cause problems
+// and the users save files will most likely become unusable between updates. Better to keep things
+// static and maybe update the installer bi-weekly - monthly and prompt the user if they want to update
+// the installer to a new version.
+
+// TODO: Uninstall older versions of mods first before starting any new installation.
+// Check the current mod versions with what is currently installed.
 
 // TODO: Final bug fixing before release.
 
@@ -57,116 +65,122 @@ namespace GPPInstaller
 
             InitModList();
 
-            ScrapeLinks();
-            AddFieldsToModList();
+            //AddFieldsToModList();
 
-            CheckForScraperErrors();
+            //GetCurrentlyInstalledModVersionNumber();
 
             RefreshModState();
         }
 
+        // TODO: give everything an install source path
         public void InitModList()
         {
             modList.Add(new Mod()
             {
                 ModType = "Core",
                 ModName = "Kopernicus",
-                DownloadAddress = "",
-                ArchiveFileName = "",
+                DownloadAddress = GlobalInfo.kopernicusDownloadLink,
+                ArchiveFileName = GlobalInfo.kopernicusZip,
                 ArchiveFilePath = @".\GPPInstaller",
-                ExtractedDirName = "",
+                ExtractedDirName = GlobalInfo.kopernicusExtracted,
                 ExtractedPath = @".\GPPInstaller",
                 InstallDirName = "Kopernicus",
                 InstallDestPath = @".\GameData",
                 State_Downloaded = false,
                 State_Extracted = false,
                 State_Installed = false,
-                ActionToTake = ""
+                ActionToTake = "",
+                VersionNumber = ""
             });
 
             modList.Add(new Mod()
             {
                 ModType = "Core",
                 ModName = "GPP",
-                DownloadAddress = "",
-                ArchiveFileName = "",
+                DownloadAddress = GlobalInfo.gppDownloadLink,
+                ArchiveFileName = GlobalInfo.gppZip,
                 ArchiveFilePath = @".\GPPInstaller",
-                ExtractedDirName = "",
+                ExtractedDirName = GlobalInfo.gppExtracted,
                 ExtractedPath = @".\GPPInstaller",
                 InstallDirName = "GPP",
                 InstallDestPath = @".\GameData",
                 State_Downloaded = false,
                 State_Extracted = false,
                 State_Installed = false,
-                ActionToTake = ""
+                ActionToTake = "",
+                VersionNumber = ""
             });
 
             modList.Add(new Mod()
             {
                 ModType = "Core",
                 ModName = "GPP_Textures",
-                DownloadAddress = "",
-                ArchiveFileName = "",
+                DownloadAddress = GlobalInfo.gppTexturesDownloadLink,
+                ArchiveFileName = GlobalInfo.gppTexturesZip,
                 ArchiveFilePath = @".\GPPInstaller",
-                ExtractedDirName = "",
+                ExtractedDirName = GlobalInfo.gppTexturesExtracted,
                 ExtractedPath = @".\GPPInstaller",
                 InstallDirName = "GPP_Textures",
                 InstallDestPath = @".\GameData\GPP",
                 State_Downloaded = false,
                 State_Extracted = false,
                 State_Installed = false,
-                ActionToTake = ""
+                ActionToTake = "",
+                VersionNumber = ""
             });
 
             modList.Add(new Mod()
             {
                 ModType = "Visuals",
                 ModName = "EVE",
-                DownloadAddress = "",
-                ArchiveFileName = "",
+                DownloadAddress = GlobalInfo.eveDownloadLink,
+                ArchiveFileName = GlobalInfo.eveZip,
                 ArchiveFilePath = @".\GPPInstaller",
-                ExtractedDirName = "",
+                ExtractedDirName = GlobalInfo.eveExtracted,
                 ExtractedPath = @".\GPPInstaller",
                 InstallDirName = "EnvironmentalVisualEnhancements",
                 InstallDestPath = @".\GameData",
                 State_Downloaded = false,
                 State_Extracted = false,
                 State_Installed = false,
-                ActionToTake = ""
+                ActionToTake = "",
+                VersionNumber = ""
             });
 
             modList.Add(new Mod()
             {
                 ModType = "Visuals",
                 ModName = "Scatterer",
-                DownloadAddress = "",
-                ArchiveFileName = "",
+                DownloadAddress = GlobalInfo.scattererDownloadLink,
+                ArchiveFileName = GlobalInfo.scattererZip,
                 ArchiveFilePath = @".\GPPInstaller",
-                ExtractedDirName = "",
+                ExtractedDirName = GlobalInfo.scattererExtracted,
                 ExtractedPath = @".\GPPInstaller",
                 InstallDirName = "scatterer",
                 InstallDestPath = @".\GameData",
                 State_Downloaded = false,
                 State_Extracted = false,
                 State_Installed = false,
-                ActionToTake = ""
+                ActionToTake = "",
+                VersionNumber = ""
             });
 
             modList.Add(new Mod()
             {
                 ModType = "Visuals",
                 ModName = "DistantObjectEnhancement",
-                DownloadAddress = "",
-                ArchiveFileName = "",
+                DownloadAddress = GlobalInfo.doeDownloadLink,
+                ArchiveFileName = GlobalInfo.doeZip,
                 ArchiveFilePath = @".\GPPInstaller",
-                ExtractedDirName = "",
+                ExtractedDirName = GlobalInfo.doeExtracted,
                 ExtractedPath = @".\GPPInstaller",
                 InstallDirName = "DistantObject",
                 InstallDestPath = @".\GameData",
                 State_Downloaded = false,
                 State_Extracted = false,
                 State_Installed = false,
-                ActionToTake = ""
+                ActionToTake = "",
+                VersionNumber = ""
             });
 
             modList.Add(new Mod()
@@ -176,14 +190,15 @@ namespace GPPInstaller
                 DownloadAddress = "",
                 ArchiveFileName = "",
                 ArchiveFilePath = "",
-                ExtractedDirName = "GPP_Clouds",
+                ExtractedDirName = GlobalInfo.cloudsLowResExtracted,
                 ExtractedPath = "",
                 InstallDirName = "GPP_Clouds",
                 InstallDestPath = @".\GameData\GPP",
                 State_Downloaded = false,
                 State_Extracted = false,
                 State_Installed = false,
-                ActionToTake = ""
+                ActionToTake = "",
+                VersionNumber = ""
             });
 
             modList.Add(new Mod()
@@ -193,233 +208,239 @@ namespace GPPInstaller
                 DownloadAddress = "",
                 ArchiveFileName = "",
                 ArchiveFilePath = "",
-                ExtractedDirName = "GPP_Clouds",
+                ExtractedDirName = GlobalInfo.cloudsHighResExtracted,
                 ExtractedPath = "",
                 InstallDirName = "GPP_Clouds",
                 InstallDestPath = @".\GameData\GPP",
                 State_Downloaded = false,
                 State_Extracted = false,
                 State_Installed = false,
-                ActionToTake = ""
+                ActionToTake = "",
+                VersionNumber = ""
             });
 
             modList.Add(new Mod()
             {
                 ModType = "Utility",
                 ModName = "KerbalEngineer",
-                DownloadAddress = "",
-                ArchiveFileName = "",
+                DownloadAddress = GlobalInfo.kerDownloadLink,
+                ArchiveFileName = GlobalInfo.kerZip,
                 ArchiveFilePath = @".\GPPInstaller",
-                ExtractedDirName = "",
+                ExtractedDirName = GlobalInfo.kerExtracted,
                 ExtractedPath = @".\GPPInstaller",
                 InstallDirName = "KerbalEngineer",
                 InstallDestPath = @".\GameData",
                 State_Downloaded = false,
                 State_Extracted = false,
                 State_Installed = false,
-                ActionToTake = ""
+                ActionToTake = "",
+                VersionNumber = ""
             });
 
             modList.Add(new Mod()
             {
                 ModType = "Utility",
                 ModName = "KerbalAlarmClock",
-                DownloadAddress = "",
-                ArchiveFileName = "",
+                DownloadAddress = GlobalInfo.kacDownloadLink,
+                ArchiveFileName = GlobalInfo.kacZip,
                 ArchiveFilePath = @".\GPPInstaller",
-                ExtractedDirName = "",
+                ExtractedDirName = GlobalInfo.kacExtracted,
                 ExtractedPath = @".\GPPInstaller",
                 InstallDirName = "TriggerTech",
                 InstallDestPath = @".\GameData",
                 State_Downloaded = false,
                 State_Extracted = false,
                 State_Installed = false,
-                ActionToTake = ""
+                ActionToTake = "",
+                VersionNumber = ""
             });
 
         }
 
-        private void CheckForScraperErrors()
-        {
-            foreach (string url in failedLinks)
-            {
-                if (failedLinks.Any())
-                {
-                    form1.ErrorScraperFail("Failed to connect to: " + url);
-                }
-            }
-        }
+        //private void GetCurrentlyInstalledModVersionNumber()
+        //{
+        //    foreach (Mod mod in modList)
+        //    {
+        //        // TODO: left off here
+        //        if (mod.State_Installed == true)
+        //        {
+        //            //Grab VersionOf Installed mod files
 
-        public void ScrapeLinks()
-        {
-            modList[GlobalInfo.kopericusIndex].DownloadAddress = GetLink(GlobalInfo.kopernicusUrl, GlobalInfo.kopernicusXpath);
-            modList[GlobalInfo.gppIndex].DownloadAddress = GetLink(GlobalInfo.gppUrl, GlobalInfo.gppXpath);
-            modList[GlobalInfo.gppTexturesIndex].DownloadAddress = GetLink(GlobalInfo.gppTexturesUrl, GlobalInfo.gppTexturesXpath);
-            modList[GlobalInfo.eveIndex].DownloadAddress = GetLink(GlobalInfo.eveUrl, GlobalInfo.eveXpath);
-            modList[GlobalInfo.scattererIndex].DownloadAddress = GetLink(GlobalInfo.scattererUrl, GlobalInfo.scattererXpath);
-            modList[GlobalInfo.doeIndex].DownloadAddress = GetLink(GlobalInfo.doeUrl, GlobalInfo.doeXpath);
-            modList[GlobalInfo.kerIndex].DownloadAddress = GetLink(GlobalInfo.kerUrl, GlobalInfo.kerXpath);
-            modList[GlobalInfo.kacIndex].DownloadAddress = GetLink(GlobalInfo.kacUrl, GlobalInfo.kacXpath);
-        }
+        //        }
+        //    }
+        //}
 
-        private string GetLink(string url, string xpath)
-        {
-            HtmlWeb web = new HtmlWeb();
-
-            try
-            {
-                var htmlDoc = web.Load(url);
-                var anchor = htmlDoc.DocumentNode.SelectNodes(xpath);
-
-                var outterHtml = anchor.Select(node => node.OuterHtml);
-                string item = outterHtml.ElementAt(0);
-
-                string link;
-
-                if (url == "https://spacedock.info/mod/141/scatterer")
-                {
-                    int leadingEnd = item.IndexOf("h") - 1;
-                    string href = item.Remove(0, leadingEnd + 1);
-                    leadingEnd = href.IndexOf('"') + 1;
-                    href = href.Remove(0, leadingEnd);
-                    int trailingStart = href.LastIndexOf('"');
-                    href = href.Remove(trailingStart, (href.Length - trailingStart));
-
-                    link = "https://spacedock.info" + href;
-                }
-                else
-                {
-                    int leadingEnd = item.IndexOf('"');
-                    link = item.Remove(0, leadingEnd + 1);
-                    int trailingStart = link.IndexOf('"');
-                    link = link.Remove(trailingStart, link.Length - trailingStart);
-                    link = "https://github.com" + link;
-                }
-
-                return link;
-            }
-            catch (Exception e)
-            {
-                AddFailedLink(url);
-                return "";
-            }
-        }
-
-        public void AddFailedLink(string downloadLink)
-        {
-            failedLinks.Add(downloadLink);
-        }
+        //private void CheckForScraperErrors()
+        //{
+        //    foreach (string url in failedLinks)
+        //    {
+        //        if (failedLinks.Any())
+        //        {
+        //            form1.ErrorScraperFail("Failed to connect to: " + url);
+        //        }
+        //    }
+        //}
 
         
 
-        private void AddFieldsToModList()
-        {
-            // ArchiveFileName
-            for (int i = 0; i < modList.Count; i++)
-            {
-                if (i != GlobalInfo.cloudsLowResIndex && i != GlobalInfo.cloudsHighResIndex)
-                {
-                    if (modList[i].ModName == "Scatterer")
-                    {
-                        modList[i].ArchiveFileName = GetArchiveFileName(modList[i].DownloadAddress, true);
-                    }
-                    else
-                    {
-                        modList[i].ArchiveFileName = GetArchiveFileName(modList[i].DownloadAddress);
-                    }
+        //private string GetLink(string url, string xpath)
+        //{
+        //    HtmlWeb web = new HtmlWeb();
+
+        //    try
+        //    {
+        //        var htmlDoc = web.Load(url);
+        //        var anchor = htmlDoc.DocumentNode.SelectNodes(xpath);
+
+        //        var outterHtml = anchor.Select(node => node.OuterHtml);
+        //        string item = outterHtml.ElementAt(0);
+
+        //        string link;
+
+        //        if (url == "https://spacedock.info/mod/141/scatterer")
+        //        {
+        //            int leadingEnd = item.IndexOf("h") - 1;
+        //            string href = item.Remove(0, leadingEnd + 1);
+        //            leadingEnd = href.IndexOf('"') + 1;
+        //            href = href.Remove(0, leadingEnd);
+        //            int trailingStart = href.LastIndexOf('"');
+        //            href = href.Remove(trailingStart, (href.Length - trailingStart));
+
+        //            link = "https://spacedock.info" + href;
+        //        }
+        //        else
+        //        {
+        //            int leadingEnd = item.IndexOf('"');
+        //            link = item.Remove(0, leadingEnd + 1);
+        //            int trailingStart = link.IndexOf('"');
+        //            link = link.Remove(trailingStart, link.Length - trailingStart);
+        //            link = "https://github.com" + link;
+        //        }
+
+        //        return link;
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        AddFailedLink(url);
+        //        return "";
+        //    }
+        //}
+
+        //public void AddFailedLink(string downloadLink)
+        //{
+        //    failedLinks.Add(downloadLink);
+        //}
+
+        
+
+        //private void AddFieldsToModList()
+        //{
+        //    // ArchiveFileName
+        //    for (int i = 0; i < modList.Count; i++)
+        //    {
+        //        if (i != GlobalInfo.cloudsLowResIndex && i != GlobalInfo.cloudsHighResIndex)
+        //        {
+        //            if (modList[i].ModName == "Scatterer")
+        //            {
+        //                modList[i].ArchiveFileName = GetArchiveFileName(modList[i].DownloadAddress, true);
+        //            }
+        //            else
+        //            {
+        //                modList[i].ArchiveFileName = GetArchiveFileName(modList[i].DownloadAddress);
+        //            }
 
                     
-                }
-            }
+        //        }
+        //    }
 
-            // ExtractedDirName
-            for (int i = 0; i < modList.Count; i++)
-            {
-                if (i != GlobalInfo.cloudsLowResIndex && i != GlobalInfo.cloudsHighResIndex)
-                {
-                    modList[i].ExtractedDirName = GlobalInfo.RemoveZip(modList[i].ArchiveFileName);
-                }
-            }
+        //    // ExtractedDirName
+        //    for (int i = 0; i < modList.Count; i++)
+        //    {
+        //        if (i != GlobalInfo.cloudsLowResIndex && i != GlobalInfo.cloudsHighResIndex)
+        //        {
+        //            modList[i].ExtractedDirName = GlobalInfo.RemoveZip(modList[i].ArchiveFileName);
+        //        }
+        //    }
 
-            // ExtractedDirPath
-            for (int i = 0; i < modList.Count; i++)
-            {
-                if (modList[i].ModType == "Clouds")
-                {
-                    modList[i].ExtractedPath = AddExtractedPath(modList[i].ModName, modList[1].ExtractedDirName);
-                }
-                else
-                {
-                    modList[i].ExtractedPath = AddExtractedPath(modList[i].ModName, modList[i].ExtractedDirName);
-                }
-            }
-        }
+        //    // ExtractedDirPath
+        //    for (int i = 0; i < modList.Count; i++)
+        //    {
+        //        if (modList[i].ModType == "Clouds")
+        //        {
+        //            modList[i].ExtractedPath = AddExtractedPath(modList[i].ModName, modList[1].ExtractedDirName);
+        //        }
+        //        else
+        //        {
+        //            modList[i].ExtractedPath = AddExtractedPath(modList[i].ModName, modList[i].ExtractedDirName);
+        //        }
+        //    }
+        //}
 
-        public string GetArchiveFileName(string downloadLink)
-        {
-            if (downloadLink != "")
-            {
-                int subStart = downloadLink.LastIndexOf('/') + 1;
-                int length = downloadLink.Length - subStart;
-                string archive = downloadLink.Substring(subStart, length);
+        //public string GetArchiveFileName(string downloadLink)
+        //{
+        //    if (downloadLink != "")
+        //    {
+        //        int subStart = downloadLink.LastIndexOf('/') + 1;
+        //        int length = downloadLink.Length - subStart;
+        //        string archive = downloadLink.Substring(subStart, length);
 
-                return archive;
-            }
-            else
-            {
-                return "";
-            } 
+        //        return archive;
+        //    }
+        //    else
+        //    {
+        //        return "";
+        //    } 
 
-        }
+        //}
 
-        public string GetArchiveFileName(string downloadLink, bool isScatter)
-        {
-            if (downloadLink != "")
-            {
-                string archive;
+        //public string GetArchiveFileName(string downloadLink, bool isScatter)
+        //{
+        //    if (downloadLink != "")
+        //    {
+        //        string archive;
 
-                int offset = downloadLink.IndexOf('/');
-                offset = downloadLink.IndexOf('/', offset + 1);
-                offset = downloadLink.IndexOf('/', offset + 1);
-                offset = downloadLink.IndexOf('/', offset + 1);
-                int count = downloadLink.Length - offset;
-                archive = downloadLink.Remove(0, count);
+        //        int offset = downloadLink.IndexOf('/');
+        //        offset = downloadLink.IndexOf('/', offset + 1);
+        //        offset = downloadLink.IndexOf('/', offset + 1);
+        //        offset = downloadLink.IndexOf('/', offset + 1);
+        //        int count = downloadLink.Length - offset;
+        //        archive = downloadLink.Remove(0, count);
 
-                int start = archive.IndexOf('/');
-                int end = archive.LastIndexOf('/');
-                count = end - start;
-                archive = archive.Remove(start, count);
-                archive = archive.Replace('/', '-');
-                archive += ".zip";
+        //        int start = archive.IndexOf('/');
+        //        int end = archive.LastIndexOf('/');
+        //        count = end - start;
+        //        archive = archive.Remove(start, count);
+        //        archive = archive.Replace('/', '-');
+        //        archive += ".zip";
 
-                return archive;
-            }
-            else return "";
-        }
+        //        return archive;
+        //    }
+        //    else return "";
+        //}
 
-        private string AddExtractedPath(string modName, string extractedDirName)
-        {
-            if (modName == "CloudsLowRes")
-            {
-                return @".\GPPInstaller\" + extractedDirName + @"\Optional Mods\GPP_Clouds\Low-res Clouds_GameData inside\GameData\GPP";
-            }
-            else if (modName == "CloudsHighRes")
-            {
-                return @".\GPPInstaller\" + extractedDirName + @"\Optional Mods\GPP_Clouds\High-res Clouds_GameData inside\GameData\GPP";
-            }
-            else if (modName == "KerbalEngineer")
-            {
-                return @".\GPPInstaller\" + extractedDirName;
-            }
-            else if (modName == "GPP_Textures")
-            {
-                return @".\GPPInstaller\" + extractedDirName + @"\GameData\GPP";
-            }
-            else
-            {
-                return @".\GPPInstaller\" + extractedDirName + @"\GameData";
-            }
-        }
+        //private string AddExtractedPath(string modName, string extractedDirName)
+        //{
+        //    if (modName == "CloudsLowRes")
+        //    {
+        //        return @".\GPPInstaller\" + extractedDirName + @"\Optional Mods\GPP_Clouds\Low-res Clouds_GameData inside\GameData\GPP";
+        //    }
+        //    else if (modName == "CloudsHighRes")
+        //    {
+        //        return @".\GPPInstaller\" + extractedDirName + @"\Optional Mods\GPP_Clouds\High-res Clouds_GameData inside\GameData\GPP";
+        //    }
+        //    else if (modName == "KerbalEngineer")
+        //    {
+        //        return @".\GPPInstaller\" + extractedDirName;
+        //    }
+        //    else if (modName == "GPP_Textures")
+        //    {
+        //        return @".\GPPInstaller\" + extractedDirName + @"\GameData\GPP";
+        //    }
+        //    else
+        //    {
+        //        return @".\GPPInstaller\" + extractedDirName + @"\GameData";
+        //    }
+        //}
 
 
         public void RefreshModState()
@@ -454,7 +475,7 @@ namespace GPPInstaller
             // extracted
             foreach (Mod mod in modList)
             {
-                if (Directory.Exists(mod.ExtractedPath + @"\" + mod.InstallDirName))
+                if (Directory.Exists(mod.ExtractedPath + @"\" + mod.ExtractedDirName))
                 {
                     mod.State_Extracted = true;
                 }
@@ -881,7 +902,7 @@ namespace GPPInstaller
                 if (modList[modIndex].State_Installed == false &&
                     modList[modIndex].ActionToTake == "Install")
                 {
-                    string sourceDirName = modList[modIndex].ExtractedPath;
+                    string sourceDirName = modList[modIndex].ExtractedPath + @"\" + modList[modIndex].ExtractedDirName;
                     string destDirName = modList[modIndex].InstallDestPath;
 
                     if (modList[modIndex].ModType == "Clouds")
@@ -1030,13 +1051,21 @@ namespace GPPInstaller
 
         public string GetGPPVersion()
         {
-            string dirName = modList[GlobalInfo.gppIndex].ExtractedDirName;
-            int offset = dirName.LastIndexOf(".");
-            offset = dirName.LastIndexOf(".", offset - 1);
-            int leadingEnd = dirName.LastIndexOf(".", offset - 1) + 1;
-            string result = dirName.Remove(0, leadingEnd);
+            try
+            {
+                string dirName = modList[GlobalInfo.gppIndex].ExtractedDirName;
+                int offset = dirName.LastIndexOf(".");
+                offset = dirName.LastIndexOf(".", offset - 1);
+                int leadingEnd = dirName.LastIndexOf(".", offset - 1) + 1;
+                string result = dirName.Remove(0, leadingEnd);
 
-            return result;
+                return result;
+            }
+            catch (Exception e)
+            {
+                return "";
+            }
+            
         }
 
         public void UninstallMod()

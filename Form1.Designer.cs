@@ -46,9 +46,27 @@
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.utility_checkBox = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.doeAuthorsLabel = new System.Windows.Forms.Label();
+            this.eveAuthorsLabel = new System.Windows.Forms.Label();
+            this.scattererAuthorsLabel = new System.Windows.Forms.Label();
+            this.kacAuthorsLabel = new System.Windows.Forms.Label();
+            this.kerAuthorsLabel = new System.Windows.Forms.Label();
+            this.gppAuthorsLabel = new System.Windows.Forms.Label();
+            this.kopernicusAuthorsLabel = new System.Windows.Forms.Label();
+            this.authorsColumnHeaderLabel = new System.Windows.Forms.Label();
+            this.modnameColumnHeaderLabel = new System.Windows.Forms.Label();
+            this.doeModNameLabel = new System.Windows.Forms.Label();
+            this.eveModNameLabel = new System.Windows.Forms.Label();
+            this.scattererModNameLabel = new System.Windows.Forms.Label();
+            this.kacModNameLabel = new System.Windows.Forms.Label();
+            this.kerModNameLabel = new System.Windows.Forms.Label();
+            this.gppModNameLabel = new System.Windows.Forms.Label();
+            this.kopernicusModNameLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLeftPic)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxRightPic)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // core_checkBox
@@ -210,7 +228,7 @@
             // pictureBoxRightPic
             // 
             this.pictureBoxRightPic.Image = global::GPPInstaller.Properties.Resources.screenshot2_right;
-            this.pictureBoxRightPic.Location = new System.Drawing.Point(686, 1);
+            this.pictureBoxRightPic.Location = new System.Drawing.Point(1033, 2);
             this.pictureBoxRightPic.Name = "pictureBoxRightPic";
             this.pictureBoxRightPic.Size = new System.Drawing.Size(145, 563);
             this.pictureBoxRightPic.TabIndex = 20;
@@ -248,11 +266,216 @@
             this.label1.TabIndex = 24;
             this.label1.Text = "Kerbal Engineer, Kerbal Alarm Clock";
             // 
+            // panel1
+            // 
+            this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel1.Controls.Add(this.doeAuthorsLabel);
+            this.panel1.Controls.Add(this.eveAuthorsLabel);
+            this.panel1.Controls.Add(this.scattererAuthorsLabel);
+            this.panel1.Controls.Add(this.kacAuthorsLabel);
+            this.panel1.Controls.Add(this.kerAuthorsLabel);
+            this.panel1.Controls.Add(this.gppAuthorsLabel);
+            this.panel1.Controls.Add(this.kopernicusAuthorsLabel);
+            this.panel1.Controls.Add(this.authorsColumnHeaderLabel);
+            this.panel1.Controls.Add(this.modnameColumnHeaderLabel);
+            this.panel1.Controls.Add(this.doeModNameLabel);
+            this.panel1.Controls.Add(this.eveModNameLabel);
+            this.panel1.Controls.Add(this.scattererModNameLabel);
+            this.panel1.Controls.Add(this.kacModNameLabel);
+            this.panel1.Controls.Add(this.kerModNameLabel);
+            this.panel1.Controls.Add(this.gppModNameLabel);
+            this.panel1.Controls.Add(this.kopernicusModNameLabel);
+            this.panel1.Location = new System.Drawing.Point(668, 0);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(368, 565);
+            this.panel1.TabIndex = 27;
+            // 
+            // doeAuthorsLabel
+            // 
+            this.doeAuthorsLabel.AutoSize = true;
+            this.doeAuthorsLabel.Location = new System.Drawing.Point(213, 389);
+            this.doeAuthorsLabel.Name = "doeAuthorsLabel";
+            this.doeAuthorsLabel.Size = new System.Drawing.Size(52, 13);
+            this.doeAuthorsLabel.TabIndex = 15;
+            this.doeAuthorsLabel.Text = "MOARdV";
+            // 
+            // eveAuthorsLabel
+            // 
+            this.eveAuthorsLabel.AutoSize = true;
+            this.eveAuthorsLabel.Location = new System.Drawing.Point(213, 344);
+            this.eveAuthorsLabel.Name = "eveAuthorsLabel";
+            this.eveAuthorsLabel.Size = new System.Drawing.Size(51, 13);
+            this.eveAuthorsLabel.TabIndex = 14;
+            this.eveAuthorsLabel.Text = "WazWaz";
+            // 
+            // scattererAuthorsLabel
+            // 
+            this.scattererAuthorsLabel.AutoSize = true;
+            this.scattererAuthorsLabel.Location = new System.Drawing.Point(213, 298);
+            this.scattererAuthorsLabel.Name = "scattererAuthorsLabel";
+            this.scattererAuthorsLabel.Size = new System.Drawing.Size(54, 13);
+            this.scattererAuthorsLabel.TabIndex = 13;
+            this.scattererAuthorsLabel.Text = "blackrack";
+            // 
+            // kacAuthorsLabel
+            // 
+            this.kacAuthorsLabel.AutoSize = true;
+            this.kacAuthorsLabel.Location = new System.Drawing.Point(213, 250);
+            this.kacAuthorsLabel.Name = "kacAuthorsLabel";
+            this.kacAuthorsLabel.Size = new System.Drawing.Size(53, 13);
+            this.kacAuthorsLabel.TabIndex = 12;
+            this.kacAuthorsLabel.Text = "TriggerAu";
+            // 
+            // kerAuthorsLabel
+            // 
+            this.kerAuthorsLabel.AutoSize = true;
+            this.kerAuthorsLabel.Location = new System.Drawing.Point(213, 207);
+            this.kerAuthorsLabel.Name = "kerAuthorsLabel";
+            this.kerAuthorsLabel.Size = new System.Drawing.Size(57, 13);
+            this.kerAuthorsLabel.TabIndex = 11;
+            this.kerAuthorsLabel.Text = "CYBUTEK";
+            // 
+            // gppAuthorsLabel
+            // 
+            this.gppAuthorsLabel.AutoSize = true;
+            this.gppAuthorsLabel.Location = new System.Drawing.Point(213, 164);
+            this.gppAuthorsLabel.Name = "gppAuthorsLabel";
+            this.gppAuthorsLabel.Size = new System.Drawing.Size(51, 13);
+            this.gppAuthorsLabel.TabIndex = 10;
+            this.gppAuthorsLabel.Text = "Galileo88";
+            // 
+            // kopernicusAuthorsLabel
+            // 
+            this.kopernicusAuthorsLabel.AutoSize = true;
+            this.kopernicusAuthorsLabel.Location = new System.Drawing.Point(213, 86);
+            this.kopernicusAuthorsLabel.Name = "kopernicusAuthorsLabel";
+            this.kopernicusAuthorsLabel.Size = new System.Drawing.Size(155, 52);
+            this.kopernicusAuthorsLabel.TabIndex = 9;
+            this.kopernicusAuthorsLabel.Text = "Bryce Schoeder, Tekoman117,\r\n Thomas P., NathanKell,\r\n KillAshley, Gravitasi, KCr" +
+    "eator,\r\n Sigma88";
+            // 
+            // authorsColumnHeaderLabel
+            // 
+            this.authorsColumnHeaderLabel.AutoSize = true;
+            this.authorsColumnHeaderLabel.Location = new System.Drawing.Point(213, 8);
+            this.authorsColumnHeaderLabel.Name = "authorsColumnHeaderLabel";
+            this.authorsColumnHeaderLabel.Size = new System.Drawing.Size(67, 13);
+            this.authorsColumnHeaderLabel.TabIndex = 8;
+            this.authorsColumnHeaderLabel.Text = "Mod Authors";
+            // 
+            // modnameColumnHeaderLabel
+            // 
+            this.modnameColumnHeaderLabel.AutoSize = true;
+            this.modnameColumnHeaderLabel.Location = new System.Drawing.Point(19, 8);
+            this.modnameColumnHeaderLabel.Name = "modnameColumnHeaderLabel";
+            this.modnameColumnHeaderLabel.Size = new System.Drawing.Size(109, 13);
+            this.modnameColumnHeaderLabel.TabIndex = 7;
+            this.modnameColumnHeaderLabel.Text = "Link to KSP form post";
+            // 
+            // doeModNameLabel
+            // 
+            this.doeModNameLabel.AutoSize = true;
+            this.doeModNameLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.doeModNameLabel.ForeColor = System.Drawing.SystemColors.HotTrack;
+            this.doeModNameLabel.Location = new System.Drawing.Point(19, 389);
+            this.doeModNameLabel.Name = "doeModNameLabel";
+            this.doeModNameLabel.Size = new System.Drawing.Size(74, 13);
+            this.doeModNameLabel.TabIndex = 6;
+            this.doeModNameLabel.Text = "Distant Object";
+            this.doeModNameLabel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.doeModNameLabel_MouseDown);
+            this.doeModNameLabel.MouseEnter += new System.EventHandler(this.doeModNameLabel_MouseEnter);
+            this.doeModNameLabel.MouseLeave += new System.EventHandler(this.doeModNameLabel_MouseLeave);
+            // 
+            // eveModNameLabel
+            // 
+            this.eveModNameLabel.AutoSize = true;
+            this.eveModNameLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.eveModNameLabel.ForeColor = System.Drawing.SystemColors.HotTrack;
+            this.eveModNameLabel.Location = new System.Drawing.Point(19, 344);
+            this.eveModNameLabel.Name = "eveModNameLabel";
+            this.eveModNameLabel.Size = new System.Drawing.Size(179, 13);
+            this.eveModNameLabel.TabIndex = 5;
+            this.eveModNameLabel.Text = "Environmental Visual Enhancements";
+            this.eveModNameLabel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.eveModNameLabel_MouseDown);
+            this.eveModNameLabel.MouseEnter += new System.EventHandler(this.eveModNameLabel_MouseEnter);
+            this.eveModNameLabel.MouseLeave += new System.EventHandler(this.eveModNameLabel_MouseLeave);
+            // 
+            // scattererModNameLabel
+            // 
+            this.scattererModNameLabel.AutoSize = true;
+            this.scattererModNameLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.scattererModNameLabel.ForeColor = System.Drawing.SystemColors.HotTrack;
+            this.scattererModNameLabel.Location = new System.Drawing.Point(19, 298);
+            this.scattererModNameLabel.Name = "scattererModNameLabel";
+            this.scattererModNameLabel.Size = new System.Drawing.Size(50, 13);
+            this.scattererModNameLabel.TabIndex = 4;
+            this.scattererModNameLabel.Text = "Scatterer";
+            this.scattererModNameLabel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.scattererModNameLabel_MouseDown);
+            this.scattererModNameLabel.MouseEnter += new System.EventHandler(this.scattererModNameLabel_MouseEnter);
+            this.scattererModNameLabel.MouseLeave += new System.EventHandler(this.scattererModNameLabel_MouseLeave);
+            // 
+            // kacModNameLabel
+            // 
+            this.kacModNameLabel.AutoSize = true;
+            this.kacModNameLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.kacModNameLabel.ForeColor = System.Drawing.SystemColors.HotTrack;
+            this.kacModNameLabel.Location = new System.Drawing.Point(19, 250);
+            this.kacModNameLabel.Name = "kacModNameLabel";
+            this.kacModNameLabel.Size = new System.Drawing.Size(96, 13);
+            this.kacModNameLabel.TabIndex = 3;
+            this.kacModNameLabel.Text = "Kerbal Alarm Clock";
+            this.kacModNameLabel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.kacModNameLabel_MouseDown);
+            this.kacModNameLabel.MouseEnter += new System.EventHandler(this.kacModNameLabel_MouseEnter);
+            this.kacModNameLabel.MouseLeave += new System.EventHandler(this.kacModNameLabel_MouseLeave);
+            // 
+            // kerModNameLabel
+            // 
+            this.kerModNameLabel.AutoSize = true;
+            this.kerModNameLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.kerModNameLabel.ForeColor = System.Drawing.SystemColors.HotTrack;
+            this.kerModNameLabel.Location = new System.Drawing.Point(19, 207);
+            this.kerModNameLabel.Name = "kerModNameLabel";
+            this.kerModNameLabel.Size = new System.Drawing.Size(116, 13);
+            this.kerModNameLabel.TabIndex = 2;
+            this.kerModNameLabel.Text = "Kerbal Engineer Redux";
+            this.kerModNameLabel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.kerModNameLabel_MouseDown);
+            this.kerModNameLabel.MouseEnter += new System.EventHandler(this.kerModNameLabel_MouseEnter);
+            this.kerModNameLabel.MouseLeave += new System.EventHandler(this.kerModNameLabel_MouseLeave);
+            // 
+            // gppModNameLabel
+            // 
+            this.gppModNameLabel.AutoSize = true;
+            this.gppModNameLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.gppModNameLabel.ForeColor = System.Drawing.SystemColors.HotTrack;
+            this.gppModNameLabel.Location = new System.Drawing.Point(19, 164);
+            this.gppModNameLabel.Name = "gppModNameLabel";
+            this.gppModNameLabel.Size = new System.Drawing.Size(100, 13);
+            this.gppModNameLabel.TabIndex = 1;
+            this.gppModNameLabel.Text = "Galileo Planet Pack";
+            this.gppModNameLabel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.gppModNameLabel_MouseDown);
+            this.gppModNameLabel.MouseEnter += new System.EventHandler(this.gppModNameLabel_MouseEnter);
+            this.gppModNameLabel.MouseLeave += new System.EventHandler(this.gppModNameLabel_MouseLeave);
+            // 
+            // kopernicusModNameLabel
+            // 
+            this.kopernicusModNameLabel.AutoSize = true;
+            this.kopernicusModNameLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.kopernicusModNameLabel.ForeColor = System.Drawing.SystemColors.HotTrack;
+            this.kopernicusModNameLabel.Location = new System.Drawing.Point(19, 86);
+            this.kopernicusModNameLabel.Name = "kopernicusModNameLabel";
+            this.kopernicusModNameLabel.Size = new System.Drawing.Size(60, 13);
+            this.kopernicusModNameLabel.TabIndex = 0;
+            this.kopernicusModNameLabel.Text = "Kopernicus";
+            this.kopernicusModNameLabel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.kopernicusModNameLabel_MouseDown);
+            this.kopernicusModNameLabel.MouseEnter += new System.EventHandler(this.kopernicusModNameLabel_MouseEnter);
+            this.kopernicusModNameLabel.MouseLeave += new System.EventHandler(this.kopernicusModNameLabel_MouseLeave);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(831, 565);
+            this.ClientSize = new System.Drawing.Size(1178, 565);
+            this.Controls.Add(this.panel1);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.utility_checkBox);
             this.Controls.Add(this.restartButton);
@@ -275,9 +498,12 @@
             this.MaximizeBox = false;
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLeftPic)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxRightPic)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -293,7 +519,7 @@
         private System.Windows.Forms.CheckBox lowResClouds_checkBox;
         private System.Windows.Forms.CheckBox highResClouds_checkBox;
         private System.Windows.Forms.Label cloudTextureLabel;
-        private System.ComponentModel.BackgroundWorker backgroundWorker1;
+        //private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.Windows.Forms.Button applyButton;
         private System.Windows.Forms.Button cancelButton;
         private System.Windows.Forms.PictureBox pictureBox1;
@@ -303,6 +529,23 @@
         private System.Windows.Forms.Button restartButton;
         private System.Windows.Forms.CheckBox utility_checkBox;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Label doeModNameLabel;
+        private System.Windows.Forms.Label eveModNameLabel;
+        private System.Windows.Forms.Label scattererModNameLabel;
+        private System.Windows.Forms.Label kacModNameLabel;
+        private System.Windows.Forms.Label kerModNameLabel;
+        private System.Windows.Forms.Label gppModNameLabel;
+        private System.Windows.Forms.Label kopernicusModNameLabel;
+        private System.Windows.Forms.Label kopernicusAuthorsLabel;
+        private System.Windows.Forms.Label authorsColumnHeaderLabel;
+        private System.Windows.Forms.Label modnameColumnHeaderLabel;
+        private System.Windows.Forms.Label gppAuthorsLabel;
+        private System.Windows.Forms.Label kerAuthorsLabel;
+        private System.Windows.Forms.Label scattererAuthorsLabel;
+        private System.Windows.Forms.Label kacAuthorsLabel;
+        private System.Windows.Forms.Label doeAuthorsLabel;
+        private System.Windows.Forms.Label eveAuthorsLabel;
     }
 }
 

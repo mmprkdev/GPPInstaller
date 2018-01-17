@@ -17,13 +17,19 @@ namespace GPPInstaller
 
             core.SetCheckBoxes(core_checkBox, utility_checkBox, visuals_checkBox, lowResClouds_checkBox, highResClouds_checkBox);
 
-            Text = "GPP Installer(GPP v" + core.GetGPPVersion() + ") (KSP v" + GetKSPVersionNumber() + ")";
-
-            InitialCheckForErrors();
-
-            DisableApplyButton();
-
             Directory.CreateDirectory(".\\GPPInstaller");
+
+            if (!Directory.Exists(@".\GameData"))
+            {
+                Directory.CreateDirectory(@".\GameData");
+            }
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            Text = "GPP Installer(GPP v" + core.GetGPPVersion() + ") (KSP v" + GetKSPVersionNumber() + ")";
+            CheckForExe();
+            DisableApplyButton();
         }
 
         public string GetGPPVersion()
@@ -37,34 +43,8 @@ namespace GPPInstaller
             return result;
         }
 
-        private void InitialCheckForErrors()
+        private void CheckForExe()
         {
-            // Version
-            string versionTarget = @".\readme.txt";
-
-            if (!File.Exists(versionTarget))
-            {
-                ErrorGeneral("Could not determine KSP version. Make sure the \"readme.txt\" file exists.");
-            }
-
-            string[] readmeLines = File.ReadAllLines(versionTarget);
-
-            string versionNumberLine = readmeLines[14];
-
-            char[] versionChars = new char[5];
-            for (int lineI = 8, charI = 0; lineI <= 12; lineI++, charI++)
-            {
-                versionChars[charI] = versionNumberLine[lineI];
-            }
-
-            string detectedVersionNumber = new string(versionChars);
-
-            if (detectedVersionNumber != GlobalInfo.compatableKSPVersion)
-            {
-                ErrorGeneral("The detected KSP version " + detectedVersionNumber + " is not compatable. Version " + GlobalInfo.compatableKSPVersion + " is required.");
-            }
-
-            // EXE
             string exeTarget64 = @".\KSP_x64.exe";
             string exeTarget32 = @".\KSP.exe";
             string currentExe = "";
@@ -83,6 +63,8 @@ namespace GPPInstaller
             {
                 ErrorGeneral("Could not determine the exe type. Make sure the KSP exicutable file exists.");
             }
+
+            
 
         }
 
@@ -299,25 +281,29 @@ namespace GPPInstaller
         {
             string target = ".\\readme.txt";
 
-            if (!File.Exists(target))
+            if (File.Exists(target))
             {
-                ErrorGeneral("Could not determine KSP version. Make sure KSP is installed properly.");
+                string[] readmeLines = File.ReadAllLines(target);
+
+                string versionNumberLine = readmeLines[14];
+
+                char[] versionChars = new char[5];
+                for (int lineI = 8, charI = 0; lineI <= 12; lineI++, charI++)
+                {
+                    versionChars[charI] = versionNumberLine[lineI];
+                }
+
+                string versionNumber = new string(versionChars);
+
+                return versionNumber;
+                
+            }
+            else
+            {
+                ErrorGeneral("Could not determine KSP version. Make sure the KSP readme.txt file exists.");
                 return "";
             }
-
-            string[] readmeLines = File.ReadAllLines(target);
-
-            string versionNumberLine = readmeLines[14];
-
-            char[] versionChars = new char[5];
-            for (int lineI = 8, charI = 0; lineI <= 12; lineI++, charI++)
-            {
-                versionChars[charI] = versionNumberLine[lineI];
-            }
-
-            string versionNumber = new string(versionChars);
-
-            return versionNumber;
+            
         }
 
         public void ErrorGeneral(string message)
@@ -359,5 +345,152 @@ namespace GPPInstaller
 
         }
 
+        private void kopernicusModNameLabel_MouseDown(object sender, MouseEventArgs e)
+        {
+            try
+            {
+                Process.Start("https://forum.kerbalspaceprogram.com/index.php?/topic/140580-131-kopernicus-release-3-nov-30/");
+            }
+            catch
+            {
+                // Error here?
+            }
+        }
+
+        private void gppModNameLabel_MouseDown(object sender, MouseEventArgs e)
+        {
+            try
+            {
+                Process.Start("https://forum.kerbalspaceprogram.com/index.php?/topic/152136-ksp-131-galileos-planet-pack-v160-16-jan-2018/");
+            }
+            catch
+            {
+            }
+        }
+
+        private void kerModNameLabel_MouseDown(object sender, MouseEventArgs e)
+        {
+            try
+            {
+                Process.Start("https://forum.kerbalspaceprogram.com/index.php?/topic/17833-130-kerbal-engineer-redux-1130-2017-05-28/");
+            }
+            catch
+            {
+            }
+        }
+
+        private void kacModNameLabel_MouseDown(object sender, MouseEventArgs e)
+        {
+            try
+            {
+                Process.Start("https://forum.kerbalspaceprogram.com/index.php?/topic/22809-13x-kerbal-alarm-clock-v3850-may-30/");
+            }
+            catch
+            {
+            }
+        }
+
+        private void scattererModNameLabel_MouseDown(object sender, MouseEventArgs e)
+        {
+            try
+            {
+                Process.Start("https://forum.kerbalspaceprogram.com/index.php?/topic/103963-wip12213-scatterer-atmospheric-scattering-v00320-0320b-06072017-water-refraction/");
+            }
+            catch
+            {
+            }
+        }
+
+        private void eveModNameLabel_MouseDown(object sender, MouseEventArgs e)
+        {
+            try
+            {
+                Process.Start("https://forum.kerbalspaceprogram.com/index.php?/topic/149733-13-122-environmentalvisualenhancements-122-1/");
+            }
+            catch
+            {
+            }
+        }
+
+        private void doeModNameLabel_MouseDown(object sender, MouseEventArgs e)
+        {
+            try
+            {
+                Process.Start("https://forum.kerbalspaceprogram.com/index.php?/topic/89214-131-distant-object-enhancement-bis-v191-8-july-2017/");
+            }
+            catch
+            {
+            }
+        }
+
+        private void kopernicusModNameLabel_MouseEnter(object sender, EventArgs e)
+        {
+            Cursor = Cursors.Hand;
+        }
+
+        private void kopernicusModNameLabel_MouseLeave(object sender, EventArgs e)
+        {
+            Cursor = Cursors.Default;
+        }
+
+        private void gppModNameLabel_MouseEnter(object sender, EventArgs e)
+        {
+            Cursor = Cursors.Hand;
+        }
+
+        private void gppModNameLabel_MouseLeave(object sender, EventArgs e)
+        {
+            Cursor = Cursors.Default;
+        }
+
+        private void kerModNameLabel_MouseEnter(object sender, EventArgs e)
+        {
+            Cursor = Cursors.Hand;
+        }
+
+        private void kerModNameLabel_MouseLeave(object sender, EventArgs e)
+        {
+            Cursor = Cursors.Default;
+        }
+
+        private void kacModNameLabel_MouseEnter(object sender, EventArgs e)
+        {
+            Cursor = Cursors.Hand;
+        }
+
+        private void kacModNameLabel_MouseLeave(object sender, EventArgs e)
+        {
+            Cursor = Cursors.Default;
+        }
+
+        private void scattererModNameLabel_MouseEnter(object sender, EventArgs e)
+        {
+            Cursor = Cursors.Hand;
+        }
+
+        private void scattererModNameLabel_MouseLeave(object sender, EventArgs e)
+        {
+            Cursor = Cursors.Default;
+        }
+
+        private void eveModNameLabel_MouseEnter(object sender, EventArgs e)
+        {
+            Cursor = Cursors.Hand;
+        }
+
+        private void eveModNameLabel_MouseLeave(object sender, EventArgs e)
+        {
+            Cursor = Cursors.Default;
+        }
+
+        private void doeModNameLabel_MouseEnter(object sender, EventArgs e)
+        {
+            Cursor = Cursors.Hand;
+        }
+
+        private void doeModNameLabel_MouseLeave(object sender, EventArgs e)
+        {
+            Cursor = Cursors.Default;
+        }
     }
 }
