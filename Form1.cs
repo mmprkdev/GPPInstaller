@@ -28,8 +28,21 @@ namespace GPPInstaller
         private void Form1_Load(object sender, EventArgs e)
         {
             Text = "GPP Installer(GPP v" + core.GetGPPVersion() + ") (KSP v" + GetKSPVersionNumber() + ")";
+
             CheckForExe();
+
             DisableApplyButton();
+
+            if (UpdateAvailable())
+            {
+                Updater updater = new Updater();
+                updater.Show(this);
+            }
+        }
+
+        private bool UpdateAvailable()
+        {
+            return false;
         }
 
         public string GetGPPVersion()

@@ -8,12 +8,13 @@ namespace GPPInstaller
 {
     class Mod
     {
+        // ActionToTake: "Install"
+        //               "Uninstall"
         // States: "Downloaded" == true : The archive file is present in .\GPPInstaller
         //         "Extracted" == true  : An extracted dir exsists in .\GPPInstaller
         //         "Installed" == true  : All required dirs and files are present inside of .\GameData
         //         ""                   : Initial default state 
-        // InstallTheMod:   true : install the mod
-        //                  false: uninstall the mod
+        // OldExtractedDirName: The name of the old 
         public string ModType { get; set; }
         public string ModName { get; set; }
         public string DownloadAddress { get; set; }
@@ -29,6 +30,7 @@ namespace GPPInstaller
         public bool State_Installed { get; set; }
         public string ActionToTake { get; set; }
         public string VersionNumber { get; set; }
+        public bool IsCurrentVersion { get; set; }
     }
 
 }

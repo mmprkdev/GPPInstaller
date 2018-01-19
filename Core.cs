@@ -26,10 +26,20 @@ using System.Linq;
 // static and maybe update the installer bi-weekly - monthly and prompt the user if they want to update
 // the installer to a new version.
 
-// TODO: Uninstall older versions of mods first before starting any new installation.
-// Check the current mod versions with what is currently installed.
+// TODO: add ksc swither to the core install pack
 
-// TODO: Final bug fixing before release.
+// TODO: add Pood's Milky Way Skybox
+
+// TODO: get rid of distant object
+
+// TODO: release GPPInstaller on GitHub
+
+// TODO: Create an updater. Detect whether or not a new version of the
+// the instller is available to download. Inform the user that installing
+// a new version will require them to re-download mods and potentially break
+// existing saved games. 
+
+// TODO (maybe): make clouds an optional mod type along with kscSwitcher
 
 namespace GPPInstaller
 {
@@ -65,14 +75,11 @@ namespace GPPInstaller
 
             InitModList();
 
-            //AddFieldsToModList();
-
-            //GetCurrentlyInstalledModVersionNumber();
-
             RefreshModState();
+
+            //CheckCurrentlyInstalledVerisons();
         }
 
-        // TODO: give everything an install source path
         public void InitModList()
         {
             modList.Add(new Mod()
@@ -86,11 +93,13 @@ namespace GPPInstaller
                 ExtractedPath = @".\GPPInstaller",
                 InstallDirName = "Kopernicus",
                 InstallDestPath = @".\GameData",
+                InstallSourcePath = GlobalInfo.koperincusInstallSource,
                 State_Downloaded = false,
                 State_Extracted = false,
                 State_Installed = false,
                 ActionToTake = "",
-                VersionNumber = ""
+                VersionNumber = GlobalInfo.kopernicusVersion,
+                IsCurrentVersion = false
             });
 
             modList.Add(new Mod()
@@ -104,11 +113,13 @@ namespace GPPInstaller
                 ExtractedPath = @".\GPPInstaller",
                 InstallDirName = "GPP",
                 InstallDestPath = @".\GameData",
+                InstallSourcePath = GlobalInfo.gppInstallSource,
                 State_Downloaded = false,
                 State_Extracted = false,
                 State_Installed = false,
                 ActionToTake = "",
-                VersionNumber = ""
+                VersionNumber = GlobalInfo.gppVersion,
+                IsCurrentVersion = false
             });
 
             modList.Add(new Mod()
@@ -122,11 +133,13 @@ namespace GPPInstaller
                 ExtractedPath = @".\GPPInstaller",
                 InstallDirName = "GPP_Textures",
                 InstallDestPath = @".\GameData\GPP",
+                InstallSourcePath = GlobalInfo.gppTexturesInstallSource,
                 State_Downloaded = false,
                 State_Extracted = false,
                 State_Installed = false,
                 ActionToTake = "",
-                VersionNumber = ""
+                VersionNumber = GlobalInfo.gppTexturesVersion,
+                IsCurrentVersion = false
             });
 
             modList.Add(new Mod()
@@ -140,11 +153,13 @@ namespace GPPInstaller
                 ExtractedPath = @".\GPPInstaller",
                 InstallDirName = "EnvironmentalVisualEnhancements",
                 InstallDestPath = @".\GameData",
+                InstallSourcePath = GlobalInfo.eveInstallSource,
                 State_Downloaded = false,
                 State_Extracted = false,
                 State_Installed = false,
                 ActionToTake = "",
-                VersionNumber = ""
+                VersionNumber = GlobalInfo.eveVersion,
+                IsCurrentVersion = false
             });
 
             modList.Add(new Mod()
@@ -158,17 +173,20 @@ namespace GPPInstaller
                 ExtractedPath = @".\GPPInstaller",
                 InstallDirName = "scatterer",
                 InstallDestPath = @".\GameData",
+                InstallSourcePath = GlobalInfo.scattererInstallSource,
                 State_Downloaded = false,
                 State_Extracted = false,
                 State_Installed = false,
                 ActionToTake = "",
-                VersionNumber = ""
+                VersionNumber = GlobalInfo.scattererVersion,
+                IsCurrentVersion = false
+
             });
 
             modList.Add(new Mod()
             {
                 ModType = "Visuals",
-                ModName = "DistantObjectEnhancement",
+                ModName = "DistantObject",
                 DownloadAddress = GlobalInfo.doeDownloadLink,
                 ArchiveFileName = GlobalInfo.doeZip,
                 ArchiveFilePath = @".\GPPInstaller",
@@ -176,11 +194,13 @@ namespace GPPInstaller
                 ExtractedPath = @".\GPPInstaller",
                 InstallDirName = "DistantObject",
                 InstallDestPath = @".\GameData",
+                InstallSourcePath = GlobalInfo.doeInstallSource,
                 State_Downloaded = false,
                 State_Extracted = false,
                 State_Installed = false,
                 ActionToTake = "",
-                VersionNumber = ""
+                VersionNumber = GlobalInfo.doeVersion,
+                IsCurrentVersion = false
             });
 
             modList.Add(new Mod()
@@ -194,6 +214,7 @@ namespace GPPInstaller
                 ExtractedPath = "",
                 InstallDirName = "GPP_Clouds",
                 InstallDestPath = @".\GameData\GPP",
+                InstallSourcePath = GlobalInfo.cloudsLowResInstallSource,
                 State_Downloaded = false,
                 State_Extracted = false,
                 State_Installed = false,
@@ -212,6 +233,26 @@ namespace GPPInstaller
                 ExtractedPath = "",
                 InstallDirName = "GPP_Clouds",
                 InstallDestPath = @".\GameData\GPP",
+                InstallSourcePath = GlobalInfo.cloudsHighResInstallSource,
+                State_Downloaded = false,
+                State_Extracted = false,
+                State_Installed = false,
+                ActionToTake = "",
+                VersionNumber = ""
+            });
+
+            modList.Add(new Mod()
+            {
+                ModType = "Clouds",
+                ModName = "CloudsHighRes",
+                DownloadAddress = "",
+                ArchiveFileName = "",
+                ArchiveFilePath = "",
+                ExtractedDirName = GlobalInfo.cloudsHighResExtracted,
+                ExtractedPath = "",
+                InstallDirName = "GPP_Clouds",
+                InstallDestPath = @".\GameData\GPP",
+                InstallSourcePath = GlobalInfo.cloudsHighResInstallSource,
                 State_Downloaded = false,
                 State_Extracted = false,
                 State_Installed = false,
@@ -230,11 +271,13 @@ namespace GPPInstaller
                 ExtractedPath = @".\GPPInstaller",
                 InstallDirName = "KerbalEngineer",
                 InstallDestPath = @".\GameData",
+                InstallSourcePath = GlobalInfo.kerInstallSource,
                 State_Downloaded = false,
                 State_Extracted = false,
                 State_Installed = false,
                 ActionToTake = "",
-                VersionNumber = ""
+                VersionNumber = GlobalInfo.kerVersion,
+                IsCurrentVersion = false
             });
 
             modList.Add(new Mod()
@@ -248,11 +291,13 @@ namespace GPPInstaller
                 ExtractedPath = @".\GPPInstaller",
                 InstallDirName = "TriggerTech",
                 InstallDestPath = @".\GameData",
+                InstallSourcePath = GlobalInfo.kacInstallSource,
                 State_Downloaded = false,
                 State_Extracted = false,
                 State_Installed = false,
                 ActionToTake = "",
-                VersionNumber = ""
+                VersionNumber = GlobalInfo.kacVersion,
+                IsCurrentVersion = false
             });
 
         }
@@ -442,6 +487,22 @@ namespace GPPInstaller
         //    }
         //}
 
+        // 1.) Check to see if the dir of the old version exists
+        // 2.) if it does, set it to be uninstalled
+        //private void CheckForNewVersion()
+        //{
+        //    foreach (Mod mod in modList)
+        //    {
+        //        if (mod.ModType != "Clouds")
+        //        {
+        //            if (Directory.Exists(@".\" + mod.OldExtractedDirName))
+        //            {
+        //                // delete dir
+        //                Directory.Delete()
+        //            }
+        //        }
+        //    }
+        //}
 
         public void RefreshModState()
         {
@@ -902,7 +963,7 @@ namespace GPPInstaller
                 if (modList[modIndex].State_Installed == false &&
                     modList[modIndex].ActionToTake == "Install")
                 {
-                    string sourceDirName = modList[modIndex].ExtractedPath + @"\" + modList[modIndex].ExtractedDirName;
+                    string sourceDirName = modList[modIndex].InstallSourcePath;
                     string destDirName = modList[modIndex].InstallDestPath;
 
                     if (modList[modIndex].ModType == "Clouds")
@@ -910,11 +971,15 @@ namespace GPPInstaller
                         if (Directory.Exists(@".\GameData\GPP\GPP_Clouds")) Directory.Delete(@".\GameData\GPP\GPP_Clouds", true);
                     }
 
-                    var args = new Tuple<string, string, bool>(sourceDirName, destDirName, true);
+                    var args = new Tuple<string, string, bool, Mod>(sourceDirName, destDirName, true, modList[modIndex]);
                     workerInstall.RunWorkerAsync(args);
+                    
                 }
                 else
                 {
+                    // Insert version file
+                    
+
                     modIndex++;
                     InstallMod();
                 }
@@ -944,14 +1009,20 @@ namespace GPPInstaller
                 return;
             }
 
-            var args = (Tuple<string, string, bool>)e.Argument;
+            var args = (Tuple<string, string, bool, Mod>)e.Argument;
 
             string sourceDirName = args.Item1;
             string destDirName = args.Item2;
             bool copySubDirs = args.Item3;
+            Mod mod = args.Item4;
+
+            // TODO: Left off here
+            //if (Directory.Exists(mod.InstallDestPath + @"\" + mod.InstallDirName)) InsertVersionFile(mod);
+
 
             DirectoryInfo dir = new DirectoryInfo(sourceDirName);
-
+            // ".\\GPPInstaller\\GPPInstaller\\bin\\Debug\\GPPInstaller\\KerbalEngineer-1.1.3.0"
+            // ".\GPPInstaller\Galileos-Planet-Pack-1.6.0.1.zip\\Optional Mods\\GPP_Clouds\\High-res Clouds_GameData inside\\GameData\\GPP"
             if (!dir.Exists)
             {
                 throw new DirectoryNotFoundException("Source directory does not exist: " + sourceDirName);
@@ -980,7 +1051,7 @@ namespace GPPInstaller
             }
 
             if (e.Cancel) Directory.Delete(destDirName);
-        }
+        } 
 
         private void workerInstall_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
@@ -1001,7 +1072,8 @@ namespace GPPInstaller
                 
                 return;
             }
-
+            // insert version file here
+            InsertVersionFile(modList[modIndex]);
             modList[modIndex].State_Installed = true;
             form1.ProgressBar1Step();
             modIndex++;
@@ -1183,6 +1255,53 @@ namespace GPPInstaller
 
             return result;
         }
+
+        private void InsertVersionFile(Mod mod)
+        {
+            // {"MAJOR":1,"MINOR":5,"PATCH":99,"BUILD":0}
+            if (mod.ModType != "Clouds")
+            {
+                string content = mod.VersionNumber;
+                Debug.WriteLine(mod.InstallDestPath + @"\" + mod.InstallDirName + @"\" + mod.ModName + ".ver");
+                string path = mod.InstallDestPath + @"\" + mod.InstallDirName + @"\" + mod.ModName + ".ver"; 
+
+                File.WriteAllText(path, content);
+            }
+        }
+
+        // NOTE: this does not work yet, but idk if I need to use this.
+        // Leaving it for now
+        private void CheckCurrentlyInstalledVerisons()
+        {
+            // Get version from version file
+            foreach (Mod mod in modList)
+            {
+                if (mod.ModType != "Clouds")
+                {
+                    string path = mod.InstallDestPath + @"\" + mod.InstallDirName + @"\" + mod.ModName + ".ver";
+                    string s = File.ReadAllText(path);
+
+                    // compare version file version to the modList version.
+                    if (s != mod.VersionNumber)
+                    {
+                        // set mod to uninstall and delete the extracted dir. 
+                        mod.ActionToTake = "Uninstall";
+                        if (Directory.Exists(mod.ExtractedPath + @"\" + mod.ExtractedDirName))
+                        {
+                            Directory.Delete(mod.ExtractedPath + @"\" + mod.ExtractedDirName, true);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    class Version
+    {
+        public int Major { get; set; }
+        public int Minor { get; set; }
+        public int Patch { get; set; }
+        public int Build { get; set; }
     }
 
 }

@@ -20,8 +20,9 @@ namespace GPPInstaller
         public static int doeIndex = 5;
         public static int cloudsLowResIndex = 6;
         public static int cloudsHighResIndex = 7;
-        public static int kerIndex = 8;
-        public static int kacIndex = 9;
+        public static int kscSwitcher = 8;
+        public static int kerIndex = 9;
+        public static int kacIndex = 10;
 
         // download links GPPInstaller 1.0.0 
         public static string kopernicusDownloadLink = "https://github.com/Kopernicus/Kopernicus/releases/download/release-1.3.1-3/Kopernicus-1.3.1-3.zip";
@@ -43,7 +44,7 @@ namespace GPPInstaller
         public static string kerZip = "KerbalEngineer-1.1.3.0.zip";
         public static string kacZip = "KerbalAlarmClock_3.8.5.0.zip";
 
-        // extracted names GPPInstaller 1.0.0
+        // extracted dir names GPPInstaller 1.0.0
         public static string kopernicusExtracted = "Kopernicus-1.3.1-3";
         public static string gppExtracted = "Galileos-Planet-Pack-1.6.0.1";
         public static string gppTexturesExtracted = "GPP_Textures-4.0.0";
@@ -54,6 +55,41 @@ namespace GPPInstaller
         public static string cloudsHighResExtracted = "GPP_Clouds";
         public static string kerExtracted = "KerbalEngineer-1.1.3.0";
         public static string kacExtracted = "KerbalAlarmClock_3.8.5.0";
+
+        // install source path
+        public static string koperincusInstallSource = @".\GPPInstaller\Kopernicus-1.3.1-3\GameData";
+        public static string gppInstallSource = @".\GPPInstaller\Galileos-Planet-Pack-1.6.0.1\GameData";
+        public static string gppTexturesInstallSource = @".\GPPInstaller\GPP_Textures-4.0.0\GameData\GPP";
+        public static string eveInstallSource = @".\GPPInstaller\EnvironmentalVisualEnhancements-1.2.2.1\GameData";
+        public static string scattererInstallSource = @".\GPPInstaller\scatterer-0.0320b\GameData";
+        public static string doeInstallSource = @".\GPPInstaller\DistantObject_1.9.1\GameData";
+        public static string cloudsLowResInstallSource = @".\GPPInstaller\Galileos-Planet-Pack-1.6.0.1\Optional Mods\GPP_Clouds\Low-res Clouds_GameData inside\GameData\GPP";
+        public static string cloudsHighResInstallSource = @".\GPPInstaller\Galileos-Planet-Pack-1.6.0.1\Optional Mods\GPP_Clouds\High-res Clouds_GameData inside\GameData\GPP";
+        public static string kerInstallSource = @".\GPPInstaller\KerbalEngineer-1.1.3.0";
+        public static string kacInstallSource = @".\GPPInstaller\KerbalAlarmClock_3.8.5.0\GameData";
+
+        // old extracted dir name
+        //public static string kopernicusOldExtracted = "";
+        //public static string gppOldExtracted = "";
+        //public static string gppTexturesOldExtracted = "";
+        //public static string eveOldExtracted = "";
+        //public static string scattererOldExtracted = "";
+        //public static string doeOldExtracted = "";
+        //public static string cloudsLowResOldExtracted = "";
+        //public static string cloudsHighResOldExtracted = "";
+        //public static string kerOldExtracted = "";
+        //public static string kacOldExtracted = "";
+
+        // current version number
+        public static string kopernicusVersion = "1.3.1-3";
+        public static string gppVersion = "1.6.0.1";
+        public static string gppTexturesVersion = "4.0.0";
+        public static string eveVersion = "1.2.2.1";
+        public static string scattererVersion = "0.0320b";
+        public static string doeVersion = "1.9.1";
+        public static string kerVersion = "1.1.3.0";
+        public static string kacVersion = "3.8.5.0";
+    
 
         // release page
         public static string kopernicusUrl = "https://github.com/Kopernicus/Kopernicus/releases";
