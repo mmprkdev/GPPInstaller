@@ -26,6 +26,10 @@ using System.Linq;
 // static and maybe update the installer bi-weekly - monthly and prompt the user if they want to update
 // the installer to a new version.
 
+// TODO: Refactor the entire application in another project
+// to incorperate SOLID principals. Don't go overboard, just
+// get things cleaned up.
+
 // TODO: add ksc swither to the core install pack
 
 // TODO: add Pood's Milky Way Skybox
