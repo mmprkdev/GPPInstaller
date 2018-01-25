@@ -7,27 +7,25 @@ namespace GPPInstaller
 {
     public partial class Form1 : Form
     {
-        Core core;
+        private readonly Core _core;
 
+        // Single responsibility: the user
+        // What we need to send to Core through the constructor:
+        // - Form1 
+        // - all the checkboxes
         public Form1()
         {
             InitializeComponent();
 
-            core = new Core(this);
-
-            core.SetCheckBoxes(core_checkBox, utility_checkBox, visuals_checkBox, lowResClouds_checkBox, highResClouds_checkBox);
-
-            Directory.CreateDirectory(".\\GPPInstaller");
-
-            if (!Directory.Exists(@".\GameData"))
-            {
-                Directory.CreateDirectory(@".\GameData");
-            }
+            _core = new Core(this, core_checkBox, utility_checkBox, visuals_checkBox, lowResClouds_checkBox, highResClouds_checkBox);
+            //_core.SetCheckBoxes(core_checkBox, utility_checkBox, visuals_checkBox, lowResClouds_checkBox, highResClouds_checkBox);
+            Directory.CreateDirectory(@".\GPPInstaller");
+            Directory.CreateDirectory(@".\GameData");
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            Text = "GPP Installer(GPP v" + core.GetGPPVersion() + ") (KSP v" + GetKSPVersionNumber() + ")";
+            Text = "GPP Installer(GPP v" + _core.GetVersion(_core.modList[GlobalInfo.gppIndex]) + ") (KSP v" + GetKSPVersionNumber() + ")";
 
             CheckForExe();
 
@@ -47,7 +45,7 @@ namespace GPPInstaller
 
         public string GetGPPVersion()
         {
-            string dirName = core.modList[GlobalInfo.gppIndex].ExtractedDirName;
+            string dirName = _core.modList[GlobalInfo.gppIndex].ExtractedDirName;
             int offset = dirName.LastIndexOf(".");
             offset = dirName.LastIndexOf(".", offset - 1);
             int leadingEnd = dirName.LastIndexOf(".", offset - 1) + 1;
@@ -79,11 +77,6 @@ namespace GPPInstaller
 
             
 
-        }
-
-        public void RefreshCheckBoxes()
-        {
-            core.SetCheckBoxes(core_checkBox, utility_checkBox, visuals_checkBox, lowResClouds_checkBox, highResClouds_checkBox);
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -171,7 +164,7 @@ namespace GPPInstaller
 
         public void ProgressBar1Init()
         {
-            int numSteps = core.NumberOfSteps();
+            int numSteps = _core.NumberOfSteps();
 
             progressBar1.Minimum = 0;
             progressBar1.Maximum = numSteps;
@@ -195,19 +188,21 @@ namespace GPPInstaller
 
         private void applyButton_Click(object sender, EventArgs e)
         {
-            core.RefreshModState();
-            core.ResetActionsToTake();
+            // example of error checking
+            if (!_core.PreInstall())
+            {
+                ErrorGeneral("Pre-Install check failed...");
+            }
 
             exitButton.Enabled = false;
             cancelButton.Visible = true;
             pictureBox1.Visible = false;
             applyButton.Enabled = false;
             DisableCheckBoxes();
-
-            core.ProcessActionToTake(core_checkBox, utility_checkBox, visuals_checkBox, lowResClouds_checkBox, highResClouds_checkBox);
-            core.UninstallMod();
             ProgressBar1Init();
-            core.DownloadMod();
+
+            _core.Uninstall();
+            _core.Install();
         }
 
         private void exitButton_Click(object sender, EventArgs e)
@@ -222,9 +217,7 @@ namespace GPPInstaller
 
         private void cancelButton_Click(object sender, EventArgs e)
         {
-            core.WebClientCancel();
-            core.ExtractCancel();
-            core.InstallCancel();
+            _core.CancelInstall();
         }
 
         public void EnableApplyButton()
@@ -261,8 +254,6 @@ namespace GPPInstaller
         {
             cancelButton.Visible = false;
         }
-
-        
 
         public void DisplayYellowWarning()
         {

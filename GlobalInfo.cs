@@ -140,5 +140,22 @@ namespace GPPInstaller
             return result;
         }
 
+        public static string WebsiteNamePop(string url)
+        {
+            string websiteName;
+
+            int leadStartIndex = 0;
+            int leadEndIndex = url.IndexOf("/") + 2;
+            int leadCount = leadEndIndex - leadStartIndex;
+            websiteName = url.Remove(leadStartIndex, leadCount);
+
+            int trailingStartIndex = websiteName.IndexOf("/");
+            int trailingEndIndex = websiteName.Length;
+            int trailingCount = trailingEndIndex - trailingStartIndex;
+            websiteName = websiteName.Remove(trailingStartIndex, trailingCount);
+
+            return websiteName;
+        }
+
     }
 }
