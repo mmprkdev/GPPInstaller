@@ -175,7 +175,6 @@ namespace GPPInstaller
 
         public void ProgressBar1Step()
         {
-
             progressBar1.PerformStep();
         }
 
@@ -202,7 +201,12 @@ namespace GPPInstaller
             ProgressBar1Init();
 
             _core.Uninstall();
-            _core.Install();
+            if(!_core.Install())
+            {
+                ErrorGeneral("Intallation failed, no internet connection detected...");
+            }
+            
+            
         }
 
         private void exitButton_Click(object sender, EventArgs e)
@@ -495,6 +499,28 @@ namespace GPPInstaller
         private void doeModNameLabel_MouseLeave(object sender, EventArgs e)
         {
             Cursor = Cursors.Default;
+        }
+
+        public void InstallSuccess()
+        {
+            RemoveProgressBar();
+            RemoveCancelButton();
+            DisplayGreenCheck();
+            EnableExitButton();
+            EnableCheckBoxes();
+            ProgressLabelUpdate("All changes applied successfully.");
+            DisableApplyButton();
+        }
+
+        public void InstallCanceled()
+        {
+            ProgressLabelUpdate("Installation canceled.");
+            DisplayRedCheck();
+            RemoveCancelButton();
+            EnableExitButton();
+            RemoveProgressBar();
+            EnableApplyButton();
+            EnableCheckBoxes();
         }
     }
 }

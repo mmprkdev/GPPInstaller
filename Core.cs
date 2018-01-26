@@ -67,7 +67,6 @@ using System.Linq;
 
 namespace GPPInstaller
 {
-    // Single responsibility: orchestrator of the application
     class Core
     {
         private readonly Form1 _form1;
@@ -86,11 +85,6 @@ namespace GPPInstaller
         private CheckBox _cloudsLowResCheckBox;
         private CheckBox _cloudsHighResCheckBox;
 
-        // TODO: figure out if you should be passing through
-        // the web client or the background workers
-        //WebClient webclient = new WebClient();
-        //BackgroundWorker workeExtract = new BackgroundWorker();
-        //BackgroundWorker workerInstall = new BackgroundWorker();
         public List<Mod> modList = new List<Mod>(); 
 
         public Core(
@@ -101,12 +95,12 @@ namespace GPPInstaller
             CheckBox cloudsLowResCheckBox,
             CheckBox cloudsHighResCheckBox)
         {
-            _modlistInit = new ModListInit();
-            _modstate = new ModState();
-            _checkboxes = new CheckBoxes();
-            _actionToTake = new ActionToTake();
+            _modlistInit = new ModListInit(this);
+            _modstate = new ModState(this);
+            _checkboxes = new CheckBoxes(this);
+            _actionToTake = new ActionToTake(this);
             _installer = new Installer(form1, this);
-            _uninstall = new Uninstall();
+            _uninstall = new Uninstall(this);
             _progressBarSteps = new ProgressBarSteps();
             _version = new Version();
 
@@ -120,15 +114,15 @@ namespace GPPInstaller
             if (!InitCore())
             {
                 _form1.ErrorGeneral("Failed to initialize Core...");
+                EndOfInstall();
             }
         }
 
         public bool InitCore()
         {
-            _modlistInit.InitModList(ref modList);
-            _modstate.SetModState(ref modList);
+            _modlistInit.InitModList();
+            _modstate.SetModState();
             _checkboxes.SetCheckBoxes(
-                ref modList,
                 _coreCheckbox,
                 _utilityCheckBox,
                 _visualsCheckBox,
@@ -142,7 +136,6 @@ namespace GPPInstaller
         public bool PreInstall()
         {
             _actionToTake.SetActionToTake(
-                ref modList,
                 _coreCheckbox,
                 _utilityCheckBox,
                 _visualsCheckBox,
@@ -155,9 +148,8 @@ namespace GPPInstaller
         // called after Install, cancelation, error
         public bool EndOfInstall()
         {
-            _modstate.SetModState(ref modList);
+            _modstate.SetModState();
             _checkboxes.SetCheckBoxes(
-                ref modList,
                 _coreCheckbox,
                 _utilityCheckBox,
                 _visualsCheckBox,
@@ -165,28 +157,6 @@ namespace GPPInstaller
                 _cloudsHighResCheckBox);
 
             return true;
-        }
-
-        public void InstallSuccess()
-        {
-            _form1.RemoveProgressBar();
-            _form1.RemoveCancelButton();
-            _form1.DisplayGreenCheck();
-            _form1.EnableExitButton();
-            _form1.EnableCheckBoxes();
-            _form1.ProgressLabelUpdate("All changes applied successfully.");
-            _form1.DisableApplyButton();
-        }
-
-        public void InstallCanceled()
-        {
-            _form1.ProgressLabelUpdate("Installation canceled.");
-            _form1.DisplayRedCheck();
-            _form1.RemoveCancelButton();
-            _form1.EnableExitButton();
-            _form1.RemoveProgressBar();
-            _form1.EnableApplyButton();
-            _form1.EnableCheckBoxes();
         }
 
         public bool Install()
@@ -198,7 +168,7 @@ namespace GPPInstaller
 
         public bool Uninstall()
         {
-            _uninstall.UninstallMod(ref modList);
+            _uninstall.UninstallMod();
 
             return true;
         }

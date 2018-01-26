@@ -7,23 +7,29 @@ using System.IO;
 
 namespace GPPInstaller
 {
-    // Single Responsibility: update the state of mods in modlist
     class ModState
     {
-        public void SetModState(ref List<Mod> modList)
+        Core _core;
+
+        public ModState(Core core)
+        {
+            _core = core;
+        }
+
+        public void SetModState()
         {
             // downloaded
-            foreach (Mod mod in modList)
+            foreach (Mod mod in _core.modList)
             {
                 if (mod.ModName == "CloudsLowRes" &&
-                    modList[GlobalInfo.gppIndex].State_Downloaded == true)
+                    _core.modList[GlobalInfo.gppIndex].State_Downloaded == true)
                 {
                     mod.State_Downloaded = true;
                 }
                 else mod.State_Downloaded = false;
 
                 if (mod.ModName == "CloudsHighRes" &&
-                    modList[GlobalInfo.gppIndex].State_Downloaded == true)
+                    _core.modList[GlobalInfo.gppIndex].State_Downloaded == true)
                 {
                     mod.State_Downloaded = true;
                 }
@@ -40,7 +46,7 @@ namespace GPPInstaller
             }
 
             // extracted
-            foreach (Mod mod in modList)
+            foreach (Mod mod in _core.modList)
             {
                 if (Directory.Exists(mod.ExtractedPath + @"\" + mod.ExtractedDirName))
                 {
@@ -53,7 +59,7 @@ namespace GPPInstaller
             }
 
             // installed
-            foreach (Mod mod in modList)
+            foreach (Mod mod in _core.modList)
             {
                 if (mod.ModType == "Clouds")
                 {

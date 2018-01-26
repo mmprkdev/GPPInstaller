@@ -41,6 +41,7 @@ namespace GPPInstaller
 
         public void DownloadMod()
         {
+            
             if (modIndex < _core.modList.Count)
             {
                 if (_core.modList[modIndex].State_Extracted == false &&
@@ -58,7 +59,7 @@ namespace GPPInstaller
                     {
                         _form1.ErrorNoInternetConnection("No internet connection detected.");
                         webclient.CancelAsync();
-                        _core.InstallCanceled();
+                        _form1.InstallCanceled();
 
                         return;
                     }
@@ -91,7 +92,7 @@ namespace GPPInstaller
             if (e.Cancelled)
             {
                 GlobalInfo.DeleteAllZips(@".\GPPInstaller");
-                _core.InstallCanceled();
+                _form1.InstallCanceled();
                 _core.EndOfInstall();
 
                 return;
@@ -146,7 +147,7 @@ namespace GPPInstaller
                             {
                                 workerExtract.RunWorkerAsync(args);
                             }
-                            catch (InvalidDataException exception)
+                            catch (InvalidDataException e)
                             {
                                 _form1.ErrorInvalidData("Download was incomplete.");
                                 return;
@@ -200,7 +201,7 @@ namespace GPPInstaller
             if (e.Cancelled)
             {
                 //modIndex = 0;
-                _core.InstallCanceled();
+                _form1.InstallCanceled();
                 _core.EndOfInstall();
 
                 return;
@@ -244,7 +245,7 @@ namespace GPPInstaller
             else
             {
                 modIndex = 0;
-                _core.InstallSuccess();
+                _form1.InstallSuccess();
                 _core.EndOfInstall();
             }
         }
@@ -299,7 +300,7 @@ namespace GPPInstaller
             if (e.Cancelled)
             {
                 //modIndex = 0;
-                _core.InstallCanceled();
+                _form1.InstallCanceled();
                 _core.EndOfInstall();
 
                 return;

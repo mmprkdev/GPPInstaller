@@ -9,15 +9,21 @@ namespace GPPInstaller
 {
     class ActionToTake
     {
+        Core _core;
+
+        public ActionToTake(Core core)
+        {
+            _core = core;
+        }
+
         public void SetActionToTake(
-            ref List<Mod> modList,
             CheckBox coreCheckBox,
             CheckBox utilityCheckBox,
             CheckBox visualsCheckBox,
             CheckBox cloudsLowResCheckBox,
             CheckBox cloudsHighResCheckBox)
         {
-            foreach (Mod mod in modList)
+            foreach (Mod mod in _core.modList)
             {
                 if (mod.State_Installed == false)
                 {
