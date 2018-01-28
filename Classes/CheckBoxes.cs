@@ -8,7 +8,7 @@ using System.Windows.Forms;
 namespace GPPInstaller
 {
     // Single Responsibility: set form checkboxes based on current mod state
-    class CheckBoxes
+    class CheckBoxes : ICheckBoxes
     {
         Core _core;
 

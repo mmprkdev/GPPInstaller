@@ -3,13 +3,15 @@ using System.IO;
 
 namespace GPPInstaller
 {
+    // Global static variables and utility functions
+    //These are all valid as of GPP v1.5.99, KSP 1.3.1, and GPPInstaller v1.0.0
     static class GlobalInfo
     {
-        // NOTE: These are all valid as of GPP v1.5.99 and GPPInstaller v1.0.0
-
         // Compatable KSP Versions
         public static string compatableKSPVersion = "1.3.1";
-        public static string compatableKSPEXE = "64";
+        //public static string compatableKSPEXE = "64";
+        public static string ksp64bitExeFile = @".\KSP_x64.exe";
+        public static string ksp32bitExeFile = @".\KSP.exe";
 
         // index for modList
         public static int kopericusIndex = 0;
@@ -68,18 +70,6 @@ namespace GPPInstaller
         public static string kerInstallSource = @".\GPPInstaller\KerbalEngineer-1.1.3.0";
         public static string kacInstallSource = @".\GPPInstaller\KerbalAlarmClock_3.8.5.0\GameData";
 
-        // old extracted dir name
-        //public static string kopernicusOldExtracted = "";
-        //public static string gppOldExtracted = "";
-        //public static string gppTexturesOldExtracted = "";
-        //public static string eveOldExtracted = "";
-        //public static string scattererOldExtracted = "";
-        //public static string doeOldExtracted = "";
-        //public static string cloudsLowResOldExtracted = "";
-        //public static string cloudsHighResOldExtracted = "";
-        //public static string kerOldExtracted = "";
-        //public static string kacOldExtracted = "";
-
         // current version number
         public static string kopernicusVersion = "1.3.1-3";
         public static string gppVersion = "1.6.0.1";
@@ -90,7 +80,6 @@ namespace GPPInstaller
         public static string kerVersion = "1.1.3.0";
         public static string kacVersion = "3.8.5.0";
     
-
         // release page
         public static string kopernicusUrl = "https://github.com/Kopernicus/Kopernicus/releases";
         public static string gppUrl = "https://github.com/Galileo88/Galileos-Planet-Pack/releases";

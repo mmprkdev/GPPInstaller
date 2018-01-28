@@ -7,7 +7,7 @@ using System.IO;
 
 namespace GPPInstaller
 {
-    class ModState
+    class ModState : IModState
     {
         Core _core;
 

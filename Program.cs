@@ -16,6 +16,7 @@ namespace GPPInstaller
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            // TODO: consider instantiating core here
             Application.Run(new Form1());
         }
     }

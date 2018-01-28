@@ -7,7 +7,7 @@ using System.Windows.Forms;
 
 namespace GPPInstaller
 {
-    class ActionToTake
+    class ActionToTake : IActionToTake
     {
         Core _core;
 

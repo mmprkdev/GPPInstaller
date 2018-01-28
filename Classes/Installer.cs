@@ -11,7 +11,7 @@ using System.IO.Compression;
 
 namespace GPPInstaller
 {
-    class Installer
+    class Installer : IInstaller
     {
         private readonly Form1 _form1;
         private readonly Core _core;
@@ -57,11 +57,9 @@ namespace GPPInstaller
 
                     if (!GlobalInfo.IsConnectedToInternet())
                     {
-                        _form1.ErrorNoInternetConnection("No internet connection detected.");
                         webclient.CancelAsync();
                         _form1.InstallCanceled();
-
-                        return;
+                        throw new WebException();
                     }
 
                     webclient.DownloadFileAsync(uri, downloadDest);
@@ -75,19 +73,18 @@ namespace GPPInstaller
             else
             {
                 modIndex = 0;
-                _form1.ProgressLabelUpdate("Extracting files...");
                 ExtractMod();
             }
         }
 
-        private void webclient_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
+        public void webclient_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {
             string websiteName = GlobalInfo.WebsiteNamePop(_core.modList[modIndex].DownloadAddress);
             string output = "Downloading: " + _core.modList[modIndex].ArchiveFileName + " from " + websiteName + " " + e.ProgressPercentage + "% complete...";
             _form1.ProgressLabelUpdate(output);
         }
 
-        private void webclient_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
+        public void webclient_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
         {
             if (e.Cancelled)
             {
@@ -118,6 +115,8 @@ namespace GPPInstaller
                     _core.modList[modIndex].State_Downloaded == true &&
                     _core.modList[modIndex].ArchiveFileName != "")
                 {
+                    _form1.ProgressLabelUpdate("Extracting " + _core.modList[modIndex].ModName + "...");
+
                     string fileName = _core.modList[modIndex].ArchiveFileName;
                     int fileNameLength = fileName.Length;
                     string dirName = fileName.Remove((fileNameLength - 4), 4);
@@ -142,15 +141,13 @@ namespace GPPInstaller
 
                             var args = new Tuple<string, string>(zipFile, destDir);
 
-                            // NOTE: in-case the zip file download failed
                             try
                             {
                                 workerExtract.RunWorkerAsync(args);
                             }
-                            catch (InvalidDataException e)
+                            catch (Exception)
                             {
-                                _form1.ErrorInvalidData("Download was incomplete.");
-                                return;
+                                throw new InvalidDataException();
                             }
                         }
                     }
@@ -164,13 +161,12 @@ namespace GPPInstaller
             else
             {
                 modIndex = 0;
-                _form1.ProgressLabelUpdate("Copying to GameData...");
                 GlobalInfo.DeleteAllZips(@".\GPPInstaller");
                 CopyMod();
             }
         }
 
-        private void workerExtract_DoWork(object sender, DoWorkEventArgs e)
+        public void workerExtract_DoWork(object sender, DoWorkEventArgs e)
         {
             var args = (Tuple<string, string>)e.Argument;
             using (var archive = ZipFile.OpenRead(args.Item1))
@@ -196,11 +192,10 @@ namespace GPPInstaller
             if (e.Cancel) Directory.Delete(args.Item2, true);
         }
 
-        private void workerExtract_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        public void workerExtract_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             if (e.Cancelled)
             {
-                //modIndex = 0;
                 _form1.InstallCanceled();
                 _core.EndOfInstall();
 
@@ -225,6 +220,8 @@ namespace GPPInstaller
                 if (_core.modList[modIndex].State_Installed == false &&
                     _core.modList[modIndex].ActionToTake == "Install")
                 {
+                    _form1.ProgressLabelUpdate("Copying " + _core.modList[modIndex].ModName + " to GameData...");
+
                     string sourceDirName = _core.modList[modIndex].InstallSourcePath;
                     string destDirName = _core.modList[modIndex].InstallDestPath;
 
@@ -250,7 +247,7 @@ namespace GPPInstaller
             }
         }
 
-        private void workerCopy_DoWork(object sender, DoWorkEventArgs e)
+        public void workerCopy_DoWork(object sender, DoWorkEventArgs e)
         {
             if (workerCopy.CancellationPending)
             {
@@ -295,11 +292,10 @@ namespace GPPInstaller
             if (e.Cancel) Directory.Delete(destDirName);
         }
 
-        private void workerCopy_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        public void workerCopy_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             if (e.Cancelled)
             {
-                //modIndex = 0;
                 _form1.InstallCanceled();
                 _core.EndOfInstall();
 
@@ -317,11 +313,12 @@ namespace GPPInstaller
             workerCopy.CancelAsync();
         }
 
-        private void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs)
+        public void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs)
         {
             // Get subdirectories for the specified directory.
             DirectoryInfo dir = new DirectoryInfo(sourceDirName);
 
+            // TODO: catch this exception or don't throw it
             if (!dir.Exists)
             {
                 throw new DirectoryNotFoundException("Source directory does not exist: " + sourceDirName);

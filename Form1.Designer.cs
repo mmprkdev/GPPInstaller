@@ -184,7 +184,7 @@
             // cancelButton
             // 
             this.cancelButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cancelButton.Location = new System.Drawing.Point(347, 466);
+            this.cancelButton.Location = new System.Drawing.Point(356, 466);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(75, 23);
             this.cancelButton.TabIndex = 17;
@@ -209,9 +209,9 @@
             this.restartButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.restartButton.Location = new System.Drawing.Point(275, 466);
             this.restartButton.Name = "restartButton";
-            this.restartButton.Size = new System.Drawing.Size(75, 23);
+            this.restartButton.Size = new System.Drawing.Size(95, 23);
             this.restartButton.TabIndex = 22;
-            this.restartButton.Text = "Restart";
+            this.restartButton.Text = "Restart App";
             this.restartButton.UseVisualStyleBackColor = true;
             this.restartButton.Visible = false;
             this.restartButton.Click += new System.EventHandler(this.restartButton_Click);
@@ -228,9 +228,9 @@
             // pictureBoxRightPic
             // 
             this.pictureBoxRightPic.Image = global::GPPInstaller.Properties.Resources.screenshot2_right;
-            this.pictureBoxRightPic.Location = new System.Drawing.Point(1033, 2);
+            this.pictureBoxRightPic.Location = new System.Drawing.Point(971, 0);
             this.pictureBoxRightPic.Name = "pictureBoxRightPic";
-            this.pictureBoxRightPic.Size = new System.Drawing.Size(145, 563);
+            this.pictureBoxRightPic.Size = new System.Drawing.Size(145, 565);
             this.pictureBoxRightPic.TabIndex = 20;
             this.pictureBoxRightPic.TabStop = false;
             // 
@@ -285,15 +285,15 @@
             this.panel1.Controls.Add(this.kerModNameLabel);
             this.panel1.Controls.Add(this.gppModNameLabel);
             this.panel1.Controls.Add(this.kopernicusModNameLabel);
-            this.panel1.Location = new System.Drawing.Point(668, 0);
+            this.panel1.Location = new System.Drawing.Point(668, -11);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(368, 565);
+            this.panel1.Size = new System.Drawing.Size(309, 584);
             this.panel1.TabIndex = 27;
             // 
             // doeAuthorsLabel
             // 
             this.doeAuthorsLabel.AutoSize = true;
-            this.doeAuthorsLabel.Location = new System.Drawing.Point(213, 389);
+            this.doeAuthorsLabel.Location = new System.Drawing.Point(155, 389);
             this.doeAuthorsLabel.Name = "doeAuthorsLabel";
             this.doeAuthorsLabel.Size = new System.Drawing.Size(52, 13);
             this.doeAuthorsLabel.TabIndex = 15;
@@ -311,7 +311,7 @@
             // scattererAuthorsLabel
             // 
             this.scattererAuthorsLabel.AutoSize = true;
-            this.scattererAuthorsLabel.Location = new System.Drawing.Point(213, 298);
+            this.scattererAuthorsLabel.Location = new System.Drawing.Point(155, 298);
             this.scattererAuthorsLabel.Name = "scattererAuthorsLabel";
             this.scattererAuthorsLabel.Size = new System.Drawing.Size(54, 13);
             this.scattererAuthorsLabel.TabIndex = 13;
@@ -320,7 +320,7 @@
             // kacAuthorsLabel
             // 
             this.kacAuthorsLabel.AutoSize = true;
-            this.kacAuthorsLabel.Location = new System.Drawing.Point(213, 250);
+            this.kacAuthorsLabel.Location = new System.Drawing.Point(151, 250);
             this.kacAuthorsLabel.Name = "kacAuthorsLabel";
             this.kacAuthorsLabel.Size = new System.Drawing.Size(53, 13);
             this.kacAuthorsLabel.TabIndex = 12;
@@ -329,7 +329,7 @@
             // kerAuthorsLabel
             // 
             this.kerAuthorsLabel.AutoSize = true;
-            this.kerAuthorsLabel.Location = new System.Drawing.Point(213, 207);
+            this.kerAuthorsLabel.Location = new System.Drawing.Point(151, 207);
             this.kerAuthorsLabel.Name = "kerAuthorsLabel";
             this.kerAuthorsLabel.Size = new System.Drawing.Size(57, 13);
             this.kerAuthorsLabel.TabIndex = 11;
@@ -338,7 +338,7 @@
             // gppAuthorsLabel
             // 
             this.gppAuthorsLabel.AutoSize = true;
-            this.gppAuthorsLabel.Location = new System.Drawing.Point(213, 164);
+            this.gppAuthorsLabel.Location = new System.Drawing.Point(151, 164);
             this.gppAuthorsLabel.Name = "gppAuthorsLabel";
             this.gppAuthorsLabel.Size = new System.Drawing.Size(51, 13);
             this.gppAuthorsLabel.TabIndex = 10;
@@ -347,7 +347,7 @@
             // kopernicusAuthorsLabel
             // 
             this.kopernicusAuthorsLabel.AutoSize = true;
-            this.kopernicusAuthorsLabel.Location = new System.Drawing.Point(213, 86);
+            this.kopernicusAuthorsLabel.Location = new System.Drawing.Point(151, 86);
             this.kopernicusAuthorsLabel.Name = "kopernicusAuthorsLabel";
             this.kopernicusAuthorsLabel.Size = new System.Drawing.Size(155, 52);
             this.kopernicusAuthorsLabel.TabIndex = 9;
@@ -357,7 +357,7 @@
             // authorsColumnHeaderLabel
             // 
             this.authorsColumnHeaderLabel.AutoSize = true;
-            this.authorsColumnHeaderLabel.Location = new System.Drawing.Point(213, 8);
+            this.authorsColumnHeaderLabel.Location = new System.Drawing.Point(151, 19);
             this.authorsColumnHeaderLabel.Name = "authorsColumnHeaderLabel";
             this.authorsColumnHeaderLabel.Size = new System.Drawing.Size(67, 13);
             this.authorsColumnHeaderLabel.TabIndex = 8;
@@ -366,7 +366,7 @@
             // modnameColumnHeaderLabel
             // 
             this.modnameColumnHeaderLabel.AutoSize = true;
-            this.modnameColumnHeaderLabel.Location = new System.Drawing.Point(19, 8);
+            this.modnameColumnHeaderLabel.Location = new System.Drawing.Point(19, 19);
             this.modnameColumnHeaderLabel.Name = "modnameColumnHeaderLabel";
             this.modnameColumnHeaderLabel.Size = new System.Drawing.Size(109, 13);
             this.modnameColumnHeaderLabel.TabIndex = 7;
@@ -474,7 +474,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1178, 565);
+            this.ClientSize = new System.Drawing.Size(1116, 565);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.utility_checkBox);

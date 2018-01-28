@@ -6,13 +6,20 @@ using System.Threading.Tasks;
 
 namespace GPPInstaller
 {
-    class ProgressBarSteps
+    class ProgressBarSteps : IProgressBarSteps
     {
-        public int NumberOfSteps(ref List<Mod> modList)
+        Core _core;
+
+        public ProgressBarSteps(Core core)
+        {
+            _core = core;
+        }
+
+        public int NumberOfSteps()
         {
             int result = 0;
 
-            foreach (Mod mod in modList)
+            foreach (Mod mod in _core.modList)
             {
                 // Downloads
                 if (mod.State_Downloaded == false &&

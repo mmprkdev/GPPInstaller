@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GPPInstaller
 {
-    class Mod
+    public class Mod
     {
         // ActionToTake: "Install"
         //               "Uninstall"

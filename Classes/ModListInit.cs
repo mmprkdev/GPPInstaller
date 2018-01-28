@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GPPInstaller
 {
-    class ModListInit
+    class ModListInit : IModListInit
     {
         Core _core;
 
@@ -150,25 +150,6 @@ namespace GPPInstaller
                 InstallDirName = "GPP_Clouds",
                 InstallDestPath = @".\GameData\GPP",
                 InstallSourcePath = GlobalInfo.cloudsLowResInstallSource,
-                State_Downloaded = false,
-                State_Extracted = false,
-                State_Installed = false,
-                ActionToTake = "",
-                VersionNumber = ""
-            });
-
-            _core.modList.Add(new Mod()
-            {
-                ModType = "Clouds",
-                ModName = "CloudsHighRes",
-                DownloadAddress = "",
-                ArchiveFileName = "",
-                ArchiveFilePath = "",
-                ExtractedDirName = GlobalInfo.cloudsHighResExtracted,
-                ExtractedPath = "",
-                InstallDirName = "GPP_Clouds",
-                InstallDestPath = @".\GameData\GPP",
-                InstallSourcePath = GlobalInfo.cloudsHighResInstallSource,
                 State_Downloaded = false,
                 State_Extracted = false,
                 State_Installed = false,

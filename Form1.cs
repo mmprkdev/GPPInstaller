@@ -7,6 +7,8 @@ namespace GPPInstaller
 {
     public partial class Form1 : Form
     {
+        private readonly CheckExe _checkExe;
+        private readonly KSPVersion _kspVersion;
         private readonly Core _core;
 
         // Single responsibility: the user
@@ -16,19 +18,23 @@ namespace GPPInstaller
         public Form1()
         {
             InitializeComponent();
+            _kspVersion = new KSPVersion(this);
+            _checkExe = new CheckExe(this);
+            _core = new Core(
+                this,
+                core_checkBox,
+                utility_checkBox,
+                visuals_checkBox,
+                lowResClouds_checkBox,
+                highResClouds_checkBox);
 
-            _core = new Core(this, core_checkBox, utility_checkBox, visuals_checkBox, lowResClouds_checkBox, highResClouds_checkBox);
-            //_core.SetCheckBoxes(core_checkBox, utility_checkBox, visuals_checkBox, lowResClouds_checkBox, highResClouds_checkBox);
             Directory.CreateDirectory(@".\GPPInstaller");
             Directory.CreateDirectory(@".\GameData");
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            Text = "GPP Installer(GPP v" + _core.GetVersion(_core.modList[GlobalInfo.gppIndex]) + ") (KSP v" + GetKSPVersionNumber() + ")";
-
-            CheckForExe();
-
+            Text = "GPP Installer (GPP v" + _core.GetVersion(_core.modList[GlobalInfo.gppIndex]) + ") (KSP v" + _kspVersion.GetKSPVersionNumber() + ")";
             DisableApplyButton();
 
             if (UpdateAvailable())
@@ -38,49 +44,10 @@ namespace GPPInstaller
             }
         }
 
+        // TODO: implement updater (???)
         private bool UpdateAvailable()
         {
             return false;
-        }
-
-        public string GetGPPVersion()
-        {
-            string dirName = _core.modList[GlobalInfo.gppIndex].ExtractedDirName;
-            int offset = dirName.LastIndexOf(".");
-            offset = dirName.LastIndexOf(".", offset - 1);
-            int leadingEnd = dirName.LastIndexOf(".", offset - 1) + 1;
-            string result = dirName.Remove(0, leadingEnd);
-
-            return result;
-        }
-
-        private void CheckForExe()
-        {
-            string exeTarget64 = @".\KSP_x64.exe";
-            string exeTarget32 = @".\KSP.exe";
-            string currentExe = "";
-
-            if (File.Exists(exeTarget64))
-            {
-                currentExe = "64";
-
-            }
-            else if (File.Exists(exeTarget32))
-            {
-                currentExe = "32";
-                ErrorGeneral("32 bit version of KSP was detected. GPP requires a 64 bit version of KSP in order to run.");
-            }
-            else
-            {
-                ErrorGeneral("Could not determine the exe type. Make sure the KSP exicutable file exists.");
-            }
-
-            
-
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -90,19 +57,19 @@ namespace GPPInstaller
 
         private void core_checkBox_CheckedChanged(object sender, EventArgs e)
         {
-            EnableApplyButton();
+            applyButton.Enabled = true;
 
             if (!core_checkBox.Checked) visuals_checkBox.Checked = false;
         }
 
         private void utility_checkBox_CheckedChanged(object sender, EventArgs e)
         {
-            EnableApplyButton();
+            applyButton.Enabled = true;
         }
 
         private void visuals_checkBox_CheckedChanged(object sender, EventArgs e)
         {
-            EnableApplyButton();
+            applyButton.Enabled = true;
 
             if (visuals_checkBox.Checked)
             {
@@ -111,8 +78,7 @@ namespace GPPInstaller
                 highResClouds_checkBox.Visible = true;
 
                 // Automatically check core_checkBox when visuals_checkBox is checked,
-                // because we can only install the visual mods if the core mods
-                // are also installed.
+                // because the visual mods depend on the core mods
                 if (!core_checkBox.Checked) core_checkBox.Checked = true;
             }
             else if (visuals_checkBox.Checked == false)
@@ -129,16 +95,13 @@ namespace GPPInstaller
 
         private void lowResClouds_checkBox_CheckedChanged(object sender, EventArgs e)
         {
-            EnableApplyButton();
+            applyButton.Enabled = true;
 
             if (lowResClouds_checkBox.Checked) highResClouds_checkBox.Checked = false;
-
         }
 
         private void highResClouds_checkBox_CheckedChanged(object sender, EventArgs e)
         {
-            EnableApplyButton();
-
             applyButton.Enabled = true;
 
             if (highResClouds_checkBox.Checked) lowResClouds_checkBox.Checked = false;
@@ -187,11 +150,7 @@ namespace GPPInstaller
 
         private void applyButton_Click(object sender, EventArgs e)
         {
-            // example of error checking
-            if (!_core.PreInstall())
-            {
-                ErrorGeneral("Pre-Install check failed...");
-            }
+            _core.PreInstall();
 
             exitButton.Enabled = false;
             cancelButton.Visible = true;
@@ -201,12 +160,7 @@ namespace GPPInstaller
             ProgressBar1Init();
 
             _core.Uninstall();
-            if(!_core.Install())
-            {
-                ErrorGeneral("Intallation failed, no internet connection detected...");
-            }
-            
-            
+            _core.Install();
         }
 
         private void exitButton_Click(object sender, EventArgs e)
@@ -215,7 +169,6 @@ namespace GPPInstaller
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.FileName = @".\KSP_x64.exe";
             process.Start();
-
             Application.Exit();
         }
 
@@ -285,72 +238,36 @@ namespace GPPInstaller
             applyButton.Enabled = false;
         }
 
-        public string GetKSPVersionNumber()
-        {
-            string target = ".\\readme.txt";
-
-            if (File.Exists(target))
-            {
-                string[] readmeLines = File.ReadAllLines(target);
-
-                string versionNumberLine = readmeLines[14];
-
-                char[] versionChars = new char[5];
-                for (int lineI = 8, charI = 0; lineI <= 12; lineI++, charI++)
-                {
-                    versionChars[charI] = versionNumberLine[lineI];
-                }
-
-                string versionNumber = new string(versionChars);
-
-                return versionNumber;
-                
-            }
-            else
-            {
-                ErrorGeneral("Could not determine KSP version. Make sure the KSP readme.txt file exists.");
-                return "";
-            }
-            
-        }
-
-        public void ErrorGeneral(string message)
+        public void Error(string message)
         {
             DisplayRedCheck();
-
             progressBar1.Visible = false;
-
             progressLabel.Visible = true;
             progressLabel.Text += "Error: " + message + "\n";
-
             DisableCheckBoxes();
             restartButton.Visible = true;
             applyButton.Visible = false;
         }
 
-        public void ErrorNoInternetConnection(string message)
+        public void InstallSuccess()
         {
-            progressLabel.Text += "Error: " + message + "\n";
-            DisplayRedCheck();
             RemoveProgressBar();
             RemoveCancelButton();
+            DisplayGreenCheck();
+            EnableExitButton();
+            EnableCheckBoxes();
+            ProgressLabelUpdate("All changes applied successfully.");
+            DisableApplyButton();
         }
 
-        public void ErrorInvalidData(string message)
+        public void InstallCanceled()
         {
-            progressLabel.Text += "Error: " + message + "\n";
             DisplayRedCheck();
-            RemoveProgressBar();
             RemoveCancelButton();
-        }
-
-        public void ErrorScraperFail(string message)
-        {
-            DisplayRedCheck();
-            progressLabel.Text += message + "\n";
-            progressLabel.Visible = true;
-            DisableCheckBoxes();
-
+            EnableExitButton();
+            RemoveProgressBar();
+            EnableApplyButton();
+            EnableCheckBoxes();
         }
 
         private void kopernicusModNameLabel_MouseDown(object sender, MouseEventArgs e)
@@ -500,27 +417,6 @@ namespace GPPInstaller
         {
             Cursor = Cursors.Default;
         }
-
-        public void InstallSuccess()
-        {
-            RemoveProgressBar();
-            RemoveCancelButton();
-            DisplayGreenCheck();
-            EnableExitButton();
-            EnableCheckBoxes();
-            ProgressLabelUpdate("All changes applied successfully.");
-            DisableApplyButton();
-        }
-
-        public void InstallCanceled()
-        {
-            ProgressLabelUpdate("Installation canceled.");
-            DisplayRedCheck();
-            RemoveCancelButton();
-            EnableExitButton();
-            RemoveProgressBar();
-            EnableApplyButton();
-            EnableCheckBoxes();
-        }
     }
+
 }

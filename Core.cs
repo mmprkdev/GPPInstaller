@@ -6,7 +6,6 @@ using System.IO;
 using System.IO.Compression;
 using System.Net;
 using System.Diagnostics;
-using HtmlAgilityPack;
 using System.Linq;
 
 // NOTE: Adding a new mod requires you to make changes
@@ -26,24 +25,9 @@ using System.Linq;
 // static and maybe update the installer bi-weekly - monthly and prompt the user if they want to update
 // the installer to a new version.
 
-// DOING: Refactor the entire application in another project
-// to incorperate SOLID principals. Don't go overboard, just
-// get things cleaned up.
-//
-// Start with coupled code, then decouple it using interfaces.
+// TODO: consider instantiating core in the Program class
 
-// TODO: don't pass a ref to modList through, just reference core.modList. Maybe check
-// to see if there is a difference in performance.
-
-// TODO: rework UninstallMod() to allow for mods to be uninstalled dynamically
-
-// TODO: output the mod name to progress label when extracting and copying
-
-// TODO: consider not passing in form1 to the download/extract/install process classes
-
-// TODO: Create a new brach on github for the refactored project.
-
-// TODO: consider replacing the background workers with async Tasks
+// TODO: have a list of all working mod downloads hosted on github in a json or txt file
 
 // TODO: consider removing all private keywords
 
@@ -70,14 +54,14 @@ namespace GPPInstaller
     class Core
     {
         private readonly Form1 _form1;
-        private readonly ModListInit _modlistInit;
-        private readonly ModState _modstate;
-        private readonly CheckBoxes _checkboxes;
-        private readonly ActionToTake _actionToTake;
-        private readonly Installer _installer;
-        private readonly Uninstall _uninstall;
-        private readonly ProgressBarSteps _progressBarSteps;
-        private readonly Version _version;
+        private readonly IModListInit _modlistInit;
+        private readonly IModState _modstate;
+        private readonly ICheckBoxes _checkboxes;
+        private readonly IActionToTake _actionToTake;
+        private readonly IInstaller _installer;
+        private readonly IUninstall _uninstall;
+        private readonly IProgressBarSteps _progressBarSteps;
+        private readonly IModVersion _modVersion;
 
         private CheckBox _coreCheckbox;
         private CheckBox _utilityCheckBox;
@@ -101,8 +85,8 @@ namespace GPPInstaller
             _actionToTake = new ActionToTake(this);
             _installer = new Installer(form1, this);
             _uninstall = new Uninstall(this);
-            _progressBarSteps = new ProgressBarSteps();
-            _version = new Version();
+            _progressBarSteps = new ProgressBarSteps(this);
+            _modVersion = new ModVersion();
 
             _form1 = form1;
             _coreCheckbox = coreCheckBox;
@@ -113,7 +97,7 @@ namespace GPPInstaller
 
             if (!InitCore())
             {
-                _form1.ErrorGeneral("Failed to initialize Core...");
+                _form1.Error("Failed to initialize Core...");
                 EndOfInstall();
             }
         }
@@ -159,29 +143,34 @@ namespace GPPInstaller
             return true;
         }
 
-        public bool Install()
+        public void Install()
         {
-            _installer.DownloadMod();
-
-            return true;
-        }
-
-        public bool Uninstall()
-        {
-            _uninstall.UninstallMod();
-
-            return true;
-        }
-
-        // TODO: Do something with this(?)
-        public void ResetActionsToTake()
-        {
-            foreach (Mod mod in modList)
+            try
             {
-                mod.ActionToTake = "";
+                _installer.DownloadMod();
+            }
+            catch (WebException)
+            {
+                _form1.Error("Install failed. No internet connection detected...");
+                EndOfInstall();
+            }
+            catch (InvalidDataException)
+            {
+                _form1.Error("Install failed. Unable to extract archives...");
+                EndOfInstall();
+            }
+            catch (DirectoryNotFoundException)
+            {
+                _form1.Error("Install failed. Unable to locate extracted mod directory.");
+                EndOfInstall();
             }
         }
-        
+
+        public void Uninstall()
+        {
+            _uninstall.UninstallMod();
+        }
+
         public void CancelInstall()
         {
             _installer.WebClientCancel();
@@ -191,18 +180,19 @@ namespace GPPInstaller
 
         public int NumberOfSteps()
         {
-            return _progressBarSteps.NumberOfSteps(ref modList);
+            return _progressBarSteps.NumberOfSteps();
         }
 
         public void InsertVersionFile(Mod mod)
         {
-            _version.InsertVersionFile(mod);
+            _modVersion.InsertVersionFile(mod);
         }
 
         public string GetVersion(Mod mod)
         {
-            return _version.GetModVersion(mod);
+            return _modVersion.GetModVersion(mod);
         }
+
     }
 
 }

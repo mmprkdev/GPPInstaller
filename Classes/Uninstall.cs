@@ -7,7 +7,7 @@ using System.IO;
 
 namespace GPPInstaller
 {
-    class Uninstall
+    class Uninstall : IUninstall
     {
         Core _core;
 
@@ -18,77 +18,62 @@ namespace GPPInstaller
 
         public void UninstallMod()
         {
-            if (_core.modList[GlobalInfo.kopericusIndex].ActionToTake == "Uninstall")
+            foreach (Mod mod in _core.modList)
             {
-                if (Directory.Exists(".\\GameData\\Kopernicus")) Directory.Delete(".\\GameData\\Kopernicus", true);
-                if (Directory.Exists(".\\GameData\\ModularFlightIntegrator")) Directory.Delete(".\\GameData\\ModularFlightIntegrator", true);
-                File.Delete(".\\GameData\\ModuleManager.2.8.1.dll");
-                File.Delete(".\\GameData\\ModuleManagerLicense.md");
-                File.Delete(".\\GameData\\ModuleManager.ConfigCache");
-                File.Delete(".\\GameData\\ModuleManager.ConfigSHA");
-                File.Delete(".\\GameData\\ModuleManager.Physics");
-                File.Delete(".\\GameData\\ModuleManager.TechTree");
+                if (mod.ActionToTake == "Uninstall" && mod.State_Installed == true)
+                {
+                    DeleteModData(mod);
+                    mod.State_Installed = false;
+                    if (_core.modList[GlobalInfo.gppIndex].State_Installed == false)
+                    {
+                        _core.modList[GlobalInfo.gppTexturesIndex].State_Installed = false;
+                        _core.modList[GlobalInfo.cloudsLowResIndex].State_Installed = false;
+                        _core.modList[GlobalInfo.cloudsHighResIndex].State_Installed = false;
+                    }
+                }
+            }
+        }
 
-                _core.modList[GlobalInfo.kopericusIndex].State_Installed = false;
+        public void DeleteModData(Mod mod)
+        {
+            DirectoryInfo installSourceDir = new DirectoryInfo(mod.InstallSourcePath);
+            if (!installSourceDir.Exists)
+            {
+                throw new DirectoryNotFoundException();
             }
 
-            if (_core.modList[GlobalInfo.gppIndex].ActionToTake == "Uninstall")
-            {
-                if (Directory.Exists(".\\GameData\\GPP")) Directory.Delete(".\\GameData\\GPP", true);
+            DirectoryInfo[] installSourceDirs = installSourceDir.GetDirectories();
+            FileInfo[] installSourceFiles = installSourceDir.GetFiles();
 
-                _core.modList[GlobalInfo.gppIndex].State_Installed = false;
+            DirectoryInfo installDestDir = new DirectoryInfo(mod.InstallDestPath);
+            if (!installSourceDir.Exists)
+            {
+                throw new DirectoryNotFoundException();
             }
 
-            if (_core.modList[GlobalInfo.eveIndex].ActionToTake == "Uninstall")
-            {
-                if (Directory.Exists(@".\GameData\EnvironmentalVisualEnhancements")) Directory.Delete(@".\GameData\EnvironmentalVisualEnhancements", true);
+            DirectoryInfo[] installDestDirs = installDestDir.GetDirectories();
+            FileInfo[] installDestFiles = installDestDir.GetFiles();
 
-                _core.modList[GlobalInfo.eveIndex].State_Installed = false;
+            foreach (DirectoryInfo sourceDir in installSourceDirs)
+            {
+                foreach (DirectoryInfo destDir in installDestDirs)
+                {
+                    if (sourceDir.Name == destDir.Name)
+                    {
+                        Directory.Delete(destDir.FullName, true);
+                    }
+                }
             }
 
-            if (_core.modList[GlobalInfo.scattererIndex].ActionToTake == "Uninstall")
+            foreach (FileInfo sourceFile in installSourceFiles)
             {
-                if (Directory.Exists(@".\GameData\scatterer")) Directory.Delete(@".\GameData\scatterer", true);
-
-                _core.modList[GlobalInfo.scattererIndex].State_Installed = false;
-            }
-
-            if (_core.modList[GlobalInfo.doeIndex].ActionToTake == "Uninstall")
-            {
-                if (Directory.Exists(@".\GameData\DistantObject")) Directory.Delete(@".\GameData\DistantObject", true);
-
-                _core.modList[GlobalInfo.doeIndex].State_Installed = false;
-            }
-
-            if (_core.modList[GlobalInfo.cloudsLowResIndex].ActionToTake == "Uninstall")
-            {
-                if (Directory.Exists(@".\GameData\GPP\GPP_Clouds")) Directory.Delete(@".\GameData\GPP\GPP_Clouds", true);
-
-                _core.modList[GlobalInfo.cloudsLowResIndex].State_Installed = false;
-            }
-
-            if (_core.modList[GlobalInfo.cloudsHighResIndex].ActionToTake == "Uninstall")
-            {
-                if (Directory.Exists(@".\GameData\GPP\GPP_Clouds")) Directory.Delete(@".\GameData\GPP\GPP_Clouds", true);
-
-                _core.modList[GlobalInfo.cloudsHighResIndex].State_Installed = false;
-            }
-
-            if (_core.modList[GlobalInfo.kerIndex].ActionToTake == "Uninstall")
-            {
-                if (Directory.Exists(@".\GameData\KerbalEngineer")) Directory.Delete(@".\GameData\KerbalEngineer", true);
-                File.Delete(@".\GameData\CHANGES.txt");
-                File.Delete(@".\GameData\LICENCE.txt");
-                File.Delete(@".\GameData\README.htm");
-
-                _core.modList[GlobalInfo.kerIndex].State_Installed = false;
-            }
-
-            if (_core.modList[GlobalInfo.kacIndex].ActionToTake == "Uninstall")
-            {
-                if (Directory.Exists(@".\GameData\TriggerTech")) Directory.Delete(@".\GameData\TriggerTech", true);
-
-                _core.modList[GlobalInfo.kacIndex].State_Installed = false;
+                foreach (FileInfo destFile in installDestFiles)
+                {
+                    if (sourceFile.Name == destFile.Name)
+                    {
+                        File.Delete(destFile.FullName);
+                    }
+                }
             }
         }
     }
