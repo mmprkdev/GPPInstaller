@@ -8,16 +8,16 @@ namespace GPPInstaller
 {
     class ModListInit : IModListInit
     {
-        Core _core;
+        Form1 _form1;
 
-        public ModListInit(Core core)
+        public ModListInit(Form1 form1)
         {
-            _core = core;
+            _form1 = form1;
         }
 
         public void InitModList()
         {
-            _core.modList.Add(new Mod()
+            _form1.modList.Add(new Mod()
             {
                 ModType = "Core",
                 ModName = "Kopernicus",
@@ -37,7 +37,7 @@ namespace GPPInstaller
                 IsCurrentVersion = false
             });
 
-            _core.modList.Add(new Mod()
+            _form1.modList.Add(new Mod()
             {
                 ModType = "Core",
                 ModName = "GPP",
@@ -57,7 +57,7 @@ namespace GPPInstaller
                 IsCurrentVersion = false
             });
 
-            _core.modList.Add(new Mod()
+            _form1.modList.Add(new Mod()
             {
                 ModType = "Core",
                 ModName = "GPP_Textures",
@@ -77,7 +77,7 @@ namespace GPPInstaller
                 IsCurrentVersion = false
             });
 
-            _core.modList.Add(new Mod()
+            _form1.modList.Add(new Mod()
             {
                 ModType = "Visuals",
                 ModName = "EVE",
@@ -97,7 +97,7 @@ namespace GPPInstaller
                 IsCurrentVersion = false
             });
 
-            _core.modList.Add(new Mod()
+            _form1.modList.Add(new Mod()
             {
                 ModType = "Visuals",
                 ModName = "Scatterer",
@@ -118,7 +118,7 @@ namespace GPPInstaller
 
             });
 
-            _core.modList.Add(new Mod()
+            _form1.modList.Add(new Mod()
             {
                 ModType = "Visuals",
                 ModName = "DistantObject",
@@ -138,7 +138,7 @@ namespace GPPInstaller
                 IsCurrentVersion = false
             });
 
-            _core.modList.Add(new Mod()
+            _form1.modList.Add(new Mod()
             {
                 ModType = "Clouds",
                 ModName = "CloudsLowRes",
@@ -157,7 +157,7 @@ namespace GPPInstaller
                 VersionNumber = ""
             });
 
-            _core.modList.Add(new Mod()
+            _form1.modList.Add(new Mod()
             {
                 ModType = "Clouds",
                 ModName = "CloudsHighRes",
@@ -176,7 +176,7 @@ namespace GPPInstaller
                 VersionNumber = ""
             });
 
-            _core.modList.Add(new Mod()
+            _form1.modList.Add(new Mod()
             {
                 ModType = "Utility",
                 ModName = "KerbalEngineer",
@@ -196,7 +196,7 @@ namespace GPPInstaller
                 IsCurrentVersion = false
             });
 
-            _core.modList.Add(new Mod()
+            _form1.modList.Add(new Mod()
             {
                 ModType = "Utility",
                 ModName = "KerbalAlarmClock",

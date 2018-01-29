@@ -14,16 +14,14 @@ namespace GPPInstaller
     class Installer : IInstaller
     {
         private readonly Form1 _form1;
-        private readonly Core _core;
         private int modIndex = 0;
         private readonly WebClient webclient;
         private readonly BackgroundWorker workerExtract;
         private readonly BackgroundWorker workerCopy;
 
-        public Installer(Form1 form1, Core core)
+        public Installer(Form1 form1)
         {
             _form1 = form1;
-            _core = core;
             webclient = new WebClient();
             workerExtract = new BackgroundWorker();
             workerCopy = new BackgroundWorker();
@@ -42,15 +40,15 @@ namespace GPPInstaller
         public void DownloadMod()
         {
             
-            if (modIndex < _core.modList.Count)
+            if (modIndex < _form1.modList.Count)
             {
-                if (_core.modList[modIndex].State_Extracted == false &&
-                _core.modList[modIndex].State_Downloaded == false &&
-                _core.modList[modIndex].ActionToTake == "Install" &&
-                _core.modList[modIndex].DownloadAddress != "")
+                if (_form1.modList[modIndex].State_Extracted == false &&
+                _form1.modList[modIndex].State_Downloaded == false &&
+                _form1.modList[modIndex].ActionToTake == "Install" &&
+                _form1.modList[modIndex].DownloadAddress != "")
                 {
-                    string downloadAddress = _core.modList[modIndex].DownloadAddress;
-                    string fileName = _core.modList[modIndex].ArchiveFileName;
+                    string downloadAddress = _form1.modList[modIndex].DownloadAddress;
+                    string fileName = _form1.modList[modIndex].ArchiveFileName;
                     string downloadDest = @".\GPPInstaller\" + fileName;
 
                     Uri uri = new Uri(downloadAddress);
@@ -79,8 +77,8 @@ namespace GPPInstaller
 
         public void webclient_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {
-            string websiteName = GlobalInfo.WebsiteNamePop(_core.modList[modIndex].DownloadAddress);
-            string output = "Downloading: " + _core.modList[modIndex].ArchiveFileName + " from " + websiteName + " " + e.ProgressPercentage + "% complete...";
+            string websiteName = GlobalInfo.WebsiteNamePop(_form1.modList[modIndex].DownloadAddress);
+            string output = "Downloading: " + _form1.modList[modIndex].ArchiveFileName + " from " + websiteName + " " + e.ProgressPercentage + "% complete...";
             _form1.ProgressLabelUpdate(output);
         }
 
@@ -90,12 +88,12 @@ namespace GPPInstaller
             {
                 GlobalInfo.DeleteAllZips(@".\GPPInstaller");
                 _form1.InstallCanceled();
-                _core.EndOfInstall();
+                _form1.EndOfInstall();
 
                 return;
             }
 
-            _core.modList[modIndex].State_Downloaded = true;
+            _form1.modList[modIndex].State_Downloaded = true;
             _form1.ProgressBar1Step();
             modIndex++;
             DownloadMod();
@@ -108,16 +106,16 @@ namespace GPPInstaller
 
         public void ExtractMod()
         {
-            if (modIndex < _core.modList.Count)
+            if (modIndex < _form1.modList.Count)
             {
-                if (_core.modList[modIndex].State_Extracted == false &&
-                    _core.modList[modIndex].ActionToTake == "Install" &&
-                    _core.modList[modIndex].State_Downloaded == true &&
-                    _core.modList[modIndex].ArchiveFileName != "")
+                if (_form1.modList[modIndex].State_Extracted == false &&
+                    _form1.modList[modIndex].ActionToTake == "Install" &&
+                    _form1.modList[modIndex].State_Downloaded == true &&
+                    _form1.modList[modIndex].ArchiveFileName != "")
                 {
-                    _form1.ProgressLabelUpdate("Extracting " + _core.modList[modIndex].ModName + "...");
+                    _form1.ProgressLabelUpdate("Extracting " + _form1.modList[modIndex].ModName + "...");
 
-                    string fileName = _core.modList[modIndex].ArchiveFileName;
+                    string fileName = _form1.modList[modIndex].ArchiveFileName;
                     int fileNameLength = fileName.Length;
                     string dirName = fileName.Remove((fileNameLength - 4), 4);
                     string destDir = @".\GPPInstaller\" + dirName;
@@ -197,12 +195,12 @@ namespace GPPInstaller
             if (e.Cancelled)
             {
                 _form1.InstallCanceled();
-                _core.EndOfInstall();
+                _form1.EndOfInstall();
 
                 return;
             }
 
-            _core.modList[modIndex].State_Extracted = true;
+            _form1.modList[modIndex].State_Extracted = true;
             _form1.ProgressBar1Step();
             modIndex++;
             ExtractMod();
@@ -215,22 +213,22 @@ namespace GPPInstaller
 
         public void CopyMod()
         {
-            if (modIndex < _core.modList.Count)
+            if (modIndex < _form1.modList.Count)
             {
-                if (_core.modList[modIndex].State_Installed == false &&
-                    _core.modList[modIndex].ActionToTake == "Install")
+                if (_form1.modList[modIndex].State_Installed == false &&
+                    _form1.modList[modIndex].ActionToTake == "Install")
                 {
-                    _form1.ProgressLabelUpdate("Copying " + _core.modList[modIndex].ModName + " to GameData...");
+                    _form1.ProgressLabelUpdate("Copying " + _form1.modList[modIndex].ModName + " to GameData...");
 
-                    string sourceDirName = _core.modList[modIndex].InstallSourcePath;
-                    string destDirName = _core.modList[modIndex].InstallDestPath;
+                    string sourceDirName = _form1.modList[modIndex].InstallSourcePath;
+                    string destDirName = _form1.modList[modIndex].InstallDestPath;
 
-                    if (_core.modList[modIndex].ModType == "Clouds")
+                    if (_form1.modList[modIndex].ModType == "Clouds")
                     {
                         if (Directory.Exists(@".\GameData\GPP\GPP_Clouds")) Directory.Delete(@".\GameData\GPP\GPP_Clouds", true);
                     }
 
-                    var args = new Tuple<string, string, bool, Mod>(sourceDirName, destDirName, true, _core.modList[modIndex]);
+                    var args = new Tuple<string, string, bool, Mod>(sourceDirName, destDirName, true, _form1.modList[modIndex]);
                     workerCopy.RunWorkerAsync(args);
                 }
                 else
@@ -243,7 +241,7 @@ namespace GPPInstaller
             {
                 modIndex = 0;
                 _form1.InstallSuccess();
-                _core.EndOfInstall();
+                _form1.EndOfInstall();
             }
         }
 
@@ -297,12 +295,12 @@ namespace GPPInstaller
             if (e.Cancelled)
             {
                 _form1.InstallCanceled();
-                _core.EndOfInstall();
+                _form1.EndOfInstall();
 
                 return;
             }
-            _core.InsertVersionFile(_core.modList[modIndex]);
-            _core.modList[modIndex].State_Installed = true;
+            _form1.InsertVersionFile(_form1.modList[modIndex]);
+            _form1.modList[modIndex].State_Installed = true;
             _form1.ProgressBar1Step();
             modIndex++;
             CopyMod();

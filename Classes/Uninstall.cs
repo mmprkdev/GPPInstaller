@@ -9,26 +9,26 @@ namespace GPPInstaller
 {
     class Uninstall : IUninstall
     {
-        Core _core;
+        Form1 _form1;
 
-        public Uninstall(Core core)
+        public Uninstall(Form1 form1)
         {
-            _core = core;
+            _form1 = form1;
         }
 
         public void UninstallMod()
         {
-            foreach (Mod mod in _core.modList)
+            foreach (Mod mod in _form1.modList)
             {
                 if (mod.ActionToTake == "Uninstall" && mod.State_Installed == true)
                 {
                     DeleteModData(mod);
                     mod.State_Installed = false;
-                    if (_core.modList[GlobalInfo.gppIndex].State_Installed == false)
+                    if (_form1.modList[GlobalInfo.gppIndex].State_Installed == false)
                     {
-                        _core.modList[GlobalInfo.gppTexturesIndex].State_Installed = false;
-                        _core.modList[GlobalInfo.cloudsLowResIndex].State_Installed = false;
-                        _core.modList[GlobalInfo.cloudsHighResIndex].State_Installed = false;
+                        _form1.modList[GlobalInfo.gppTexturesIndex].State_Installed = false;
+                        _form1.modList[GlobalInfo.cloudsLowResIndex].State_Installed = false;
+                        _form1.modList[GlobalInfo.cloudsHighResIndex].State_Installed = false;
                     }
                 }
             }

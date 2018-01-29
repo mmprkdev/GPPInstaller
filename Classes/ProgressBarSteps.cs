@@ -8,18 +8,18 @@ namespace GPPInstaller
 {
     class ProgressBarSteps : IProgressBarSteps
     {
-        Core _core;
+        Form1 _form1;
 
-        public ProgressBarSteps(Core core)
+        public ProgressBarSteps(Form1 form1)
         {
-            _core = core;
+            _form1 = form1;
         }
 
         public int NumberOfSteps()
         {
             int result = 0;
 
-            foreach (Mod mod in _core.modList)
+            foreach (Mod mod in _form1.modList)
             {
                 // Downloads
                 if (mod.State_Downloaded == false &&

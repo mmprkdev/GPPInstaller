@@ -2,52 +2,167 @@
 using System.Diagnostics;
 using System.Windows.Forms;
 using System.IO;
+using System.Collections.Generic;
+using System.Net;
+
+// TODO: consider instantiating core in the Program class
+
+// TODO: have a list of all working mod downloads hosted on github in a json or txt file
+
+// TODO: consider removing all private keywords
+
+// TODO: insert using keywords to properly dispose
+// of streams. (are there any streams?)
+
+// TODO: add ksc swither to the core install pack
+
+// TODO: add Pood's Milky Way Skybox
+
+// TODO: get rid of distant object
+
+// TODO: release GPPInstaller on GitHub
+
+// TODO: Create an updater. Detect whether or not a new version of the
+// the instller is available to download. Inform the user that installing
+// a new version will require them to re-download mods and potentially break
+// existing saved games. 
+
+// TODO (maybe): make clouds an optional mod type along with kscSwitcher
 
 namespace GPPInstaller
 {
     public partial class Form1 : Form
     {
-        private readonly CheckExe _checkExe;
-        private readonly KSPVersion _kspVersion;
-        private readonly Core _core;
+        private readonly IModListInit _modlistInit;
+        private readonly IModState _modState;
+        private readonly ICheckBoxes _checkboxes;
+        private readonly IActionToTake _actionToTake;
+        private readonly IInstaller _installer;
+        private readonly IUninstall _uninstall;
+        private readonly IProgressBarSteps _progressBarSteps;
+        private readonly IModVersion _modVersion;
+        private readonly ICheckExe _checkExe;
+        private readonly IKSPVersion _kspVersion;
+        private readonly IConverter _converter;
 
-        // Single responsibility: the user
-        // What we need to send to Core through the constructor:
-        // - Form1 
-        // - all the checkboxes
+        public List<Mod> modList = new List<Mod>();
+
         public Form1()
         {
             InitializeComponent();
+
+            Directory.CreateDirectory(@".\GPPInstaller");
+            Directory.CreateDirectory(@".\GameData");
+
+            // TODO: don't pass through form1. just pass through
+            // modlist when the methods are called. Instantiate these
+            // classes in the form1 instantiation.
+            // NOTE: actually, i need form1 for Errors, maybe
+            // do errors another way???
+            // Maybe have these be child classes insted of interfaces???
+            _modlistInit = new ModListInit(this);
+            _modState = new ModState(this);
+            _checkboxes = new CheckBoxes(this);
+            _actionToTake = new ActionToTake(this);
+            _installer = new Installer(this);
+            _uninstall = new Uninstall(this);
+            _progressBarSteps = new ProgressBarSteps(this);
+            _modVersion = new ModVersion();
             _kspVersion = new KSPVersion(this);
             _checkExe = new CheckExe(this);
-            _core = new Core(
-                this,
+            _converter = new Converter();
+
+            if (!OnStart())
+            {
+                Error("Failed to initialize Core...");
+                EndOfInstall();
+            }
+        }
+
+        public bool OnStart()
+        {
+            _modlistInit.InitModList();
+            _modState.SetModState();
+            _checkboxes.SetCheckBoxes(
                 core_checkBox,
                 utility_checkBox,
                 visuals_checkBox,
                 lowResClouds_checkBox,
                 highResClouds_checkBox);
 
-            Directory.CreateDirectory(@".\GPPInstaller");
-            Directory.CreateDirectory(@".\GameData");
+            // TODO: Left off here
+            string json = _converter.SerializeModListToJson(modList);
+            string targetFilePath = @".\GPPInstaller\modList.json";
+            try
+            {
+                using (FileStream stream = File.Open(targetFilePath, FileMode.Create, FileAccess.Write))
+                using (var sw = new StreamWriter(stream))
+                {
+                    sw.Write(json);
+                    sw.Close();
+                }
+            }
+            catch (UnauthorizedAccessException)
+            {
+                Error("UnauthorizedAccessException");
+            }
+
+            return true;
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            Text = "GPP Installer (GPP v" + _core.GetVersion(_core.modList[GlobalInfo.gppIndex]) + ") (KSP v" + _kspVersion.GetKSPVersionNumber() + ")";
-            DisableApplyButton();
+            Text = "GPP Installer (GPP v" + _modVersion.GetModVersion(modList[GlobalInfo.gppIndex]) + ") (KSP v" + _kspVersion.GetKSPVersionNumber() + ")";
+            applyButton.Enabled = false;
+        }
 
-            if (UpdateAvailable())
+        public void PreInstall()
+        {
+            _actionToTake.SetActionToTake(
+                core_checkBox,
+                utility_checkBox,
+                visuals_checkBox,
+                lowResClouds_checkBox,
+                highResClouds_checkBox);
+        }
+
+        public void Install()
+        {
+            try
             {
-                Updater updater = new Updater();
-                updater.Show(this);
+                _installer.DownloadMod();
+            }
+            catch (WebException)
+            {
+                Error("Install failed. No internet connection detected...");
+                EndOfInstall();
+            }
+            catch (InvalidDataException)
+            {
+                Error("Install failed. Unable to extract archives...");
+                EndOfInstall();
+            }
+            catch (DirectoryNotFoundException)
+            {
+                Error("Install failed. Unable to locate extracted mod directory.");
+                EndOfInstall();
             }
         }
 
-        // TODO: implement updater (???)
-        private bool UpdateAvailable()
+        public void EndOfInstall()
         {
-            return false;
+            _modState.SetModState();
+            _checkboxes.SetCheckBoxes(
+                core_checkBox,
+                utility_checkBox,
+                visuals_checkBox,
+                lowResClouds_checkBox,
+                highResClouds_checkBox);
+        }
+
+        public void InsertVersionFile(Mod mod)
+        {
+            _modVersion.InsertVersionFile(mod);
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -127,7 +242,7 @@ namespace GPPInstaller
 
         public void ProgressBar1Init()
         {
-            int numSteps = _core.NumberOfSteps();
+            int numSteps = _progressBarSteps.NumberOfSteps();
 
             progressBar1.Minimum = 0;
             progressBar1.Maximum = numSteps;
@@ -150,7 +265,7 @@ namespace GPPInstaller
 
         private void applyButton_Click(object sender, EventArgs e)
         {
-            _core.PreInstall();
+            PreInstall();
 
             exitButton.Enabled = false;
             cancelButton.Visible = true;
@@ -159,8 +274,9 @@ namespace GPPInstaller
             DisableCheckBoxes();
             ProgressBar1Init();
 
-            _core.Uninstall();
-            _core.Install();
+            _uninstall.UninstallMod();
+            Install();
+            
         }
 
         private void exitButton_Click(object sender, EventArgs e)
@@ -174,12 +290,11 @@ namespace GPPInstaller
 
         private void cancelButton_Click(object sender, EventArgs e)
         {
-            _core.CancelInstall();
-        }
-
-        public void EnableApplyButton()
-        {
-            applyButton.Enabled = true;
+            {
+                _installer.WebClientCancel();
+                _installer.ExtractCancel();
+                //_installer.CopyCancel();
+            }
         }
 
         public void RemoveProgressBar()
@@ -200,16 +315,6 @@ namespace GPPInstaller
             pictureBox1.Image = Properties.Resources.checkmark_red;
             pictureBox1.Refresh();
             pictureBox1.Visible = true;
-        }
-
-        public void EnableExitButton()
-        {
-            exitButton.Enabled = true;
-        }
-
-        public void RemoveCancelButton()
-        {
-            cancelButton.Visible = false;
         }
 
         public void DisplayYellowWarning()
@@ -233,11 +338,6 @@ namespace GPPInstaller
             progressLabel.Text += message + "\n";
         }
 
-        public void DisableApplyButton()
-        {
-            applyButton.Enabled = false;
-        }
-
         public void Error(string message)
         {
             DisplayRedCheck();
@@ -252,24 +352,25 @@ namespace GPPInstaller
         public void InstallSuccess()
         {
             RemoveProgressBar();
-            RemoveCancelButton();
+            cancelButton.Visible = false;
             DisplayGreenCheck();
-            EnableExitButton();
+            exitButton.Enabled = true;
             EnableCheckBoxes();
             ProgressLabelUpdate("All changes applied successfully.");
-            DisableApplyButton();
+            applyButton.Enabled = false;
         }
 
         public void InstallCanceled()
         {
             DisplayRedCheck();
-            RemoveCancelButton();
-            EnableExitButton();
+            cancelButton.Visible = false;
+            exitButton.Enabled = true;
             RemoveProgressBar();
-            EnableApplyButton();
+            applyButton.Enabled = true;
             EnableCheckBoxes();
         }
 
+        // NOTE: these links might be subject to change. might want to fetch these from the romote sight as well.
         private void kopernicusModNameLabel_MouseDown(object sender, MouseEventArgs e)
         {
             try

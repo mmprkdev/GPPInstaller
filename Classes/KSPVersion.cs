@@ -7,7 +7,7 @@ using System.IO;
 
 namespace GPPInstaller
 {
-    class KSPVersion
+    class KSPVersion : IKSPVersion
     {
         Form1 _form1;
 

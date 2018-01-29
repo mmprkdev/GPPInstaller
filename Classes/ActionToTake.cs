@@ -9,11 +9,11 @@ namespace GPPInstaller
 {
     class ActionToTake : IActionToTake
     {
-        Core _core;
+        Form1 _form1;
 
-        public ActionToTake(Core core)
+        public ActionToTake(Form1 form1)
         {
-            _core = core;
+            _form1 = form1;
         }
 
         public void SetActionToTake(
@@ -23,7 +23,7 @@ namespace GPPInstaller
             CheckBox cloudsLowResCheckBox,
             CheckBox cloudsHighResCheckBox)
         {
-            foreach (Mod mod in _core.modList)
+            foreach (Mod mod in _form1.modList)
             {
                 if (mod.State_Installed == false)
                 {

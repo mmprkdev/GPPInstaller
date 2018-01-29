@@ -32,6 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.IO.Compression" />
@@ -51,6 +54,7 @@
     <Compile Include="Classes\CheckBoxes.cs" />
     <Compile Include="Classes\CheckExe.cs" />
     <Compile Include="Classes\Installer.cs" />
+    <Compile Include="Classes\Converter.cs" />
     <Compile Include="Classes\KSPVersion.cs" />
     <Compile Include="Classes\ProgressBarSteps.cs" />
     <Compile Include="Classes\Uninstall.cs" />
@@ -64,7 +68,10 @@
     <Compile Include="GlobalInfo.cs" />
     <Compile Include="Interfaces\IActionToTake.cs" />
     <Compile Include="Interfaces\ICheckBoxes.cs" />
+    <Compile Include="Interfaces\ICheckExe.cs" />
     <Compile Include="Interfaces\IInstaller.cs" />
+    <Compile Include="Interfaces\IConverter.cs" />
+    <Compile Include="Interfaces\IKSPVersion.cs" />
     <Compile Include="Interfaces\IModListInit.cs" />
     <Compile Include="Interfaces\IModState.cs" />
     <Compile Include="Interfaces\IModVersion.cs" />
@@ -75,13 +82,6 @@
     <Compile Include="Classes\ModState.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Core.cs" />
-    <Compile Include="Updater.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Updater.Designer.cs">
-      <DependentUpon>Updater.cs</DependentUpon>
-    </Compile>
     <Compile Include="ZipArchiveEntryExtensions.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
@@ -96,9 +96,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="Updater.resx">
-      <DependentUpon>Updater.cs</DependentUpon>
-    </EmbeddedResource>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

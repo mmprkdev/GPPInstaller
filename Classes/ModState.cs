@@ -9,27 +9,27 @@ namespace GPPInstaller
 {
     class ModState : IModState
     {
-        Core _core;
+        Form1 _form1;
 
-        public ModState(Core core)
+        public ModState(Form1 form1)
         {
-            _core = core;
+            _form1 = form1;
         }
 
         public void SetModState()
         {
             // downloaded
-            foreach (Mod mod in _core.modList)
+            foreach (Mod mod in _form1.modList)
             {
                 if (mod.ModName == "CloudsLowRes" &&
-                    _core.modList[GlobalInfo.gppIndex].State_Downloaded == true)
+                    _form1.modList[GlobalInfo.gppIndex].State_Downloaded == true)
                 {
                     mod.State_Downloaded = true;
                 }
                 else mod.State_Downloaded = false;
 
                 if (mod.ModName == "CloudsHighRes" &&
-                    _core.modList[GlobalInfo.gppIndex].State_Downloaded == true)
+                    _form1.modList[GlobalInfo.gppIndex].State_Downloaded == true)
                 {
                     mod.State_Downloaded = true;
                 }
@@ -46,7 +46,7 @@ namespace GPPInstaller
             }
 
             // extracted
-            foreach (Mod mod in _core.modList)
+            foreach (Mod mod in _form1.modList)
             {
                 if (Directory.Exists(mod.ExtractedPath + @"\" + mod.ExtractedDirName))
                 {
@@ -59,7 +59,7 @@ namespace GPPInstaller
             }
 
             // installed
-            foreach (Mod mod in _core.modList)
+            foreach (Mod mod in _form1.modList)
             {
                 if (mod.ModType == "Clouds")
                 {

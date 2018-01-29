@@ -7,7 +7,7 @@ using System.IO;
 
 namespace GPPInstaller
 {
-    class CheckExe
+    class CheckExe : ICheckExe
     {
         Form1 _form1;
 

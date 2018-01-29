@@ -10,11 +10,11 @@ namespace GPPInstaller
     // Single Responsibility: set form checkboxes based on current mod state
     class CheckBoxes : ICheckBoxes
     {
-        Core _core;
+        Form1 _form1;
 
-        public CheckBoxes(Core core)
+        public CheckBoxes(Form1 form1)
         {
-            _core = core;
+            _form1 = form1;
         }
 
         public void SetCheckBoxes(
@@ -24,7 +24,7 @@ namespace GPPInstaller
             CheckBox cloudsLowResCheckBox,
             CheckBox cloudsHighResCheckBox)
         {
-            foreach (Mod mod in _core.modList)
+            foreach (Mod mod in _form1.modList)
             {
                 if (mod.ModType == "Core")
                 {
