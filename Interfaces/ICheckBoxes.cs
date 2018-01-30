@@ -10,6 +10,7 @@ namespace GPPInstaller
     public interface ICheckBoxes
     {
         void SetCheckBoxes(
+            Form1 form1,
             CheckBox coreCheckBox,
             CheckBox utilityCheckBox,
             CheckBox visualsCheckBox,

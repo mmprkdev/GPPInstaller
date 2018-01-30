@@ -10,6 +10,7 @@ namespace GPPInstaller
     public interface IActionToTake
     {
         void SetActionToTake(
+            Form1 form1,
             CheckBox coreCheckBox,
             CheckBox utilityCheckBox,
             CheckBox visualsCheckBox,

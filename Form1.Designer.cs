@@ -112,8 +112,7 @@
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(279, 30);
             this.label4.TabIndex = 10;
-            this.label4.Text = "A collection of visual encancment mods: Scatterer,\r\nEVE, and Distant Object Enhan" +
-    "cement.";
+            this.label4.Text = "A collection of visual encancment mods: Scatterer,\r\nand EVE.";
             // 
             // progressBar1
             // 

@@ -8,7 +8,7 @@ namespace GPPInstaller
 {
     public interface IUninstall
     {
-        void UninstallMod();
+        void UninstallMod(Form1 form1);
         void DeleteModData(Mod mod);
     }
 }

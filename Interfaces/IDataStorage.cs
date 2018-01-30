@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace GPPInstaller
 {
-    public interface ICheckExe
+    public interface IDataStorage
     {
-        void CheckForExe(Form1 form1);
+        void WriteStringToFile(string targetFile, string text);
+        string ReadFileIntoString(string sourceFile);
     }
 }

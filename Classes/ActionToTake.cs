@@ -11,18 +11,16 @@ namespace GPPInstaller
     {
         Form1 _form1;
 
-        public ActionToTake(Form1 form1)
-        {
-            _form1 = form1;
-        }
-
         public void SetActionToTake(
+            Form1 form1,
             CheckBox coreCheckBox,
             CheckBox utilityCheckBox,
             CheckBox visualsCheckBox,
             CheckBox cloudsLowResCheckBox,
             CheckBox cloudsHighResCheckBox)
         {
+            _form1 = form1;
+
             foreach (Mod mod in _form1.modList)
             {
                 if (mod.State_Installed == false)

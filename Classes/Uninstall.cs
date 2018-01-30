@@ -11,13 +11,10 @@ namespace GPPInstaller
     {
         Form1 _form1;
 
-        public Uninstall(Form1 form1)
+        public void UninstallMod(Form1 form1)
         {
             _form1 = form1;
-        }
 
-        public void UninstallMod()
-        {
             foreach (Mod mod in _form1.modList)
             {
                 if (mod.ActionToTake == "Uninstall" && mod.State_Installed == true)
@@ -39,6 +36,9 @@ namespace GPPInstaller
             DirectoryInfo installSourceDir = new DirectoryInfo(mod.InstallSourcePath);
             if (!installSourceDir.Exists)
             {
+                // NOTE: If the user decides to delete the extracted mod
+                // dirs in GPPInstaller then this method won't work. Might want
+                // to consider accounting for that.
                 throw new DirectoryNotFoundException();
             }
 

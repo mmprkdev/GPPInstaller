@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Diagnostics;
 
 namespace GPPInstaller
 {
@@ -11,43 +12,45 @@ namespace GPPInstaller
     {
         Form1 _form1;
 
-        public ModState(Form1 form1)
+        //public ModState(Form1 form1)
+        //{
+        //    _form1 = form1;
+        //}
+
+        public void SetModState(Form1 form1)
         {
             _form1 = form1;
-        }
-
-        public void SetModState()
-        {
             // downloaded
-            foreach (Mod mod in _form1.modList)
-            {
-                if (mod.ModName == "CloudsLowRes" &&
-                    _form1.modList[GlobalInfo.gppIndex].State_Downloaded == true)
-                {
-                    mod.State_Downloaded = true;
-                }
-                else mod.State_Downloaded = false;
+            //foreach (Mod mod in _form1.modList)
+            //{
+            //    //if (mod.ModName == "CloudsLowRes" &&
+            //    //    _form1.modList[GlobalInfo.gppIndex].State_Downloaded == true)
+            //    //{
+            //    //    mod.State_Downloaded = true;
+            //    //}
+            //    //else mod.State_Downloaded = false;
 
-                if (mod.ModName == "CloudsHighRes" &&
-                    _form1.modList[GlobalInfo.gppIndex].State_Downloaded == true)
-                {
-                    mod.State_Downloaded = true;
-                }
-                else mod.State_Downloaded = false;
+            //    //if (mod.ModName == "CloudsHighRes" &&
+            //    //    _form1.modList[GlobalInfo.gppIndex].State_Downloaded == true)
+            //    //{
+            //    //    mod.State_Downloaded = true;
+            //    //}
+            //    //else mod.State_Downloaded = false;
 
-                if (File.Exists(mod.ArchiveFilePath + @"\" + mod.ArchiveFileName))
-                {
-                    mod.State_Downloaded = true;
-                }
-                else
-                {
-                    mod.State_Downloaded = false;
-                }
-            }
+            //    if (File.Exists(mod.ArchiveFilePath + @"\" + mod.ArchiveFileName))
+            //    {
+            //        mod.State_Downloaded = true;
+            //    }
+            //    else
+            //    {
+            //        mod.State_Downloaded = false;
+            //    }
+            //}
 
             // extracted
             foreach (Mod mod in _form1.modList)
             {
+                //if (mod.ModName == "CloudsHighRes") Debugger.Break();
                 if (Directory.Exists(mod.ExtractedPath + @"\" + mod.ExtractedDirName))
                 {
                     mod.State_Extracted = true;

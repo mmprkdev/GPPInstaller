@@ -53,12 +53,13 @@
     <Compile Include="Classes\ActionToTake.cs" />
     <Compile Include="Classes\CheckBoxes.cs" />
     <Compile Include="Classes\CheckExe.cs" />
+    <Compile Include="Classes\DataStorage.cs" />
+    <Compile Include="Classes\Downloader.cs" />
     <Compile Include="Classes\Installer.cs" />
     <Compile Include="Classes\Converter.cs" />
-    <Compile Include="Classes\KSPVersion.cs" />
     <Compile Include="Classes\ProgressBarSteps.cs" />
     <Compile Include="Classes\Uninstall.cs" />
-    <Compile Include="Classes\ModVersion.cs" />
+    <Compile Include="Classes\Version.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -69,16 +70,15 @@
     <Compile Include="Interfaces\IActionToTake.cs" />
     <Compile Include="Interfaces\ICheckBoxes.cs" />
     <Compile Include="Interfaces\ICheckExe.cs" />
+    <Compile Include="Interfaces\IDataStorage.cs" />
+    <Compile Include="Interfaces\IDownloader.cs" />
     <Compile Include="Interfaces\IInstaller.cs" />
     <Compile Include="Interfaces\IConverter.cs" />
-    <Compile Include="Interfaces\IKSPVersion.cs" />
-    <Compile Include="Interfaces\IModListInit.cs" />
     <Compile Include="Interfaces\IModState.cs" />
-    <Compile Include="Interfaces\IModVersion.cs" />
+    <Compile Include="Interfaces\IVersion.cs" />
     <Compile Include="Interfaces\IProgressBarSteps.cs" />
     <Compile Include="Interfaces\IUninstall.cs" />
     <Compile Include="Mod.cs" />
-    <Compile Include="Classes\ModListInit.cs" />
     <Compile Include="Classes\ModState.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

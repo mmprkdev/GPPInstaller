@@ -17,7 +17,7 @@ namespace GPPInstaller
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             // TODO: consider instantiating core here
-            Application.Run(new Form1());
+            Application.Run(new Form1(new ModState(), new CheckBoxes(), new ActionToTake(), new Installer(), new Uninstall(), new ProgressBarSteps(), new Version(), new CheckExe(), new Converter(), new DataStorage(), new Downloader()));
         }
     }
 }

@@ -5,120 +5,141 @@ using System.IO;
 using System.Collections.Generic;
 using System.Net;
 
-// TODO: consider instantiating core in the Program class
-
-// TODO: have a list of all working mod downloads hosted on github in a json or txt file
-
-// TODO: consider removing all private keywords
-
-// TODO: insert using keywords to properly dispose
-// of streams. (are there any streams?)
+// TODO: If there are any changes to the mod versions
+// that are different from whats currently installed,
+// prompt the user if they wish to upgrade to the latest
+// mod versions and warn them that they doing so will require
+// deleting any existing save game files.
 
 // TODO: add ksc swither to the core install pack
 
-// TODO: add Pood's Milky Way Skybox
-
-// TODO: get rid of distant object
-
-// TODO: release GPPInstaller on GitHub
-
-// TODO: Create an updater. Detect whether or not a new version of the
-// the instller is available to download. Inform the user that installing
-// a new version will require them to re-download mods and potentially break
-// existing saved games. 
+// TODO: add Pood's Milky Way Skybox 
 
 // TODO (maybe): make clouds an optional mod type along with kscSwitcher
+
+// TODO: create a demo version that runs without KSP that can be showed off
+// to employers, and a full working version. 
+
+// TODO: consider removing the global static indexers
+
+// TODO: consider removing the Downloaded state field, since we no longer 
+// keep the zip files.
+
+// TODO: get rid of Mod class since we don't use it in this project anymore.
+
+// TODO: consider storing information about what files to uninstall inside of the modList
+// insted of looking at the extracted dir.
+
+// NOTE: The code here has been set up to incorperate
+// Dependency Injection, but I have not
+// and will not do any unit testing with this app
+// so I don't no how practical it is or if it even
+// works for unit testing. It's mostly just for demonstration.
 
 namespace GPPInstaller
 {
     public partial class Form1 : Form
     {
-        private readonly IModListInit _modlistInit;
-        private readonly IModState _modState;
-        private readonly ICheckBoxes _checkboxes;
-        private readonly IActionToTake _actionToTake;
-        private readonly IInstaller _installer;
-        private readonly IUninstall _uninstall;
-        private readonly IProgressBarSteps _progressBarSteps;
-        private readonly IModVersion _modVersion;
-        private readonly ICheckExe _checkExe;
-        private readonly IKSPVersion _kspVersion;
-        private readonly IConverter _converter;
+        readonly IModState _modState;
+        readonly ICheckBoxes _checkBoxes;
+        readonly IActionToTake _actionToTake;
+        readonly IInstaller _installer;
+        readonly IUninstall _uninstall;
+        readonly IProgressBarSteps _progressBarSteps;
+        readonly IVersion _version;
+        readonly ICheckExe _checkExe;
+        readonly IConverter _converter;
+        readonly IDataStorage _dataStorage;
+        readonly IDownloader _downloader;
 
         public List<Mod> modList = new List<Mod>();
 
-        public Form1()
+        public Form1(
+            IModState modState,
+            ICheckBoxes checkBoxes,
+            IActionToTake actionToTake,
+            IInstaller installer,
+            IUninstall uninstall,
+            IProgressBarSteps progressBarSteps,
+            IVersion version,
+            ICheckExe checkExe,
+            IConverter converter,
+            IDataStorage dataStorage,
+            IDownloader downloader)
         {
             InitializeComponent();
 
-            Directory.CreateDirectory(@".\GPPInstaller");
-            Directory.CreateDirectory(@".\GameData");
-
-            // TODO: don't pass through form1. just pass through
-            // modlist when the methods are called. Instantiate these
-            // classes in the form1 instantiation.
-            // NOTE: actually, i need form1 for Errors, maybe
-            // do errors another way???
-            // Maybe have these be child classes insted of interfaces???
-            _modlistInit = new ModListInit(this);
-            _modState = new ModState(this);
-            _checkboxes = new CheckBoxes(this);
-            _actionToTake = new ActionToTake(this);
-            _installer = new Installer(this);
-            _uninstall = new Uninstall(this);
-            _progressBarSteps = new ProgressBarSteps(this);
-            _modVersion = new ModVersion();
-            _kspVersion = new KSPVersion(this);
-            _checkExe = new CheckExe(this);
-            _converter = new Converter();
-
-            if (!OnStart())
-            {
-                Error("Failed to initialize Core...");
-                EndOfInstall();
-            }
+            _modState = modState;
+            _checkBoxes = checkBoxes;
+            _actionToTake = actionToTake;
+            _installer = installer;
+            _uninstall = uninstall;
+            _progressBarSteps = progressBarSteps;
+            _version = version;
+            _checkExe = checkExe;
+            _converter = converter;
+            _dataStorage = dataStorage;
+            _downloader = downloader;
+            
+            OnInit();
         }
 
-        public bool OnStart()
+        public bool OnInit()
         {
-            _modlistInit.InitModList();
-            _modState.SetModState();
-            _checkboxes.SetCheckBoxes(
+            Directory.CreateDirectory(@".\GPPInstaller");
+            Directory.CreateDirectory(@".\GameData");
+            InitModList();
+            _modState.SetModState(this);
+            _checkBoxes.SetCheckBoxes(
+                this,
                 core_checkBox,
                 utility_checkBox,
                 visuals_checkBox,
                 lowResClouds_checkBox,
                 highResClouds_checkBox);
 
-            // TODO: Left off here
-            string json = _converter.SerializeModListToJson(modList);
-            string targetFilePath = @".\GPPInstaller\modList.json";
-            try
-            {
-                using (FileStream stream = File.Open(targetFilePath, FileMode.Create, FileAccess.Write))
-                using (var sw = new StreamWriter(stream))
-                {
-                    sw.Write(json);
-                    sw.Close();
-                }
-            }
-            catch (UnauthorizedAccessException)
-            {
-                Error("UnauthorizedAccessException");
-            }
-
             return true;
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        void Form1_Load(object sender, EventArgs e)
         {
-            Text = "GPP Installer (GPP v" + _modVersion.GetModVersion(modList[GlobalInfo.gppIndex]) + ") (KSP v" + _kspVersion.GetKSPVersionNumber() + ")";
+            Text = "GPP Installer (GPP v" + _version.GetModVersion(modList[GlobalInfo.gppIndex]) + ") (KSP v" + _version.GetKSPVersionNumber(this) + ")";
             applyButton.Enabled = false;
+        }
+
+        void InitModList()
+        {
+            // download source zip file
+            string destFile = @".\GPPInstaller\modList.json";
+            if (!GlobalInfo.IsConnectedToInternet())
+            {
+                Error("No internet connection detected...");
+            }
+            // TODO: check for WebException 
+            _downloader.Download(GlobalInfo.dropboxJsonDLLink, destFile);
+
+            // read file into string
+            string json;
+            try
+            {
+                json = _dataStorage.ReadFileIntoString(@".\GPPInstaller\modList.json");
+            }
+            catch (UnauthorizedAccessException)
+            {
+                Error("UnauthorizedAccessException.");
+                json = null;
+            }
+            
+
+            // deserialize json into modList object
+            _converter.DeserializeJsonToModList(json, ref modList);
         }
 
         public void PreInstall()
         {
+            _modState.SetModState(this);
             _actionToTake.SetActionToTake(
+                this,
                 core_checkBox,
                 utility_checkBox,
                 visuals_checkBox,
@@ -130,7 +151,7 @@ namespace GPPInstaller
         {
             try
             {
-                _installer.DownloadMod();
+                _installer.DownloadMod(this);
             }
             catch (WebException)
             {
@@ -151,8 +172,9 @@ namespace GPPInstaller
 
         public void EndOfInstall()
         {
-            _modState.SetModState();
-            _checkboxes.SetCheckBoxes(
+            _modState.SetModState(this);
+            _checkBoxes.SetCheckBoxes(
+                this,
                 core_checkBox,
                 utility_checkBox,
                 visuals_checkBox,
@@ -162,27 +184,27 @@ namespace GPPInstaller
 
         public void InsertVersionFile(Mod mod)
         {
-            _modVersion.InsertVersionFile(mod);
+            _version.InsertVersionFile(mod);
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        void button3_Click(object sender, EventArgs e)
         {
             Application.Exit();
         }
 
-        private void core_checkBox_CheckedChanged(object sender, EventArgs e)
+        void core_checkBox_CheckedChanged(object sender, EventArgs e)
         {
             applyButton.Enabled = true;
 
             if (!core_checkBox.Checked) visuals_checkBox.Checked = false;
         }
 
-        private void utility_checkBox_CheckedChanged(object sender, EventArgs e)
+        void utility_checkBox_CheckedChanged(object sender, EventArgs e)
         {
             applyButton.Enabled = true;
         }
 
-        private void visuals_checkBox_CheckedChanged(object sender, EventArgs e)
+        void visuals_checkBox_CheckedChanged(object sender, EventArgs e)
         {
             applyButton.Enabled = true;
 
@@ -208,21 +230,21 @@ namespace GPPInstaller
             }
         }
 
-        private void lowResClouds_checkBox_CheckedChanged(object sender, EventArgs e)
+        void lowResClouds_checkBox_CheckedChanged(object sender, EventArgs e)
         {
             applyButton.Enabled = true;
 
             if (lowResClouds_checkBox.Checked) highResClouds_checkBox.Checked = false;
         }
 
-        private void highResClouds_checkBox_CheckedChanged(object sender, EventArgs e)
+        void highResClouds_checkBox_CheckedChanged(object sender, EventArgs e)
         {
             applyButton.Enabled = true;
 
             if (highResClouds_checkBox.Checked) lowResClouds_checkBox.Checked = false;
         }
 
-        private void DisableCheckBoxes()
+        void DisableCheckBoxes()
         {
             core_checkBox.Enabled = false;
             utility_checkBox.Enabled = false;
@@ -242,7 +264,7 @@ namespace GPPInstaller
 
         public void ProgressBar1Init()
         {
-            int numSteps = _progressBarSteps.NumberOfSteps();
+            int numSteps = _progressBarSteps.NumberOfSteps(this);
 
             progressBar1.Minimum = 0;
             progressBar1.Maximum = numSteps;
@@ -263,7 +285,7 @@ namespace GPPInstaller
 
         }
 
-        private void applyButton_Click(object sender, EventArgs e)
+        void applyButton_Click(object sender, EventArgs e)
         {
             PreInstall();
 
@@ -274,12 +296,12 @@ namespace GPPInstaller
             DisableCheckBoxes();
             ProgressBar1Init();
 
-            _uninstall.UninstallMod();
+            _uninstall.UninstallMod(this);
             Install();
             
         }
 
-        private void exitButton_Click(object sender, EventArgs e)
+        void exitButton_Click(object sender, EventArgs e)
         {
             Process process = new Process();
             process.StartInfo.UseShellExecute = false;
@@ -288,7 +310,7 @@ namespace GPPInstaller
             Application.Exit();
         }
 
-        private void cancelButton_Click(object sender, EventArgs e)
+        void cancelButton_Click(object sender, EventArgs e)
         {
             {
                 _installer.WebClientCancel();
@@ -324,7 +346,7 @@ namespace GPPInstaller
             pictureBox1.Visible = true;
         }
 
-        private void restartButton_Click(object sender, EventArgs e)
+        void restartButton_Click(object sender, EventArgs e)
         {
             Application.Restart();
             Environment.Exit(0);
@@ -371,7 +393,7 @@ namespace GPPInstaller
         }
 
         // NOTE: these links might be subject to change. might want to fetch these from the romote sight as well.
-        private void kopernicusModNameLabel_MouseDown(object sender, MouseEventArgs e)
+        void kopernicusModNameLabel_MouseDown(object sender, MouseEventArgs e)
         {
             try
             {
@@ -383,7 +405,7 @@ namespace GPPInstaller
             }
         }
 
-        private void gppModNameLabel_MouseDown(object sender, MouseEventArgs e)
+        void gppModNameLabel_MouseDown(object sender, MouseEventArgs e)
         {
             try
             {
@@ -394,7 +416,7 @@ namespace GPPInstaller
             }
         }
 
-        private void kerModNameLabel_MouseDown(object sender, MouseEventArgs e)
+        void kerModNameLabel_MouseDown(object sender, MouseEventArgs e)
         {
             try
             {
@@ -405,7 +427,7 @@ namespace GPPInstaller
             }
         }
 
-        private void kacModNameLabel_MouseDown(object sender, MouseEventArgs e)
+        void kacModNameLabel_MouseDown(object sender, MouseEventArgs e)
         {
             try
             {
@@ -416,7 +438,7 @@ namespace GPPInstaller
             }
         }
 
-        private void scattererModNameLabel_MouseDown(object sender, MouseEventArgs e)
+        void scattererModNameLabel_MouseDown(object sender, MouseEventArgs e)
         {
             try
             {
@@ -427,7 +449,7 @@ namespace GPPInstaller
             }
         }
 
-        private void eveModNameLabel_MouseDown(object sender, MouseEventArgs e)
+        void eveModNameLabel_MouseDown(object sender, MouseEventArgs e)
         {
             try
             {
@@ -438,7 +460,7 @@ namespace GPPInstaller
             }
         }
 
-        private void doeModNameLabel_MouseDown(object sender, MouseEventArgs e)
+        void doeModNameLabel_MouseDown(object sender, MouseEventArgs e)
         {
             try
             {
@@ -449,75 +471,76 @@ namespace GPPInstaller
             }
         }
 
-        private void kopernicusModNameLabel_MouseEnter(object sender, EventArgs e)
+        void kopernicusModNameLabel_MouseEnter(object sender, EventArgs e)
         {
             Cursor = Cursors.Hand;
         }
 
-        private void kopernicusModNameLabel_MouseLeave(object sender, EventArgs e)
+        void kopernicusModNameLabel_MouseLeave(object sender, EventArgs e)
         {
             Cursor = Cursors.Default;
         }
 
-        private void gppModNameLabel_MouseEnter(object sender, EventArgs e)
+        void gppModNameLabel_MouseEnter(object sender, EventArgs e)
         {
             Cursor = Cursors.Hand;
         }
 
-        private void gppModNameLabel_MouseLeave(object sender, EventArgs e)
+        void gppModNameLabel_MouseLeave(object sender, EventArgs e)
         {
             Cursor = Cursors.Default;
         }
 
-        private void kerModNameLabel_MouseEnter(object sender, EventArgs e)
+        void kerModNameLabel_MouseEnter(object sender, EventArgs e)
         {
             Cursor = Cursors.Hand;
         }
 
-        private void kerModNameLabel_MouseLeave(object sender, EventArgs e)
+        void kerModNameLabel_MouseLeave(object sender, EventArgs e)
         {
             Cursor = Cursors.Default;
         }
 
-        private void kacModNameLabel_MouseEnter(object sender, EventArgs e)
+        void kacModNameLabel_MouseEnter(object sender, EventArgs e)
         {
             Cursor = Cursors.Hand;
         }
 
-        private void kacModNameLabel_MouseLeave(object sender, EventArgs e)
+        void kacModNameLabel_MouseLeave(object sender, EventArgs e)
         {
             Cursor = Cursors.Default;
         }
 
-        private void scattererModNameLabel_MouseEnter(object sender, EventArgs e)
+        void scattererModNameLabel_MouseEnter(object sender, EventArgs e)
         {
             Cursor = Cursors.Hand;
         }
 
-        private void scattererModNameLabel_MouseLeave(object sender, EventArgs e)
+        void scattererModNameLabel_MouseLeave(object sender, EventArgs e)
         {
             Cursor = Cursors.Default;
         }
 
-        private void eveModNameLabel_MouseEnter(object sender, EventArgs e)
+        void eveModNameLabel_MouseEnter(object sender, EventArgs e)
         {
             Cursor = Cursors.Hand;
         }
 
-        private void eveModNameLabel_MouseLeave(object sender, EventArgs e)
+        void eveModNameLabel_MouseLeave(object sender, EventArgs e)
         {
             Cursor = Cursors.Default;
         }
 
-        private void doeModNameLabel_MouseEnter(object sender, EventArgs e)
+        void doeModNameLabel_MouseEnter(object sender, EventArgs e)
         {
             Cursor = Cursors.Hand;
         }
 
-        private void doeModNameLabel_MouseLeave(object sender, EventArgs e)
+        void doeModNameLabel_MouseLeave(object sender, EventArgs e)
         {
             Cursor = Cursors.Default;
         }
+
     }
 
 }

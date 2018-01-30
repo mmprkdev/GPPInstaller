@@ -8,6 +8,6 @@ namespace GPPInstaller
 {
     public interface IProgressBarSteps
     {
-        int NumberOfSteps();
+        int NumberOfSteps(Form1 form1);
     }
 }

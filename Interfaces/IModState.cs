@@ -8,6 +8,6 @@ namespace GPPInstaller
 {
     public interface IModState
     {
-        void SetModState();
+        void SetModState(Form1 form1);
     }
 }

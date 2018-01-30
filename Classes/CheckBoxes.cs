@@ -12,18 +12,16 @@ namespace GPPInstaller
     {
         Form1 _form1;
 
-        public CheckBoxes(Form1 form1)
-        {
-            _form1 = form1;
-        }
-
         public void SetCheckBoxes(
+            Form1 form1,
             CheckBox coreCheckBox,
             CheckBox utilityCheckBox,
             CheckBox visualsCheckBox,
             CheckBox cloudsLowResCheckBox,
             CheckBox cloudsHighResCheckBox)
         {
+            _form1 = form1;
+
             foreach (Mod mod in _form1.modList)
             {
                 if (mod.ModType == "Core")

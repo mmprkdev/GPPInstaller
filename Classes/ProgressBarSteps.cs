@@ -10,13 +10,9 @@ namespace GPPInstaller
     {
         Form1 _form1;
 
-        public ProgressBarSteps(Form1 form1)
+        public int NumberOfSteps(Form1 form1)
         {
             _form1 = form1;
-        }
-
-        public int NumberOfSteps()
-        {
             int result = 0;
 
             foreach (Mod mod in _form1.modList)

@@ -11,13 +11,10 @@ namespace GPPInstaller
     {
         Form1 _form1;
 
-        public CheckExe(Form1 form1)
+        public void CheckForExe(Form1 form1)
         {
             _form1 = form1;
-        }
 
-        public void CheckForExe()
-        {
             if (!File.Exists(GlobalInfo.ksp64bitExeFile))
             {
                 if (File.Exists(GlobalInfo.ksp32bitExeFile))

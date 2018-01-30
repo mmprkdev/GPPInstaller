@@ -9,5 +9,7 @@ namespace GPPInstaller
     public interface IConverter
     {
         string SerializeModListToJson(List<Mod> modList);
+        void DeserializeJsonToModList(string json, ref List<Mod> modList);
+        void Unzip(string zipFile, string destDir);
     }
 }

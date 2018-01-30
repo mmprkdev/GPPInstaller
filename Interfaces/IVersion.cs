@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace GPPInstaller
 {
-    public interface ICheckExe
+    public interface IVersion
     {
-        void CheckForExe(Form1 form1);
+        void InsertVersionFile(Mod mod);
+        string GetModVersion(Mod mod);
+        string GetKSPVersionNumber(Form1 form1);
     }
 }
