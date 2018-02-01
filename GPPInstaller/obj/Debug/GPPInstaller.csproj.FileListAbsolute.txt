@@ -1,0 +1,12 @@
+C:\Users\Matt\source\repos\GPPInstaller\GPPInstaller\bin\Debug\GPPInstaller.exe.config
+C:\Users\Matt\source\repos\GPPInstaller\GPPInstaller\bin\Debug\GPPInstaller.exe
+C:\Users\Matt\source\repos\GPPInstaller\GPPInstaller\bin\Debug\GPPInstaller.pdb
+C:\Users\Matt\source\repos\GPPInstaller\GPPInstaller\obj\Debug\GPPInstaller.csprojResolveAssemblyReference.cache
+C:\Users\Matt\source\repos\GPPInstaller\GPPInstaller\obj\Debug\GPPInstaller.Form1.resources
+C:\Users\Matt\source\repos\GPPInstaller\GPPInstaller\obj\Debug\GPPInstaller.Properties.Resources.resources
+C:\Users\Matt\source\repos\GPPInstaller\GPPInstaller\obj\Debug\GPPInstaller.csproj.GenerateResource.Cache
+C:\Users\Matt\source\repos\GPPInstaller\GPPInstaller\obj\Debug\GPPInstaller.csproj.CoreCompileInputs.cache
+C:\Users\Matt\source\repos\GPPInstaller\GPPInstaller\obj\Debug\GPPInstaller.exe
+C:\Users\Matt\source\repos\GPPInstaller\GPPInstaller\obj\Debug\GPPInstaller.pdb
+C:\Users\Matt\source\repos\GPPInstaller\GPPInstaller\bin\Debug\Newtonsoft.Json.dll
+C:\Users\Matt\source\repos\GPPInstaller\GPPInstaller\bin\Debug\Newtonsoft.Json.xml

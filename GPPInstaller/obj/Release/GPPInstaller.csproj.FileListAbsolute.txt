@@ -1,0 +1,14 @@
+C:\Users\Matt\source\repos\GPPInstaller\GPPInstaller\bin\Release\GPPInstaller.exe.config
+C:\Users\Matt\source\repos\GPPInstaller\GPPInstaller\bin\Release\GPPInstaller.exe
+C:\Users\Matt\source\repos\GPPInstaller\GPPInstaller\bin\Release\GPPInstaller.pdb
+C:\Users\Matt\source\repos\GPPInstaller\GPPInstaller\bin\Release\HtmlAgilityPack.dll
+C:\Users\Matt\source\repos\GPPInstaller\GPPInstaller\bin\Release\HtmlAgilityPack.pdb
+C:\Users\Matt\source\repos\GPPInstaller\GPPInstaller\bin\Release\HtmlAgilityPack.xml
+C:\Users\Matt\source\repos\GPPInstaller\GPPInstaller\obj\Release\GPPInstaller.csprojResolveAssemblyReference.cache
+C:\Users\Matt\source\repos\GPPInstaller\GPPInstaller\obj\Release\GPPInstaller.Form1.resources
+C:\Users\Matt\source\repos\GPPInstaller\GPPInstaller\obj\Release\GPPInstaller.Properties.Resources.resources
+C:\Users\Matt\source\repos\GPPInstaller\GPPInstaller\obj\Release\GPPInstaller.csproj.GenerateResource.Cache
+C:\Users\Matt\source\repos\GPPInstaller\GPPInstaller\obj\Release\GPPInstaller.csproj.CoreCompileInputs.cache
+C:\Users\Matt\source\repos\GPPInstaller\GPPInstaller\obj\Release\GPPInstaller.exe
+C:\Users\Matt\source\repos\GPPInstaller\GPPInstaller\obj\Release\GPPInstaller.pdb
+C:\Users\Matt\source\repos\GPPInstaller\GPPInstaller\obj\Release\GPPInstaller.Updater.resources
