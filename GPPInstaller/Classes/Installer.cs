@@ -303,7 +303,6 @@ namespace GPPInstaller
 
                 return;
             }
-            _form1.InsertVersionFile(_form1.modList[modIndex]);
             _form1.modList[modIndex].State_Installed = true;
             _form1.ProgressBar1Step();
             modIndex++;

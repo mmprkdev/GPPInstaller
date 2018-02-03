@@ -64,6 +64,9 @@ namespace GPPInstaller
         {
             Directory.CreateDirectory(@".\GPPInstaller");
             Directory.CreateDirectory(@".\GameData");
+#if !DEMO
+            _checkExe.CheckForExe(this);
+#endif
             _modListInit.InitModList(this);
             InitModDic(ref modDic);
             _modState.SetModState(this);
@@ -80,7 +83,12 @@ namespace GPPInstaller
 
         void Form1_Load(object sender, EventArgs e)
         {
-            Text = "GPP Installer (GPP v" + _version.GetModVersion(modList[1]) + ") (KSP v" + _version.GetKSPVersionNumber(this) + ")";
+#if DEMO
+            Text = Text = "GPP Installer 1.0.0 (GPP v" + _version.GetModVersion(modDic["GPP"]) + ") (KSP v1.3.1)";
+#else
+            Text = "GPP Installer 1.0.0 (GPP v" + _version.GetModVersion(modDic["GPP"]) + ") (KSP v" + _version.GetKSPVersionNumber(this) + ")";
+#endif
+
             applyButton.Enabled = false;
         }
 
