@@ -12,11 +12,6 @@ namespace GPPInstaller
     {
         Form1 _form1;
 
-        //public ModState(Form1 form1)
-        //{
-        //    _form1 = form1;
-        //}
-
         public void SetModState(Form1 form1)
         {
             _form1 = form1;
@@ -24,7 +19,6 @@ namespace GPPInstaller
             // downloaded, extracted
             foreach (Mod mod in _form1.modList)
             {
-                //if (mod.ModName == "CloudsHighRes") Debugger.Break();
                 if (Directory.Exists(mod.ExtractedPath + @"\" + mod.ExtractedDirName))
                 {
                     mod.State_Downloaded = true;
@@ -60,16 +54,13 @@ namespace GPPInstaller
                         else mod.State_Installed = false;
                     }
                 }
+                else if (Directory.Exists(mod.InstallDestPath + @"\" + mod.InstallDirName))
+                {
+                    mod.State_Installed = true;
+                }
                 else
                 {
-                    if (Directory.Exists(mod.InstallDestPath + @"\" + mod.InstallDirName))
-                    {
-                        mod.State_Installed = true;
-                    }
-                    else
-                    {
-                        mod.State_Installed = false;
-                    }
+                    mod.State_Installed = false;
                 }
             }
         }

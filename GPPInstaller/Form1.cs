@@ -5,25 +5,8 @@ using System.IO;
 using System.Collections.Generic;
 using System.Net;
 
-// TODO: add ksc swither to the core install pack
-
-// TODO: add Pood's Milky Way Skybox 
-
 // TODO: create a demo version that runs without KSP that can be showed off
 // to employers, and a full working version. 
-
-// TODO: consider removing the global static indexers
-
-// TODO: get rid of Mod class since we don't use it in this project anymore.
-
-// TODO: consider storing information about what files to uninstall inside of the modList
-// insted of looking at the extracted dir.
-
-// NOTE: The code here has been set up to incorperate
-// Dependency Injection, but I have not
-// and will not do any unit testing with this app
-// so I don't no how practical it is or if it even
-// works for unit testing. It's mostly just for demonstration.
 
 namespace GPPInstaller
 {
@@ -43,6 +26,7 @@ namespace GPPInstaller
         readonly IDownloader _downloader;
 
         public List<Mod> modList = new List<Mod>();
+        public Dictionary<string, Mod> modDic = new Dictionary<string, Mod>();
 
         public Form1(
             IModState modState,
@@ -81,6 +65,7 @@ namespace GPPInstaller
             Directory.CreateDirectory(@".\GPPInstaller");
             Directory.CreateDirectory(@".\GameData");
             _modListInit.InitModList(this);
+            InitModDic(ref modDic);
             _modState.SetModState(this);
             _checkBoxes.SetCheckBoxes(
                 this,
@@ -95,36 +80,16 @@ namespace GPPInstaller
 
         void Form1_Load(object sender, EventArgs e)
         {
-            Text = "GPP Installer (GPP v" + _version.GetModVersion(modList[GlobalInfo.gppIndex]) + ") (KSP v" + _version.GetKSPVersionNumber(this) + ")";
+            Text = "GPP Installer (GPP v" + _version.GetModVersion(modList[1]) + ") (KSP v" + _version.GetKSPVersionNumber(this) + ")";
             applyButton.Enabled = false;
         }
 
-        void InitModList()
+        public void InitModDic(ref Dictionary<string, Mod> modDic)
         {
-            // download source zip file
-            string destFile = @".\GPPInstaller\modList.json";
-            if (!GlobalInfo.IsConnectedToInternet())
+            for (int i = 0; i < modList.Count; i++)
             {
-                Error("No internet connection detected...");
+                modDic.Add(modList[i].ModName, modList[i]);
             }
-            // TODO: check for WebException 
-            _downloader.Download(GlobalInfo.dropboxJsonDLLink, destFile);
-
-            // read file into string
-            string json;
-            try
-            {
-                json = _dataStorage.ReadFileIntoString(@".\GPPInstaller\modList.json");
-            }
-            catch (UnauthorizedAccessException)
-            {
-                Error("UnauthorizedAccessException.");
-                json = null;
-            }
-            
-
-            // deserialize json into modList object
-            _converter.DeserializeJsonToModList(json, ref modList);
         }
 
         public void PreInstall()

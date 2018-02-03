@@ -76,6 +76,26 @@ namespace GPPInstaller
 
             _form1.modList.Add(new Mod()
             {
+                ModType = "Core",
+                ModName = "KSCSwitcher",
+                DownloadAddress = "",
+                ArchiveFileName = "",
+                ArchiveFilePath = "",
+                ExtractedDirName = "KSCSwitcher",
+                ExtractedPath = @".\GPPInstaller\Galileos-Planet-Pack-1.6.0.1\Optional Mods\GPP_KSCSwitcher\GameData",
+                InstallDirName = "KSCSwitcher",
+                InstallDestPath = @".\GameData",
+                InstallSourcePath = @".\GPPInstaller\Galileos-Planet-Pack-1.6.0.1\Optional Mods\GPP_KSCSwitcher\GameData",
+                State_Downloaded = false,
+                State_Extracted = false,
+                State_Installed = false,
+                ActionToTake = "",
+                VersionNumber = "",
+                IsCurrentVersion = false
+            });
+
+            _form1.modList.Add(new Mod()
+            {
                 ModType = "Visuals",
                 ModName = "EVE",
                 DownloadAddress = "https://github.com/WazWaz/EnvironmentalVisualEnhancements/releases/download/EVE-1.2.2-1/EnvironmentalVisualEnhancements-1.2.2.1.zip",
@@ -113,6 +133,26 @@ namespace GPPInstaller
                 VersionNumber = "0.0320b",
                 IsCurrentVersion = false
 
+            });
+
+            _form1.modList.Add(new Mod()
+            {
+                ModType = "Visuals",
+                ModName = "SigmaSkyBox",
+                DownloadAddress = "https://github.com/Sigma88/Sigma-Replacements/releases/download/B_v0.2.0/Sigma-Replacements_SkyBox.v0.2.0.zip",
+                ArchiveFileName = "Sigma-Replacements_SkyBox.v0.2.0.zip",
+                ArchiveFilePath = @".\GPPInstaller",
+                ExtractedDirName = "Sigma-Replacements_SkyBox.v0.2.0",
+                ExtractedPath = @".\GPPInstaller",
+                InstallDirName = "Sigma",
+                InstallDestPath = @".\GameData",
+                InstallSourcePath = @".\GPPInstaller\Sigma-Replacements_SkyBox.v0.2.0\GameData",
+                State_Downloaded = false,
+                State_Extracted = false,
+                State_Installed = false,
+                ActionToTake = "",
+                VersionNumber = "0.2.0",
+                IsCurrentVersion = false
             });
 
             _form1.modList.Add(new Mod()

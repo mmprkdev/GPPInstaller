@@ -21,11 +21,12 @@ namespace GPPInstaller
                 {
                     DeleteModData(mod);
                     mod.State_Installed = false;
-                    if (_form1.modList[GlobalInfo.gppIndex].State_Installed == false)
+
+                    if (_form1.modDic["GPP"].State_Installed == false)
                     {
-                        _form1.modList[GlobalInfo.gppTexturesIndex].State_Installed = false;
-                        _form1.modList[GlobalInfo.cloudsLowResIndex].State_Installed = false;
-                        _form1.modList[GlobalInfo.cloudsHighResIndex].State_Installed = false;
+                        _form1.modDic["GPP_Textures"].State_Installed = false;
+                        _form1.modDic["CloudsLowRes"].State_Installed = false;
+                        _form1.modDic["CloudsHighRes"].State_Installed = false;
                     }
                 }
             }
@@ -37,8 +38,7 @@ namespace GPPInstaller
             if (!installSourceDir.Exists)
             {
                 // NOTE: If the user decides to delete the extracted mod
-                // dirs in GPPInstaller then this method won't work. Might want
-                // to consider accounting for that.
+                // dirs in GPPInstaller then this method won't work.
                 throw new DirectoryNotFoundException();
             }
 
